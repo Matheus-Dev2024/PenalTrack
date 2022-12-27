@@ -3,7 +3,6 @@
 namespace App\Models\Regras;
 
 use App\Models\Entity\AvaliacaoServidor;
-use App\Models\Entity\ProcessoAvaliacaoServidor;
 
 class AvaliacaoServidorRegras
 {
