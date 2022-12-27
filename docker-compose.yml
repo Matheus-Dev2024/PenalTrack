@@ -7,7 +7,9 @@ services:
         uid: 1000
       context: ./
       dockerfile: ./docker/Dockerfile
-    image: php74
+    image: php8
+    extra_hosts:
+        - host.docker.internal:host-gateway
     container_name: ${APP_NAME}-app
     restart: unless-stopped
     working_dir: /var/www

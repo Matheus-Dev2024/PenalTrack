@@ -5,14 +5,9 @@ namespace App\Models\Entity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class FatorAvaliacaoItem extends Model
+class UsuarioAvaliaUnidades extends Model
 {
     use HasFactory;
-    protected $table = "fator_avaliacao_item";
+    protected $table = "usuario_avalia_unidades";
     protected $guarded = [];
-
-    public function fator()
-    {
-        return $this->belongsTo(FatorAvaliacao::class);
-    }
 }

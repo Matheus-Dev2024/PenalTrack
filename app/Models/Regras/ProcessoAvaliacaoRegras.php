@@ -62,4 +62,15 @@ class ProcessoAvaliacaoRegras
         $processo->delete();
     }
 
+    public static function atualizaSituacaoServidor($p)
+    {
+        ProcessoAvaliacaoServidor::where('fk_processo_avaliacao', $p->processo_avaliacao_id)
+                                ->where('fk_servidor', $p->servidor_id)
+                                ->update([
+                                    'dias_ausencia' => $p->dias_ausencia,
+                                    'dias_trabalhados' => $p->dias_trabalhados,
+                                    'dias_prorrogados' => $p->dias_prorrogados,
+                                    'status' => 2
+                                ]);
+    }
 }

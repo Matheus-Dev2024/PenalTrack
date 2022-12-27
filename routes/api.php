@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AvaliacaoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FatorAvaliacaoController;
@@ -17,21 +18,38 @@ use App\Http\Controllers\ProcessoAvaliacaoController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+//Route::middleware('auth:sanctum')->group(function() {
+    
+    //Estágio - Lista servidores
+    Route::get('avaliacao/corrente/get-servidores', [AvaliacaoController::class, 'getServidoresAvaliacaoCorrente']);
 
 
+    //Formulário de Avaliação
+    Route::get('avaliacao/info/{processo_id}/{servidor_id}', [AvaliacaoController::class, 'info']);
+    Route::get('avaliacao/form', [AvaliacaoController::class, 'formulario']);
+    Route::post('avaliacao/store', [AvaliacaoController::class, 'store']);
+
+
+//});
+
+
+//Fator de Avaliação
 Route::get('fator-avaliacao/grid', [FatorAvaliacaoController::class, 'grid']);
 Route::post('fator-avaliacao/salvar', [FatorAvaliacaoController::class, 'salvar']);
 Route::post('fator-avaliacao/alterar', [FatorAvaliacaoController::class, 'alterar']);
 Route::post('fator-avaliacao/excluir', [FatorAvaliacaoController::class, 'excluir']);
 
+//Fator de Avaliação item
 Route::get('fator-avaliacao-item/grid', [FatorAvaliacaoItemController::class, 'grid']);
 Route::post('fator-avaliacao-item/salvar', [FatorAvaliacaoItemController::class, 'salvar']);
 Route::post('fator-avaliacao-item/alterar', [FatorAvaliacaoItemController::class, 'alterar']);
 Route::post('fator-avaliacao-item/excluir', [FatorAvaliacaoItemController::class, 'excluir']);
 
+//Processo de Avaliação
 Route::get('processo-avaliacao/grid', [ProcessoAvaliacaoController::class, 'grid']);
 Route::get('processo-avaliacao/grid-servidores', [ProcessoAvaliacaoController::class, 'gridServidores']);
 Route::get('processo-avaliacao/servidores-grid/{id_processo}', [ProcessoAvaliacaoController::class, 'servidoresGrid']);
@@ -42,3 +60,6 @@ Route::get('processo-avaliacao/edit/{id}', [ProcessoAvaliacaoController::class, 
 Route::post('processo-avaliacao/alterar', [ProcessoAvaliacaoController::class, 'alterar']);
 Route::post('processo-avaliacao/excluir/{id_periodo_avaliacao}', [ProcessoAvaliacaoController::class, 'excluir']);
 Route::get('processo-avaliacao/pesquisardescricao', [ProcessoAvaliacaoController::class, 'pesquisarDescricao']);
+
+
+

@@ -10,4 +10,15 @@ class FatorAvaliacaoDB
     {
         return FatorAvaliacao::all();
     }
+
+    public static function getFormularioAvaliacao()
+    {
+        $formulario = FatorAvaliacao::all();
+
+        foreach($formulario as $fator) {
+            $fator->itens;
+        }
+
+        return $formulario;
+    }
 }

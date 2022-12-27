@@ -68,7 +68,7 @@ class ProcessoAvaliacaoController extends Controller
 
             return response()->json(["mensagem" => "Período de Avaliação salvo com sucesso", "id_processo" => $processo->id]);
         } catch (Exception $ex) {
-            return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
+            return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde. ".$ex->getMessage()]);
         }
     }
 

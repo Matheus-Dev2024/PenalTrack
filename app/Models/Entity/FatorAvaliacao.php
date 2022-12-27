@@ -10,4 +10,10 @@ class FatorAvaliacao extends Model
     use HasFactory;
     protected $table = "fator_avaliacao";
     protected $guarded = [];
+
+
+    public function itens()
+    {
+        return $this->hasMany(FatorAvaliacaoItem::class, "fk_fator_avaliacao", "id");
+    }
 }

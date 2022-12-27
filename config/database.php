@@ -63,7 +63,7 @@ return [
             ]) : [],
         ],
 
-        'seguranca' => [
+        'conexao_seguranca' => [
             'driver' => 'pgsql',
             'host' => env('SEGURANCA_DB_HOST', 'localhost'),
             'port' => env('SEGURANCA_DB_PORT', '5432'),
@@ -89,16 +89,16 @@ return [
             'sslmode' => 'prefer',
         ],
 
-        'conexao_siga' => [
+        'conexao_srh' => [
             'driver' => 'pgsql',
-            'host' => env('CONEXAO_SIGA_DB_HOST', '127.0.0.1'),
-            'port' => env('CONEXAO_SIGA_DB_PORT', '5432'),
-            'database' => env('CONEXAO_SIGA_DB_DATABASE', 'forge'),
-            'username' => env('CONEXAO_SIGA_DB_USERNAME', 'forge'),
-            'password' => env('CONEXAO_SIGA_DB_PASSWORD', ''),
+            'host' => env('SRH_DB_HOST', '127.0.0.1'),
+            'port' => env('SRH_DB_PORT', '5432'),
+            'database' => env('SRH_DB_DATABASE', 'forge'),
+            'username' => env('SRH_DB_USERNAME', 'forge'),
+            'password' => env('SRH_DB_PASSWORD', ''),
             'charset' => 'utf8',
             'prefix' => '',
-            'schema' => env('CONEXAO_SIGA_DB_SCHEMA', 'public'),
+            'schema' => env('SRH_DB_SCHEMA', 'public'),
             'sslmode' => 'prefer',
         ],
 
