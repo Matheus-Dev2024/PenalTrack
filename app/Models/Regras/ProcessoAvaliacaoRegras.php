@@ -27,7 +27,7 @@ class ProcessoAvaliacaoRegras
 
             ]);
         }
-        
+
         return $processo;
     }
 
@@ -38,7 +38,7 @@ class ProcessoAvaliacaoRegras
     }
 
     public static function alterar(Request $dados)
-    {          
+    {
         $processo = ProcessoAvaliacao::find($dados->id);
         $processo->descricao = $dados->descricao;
         $processo->dt_inicio_avaliacao = $dados->dt_inicio_avaliacao;
@@ -55,7 +55,7 @@ class ProcessoAvaliacaoRegras
         $processo = ProcessoAvaliacaoServidor::find($id_processo_avaliacao);
         $processo->delete();
     }
-    
+
     public static function excluir($id_periodo)
     {
         $processo = ProcessoAvaliacao::find($id_periodo);

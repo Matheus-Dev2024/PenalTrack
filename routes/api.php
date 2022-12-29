@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FatorAvaliacaoController;
 use App\Http\Controllers\FatorAvaliacaoItemController;
+use App\Http\Controllers\ImpressaoController;
 use App\Http\Controllers\ProcessoAvaliacaoController;
 
 /*
@@ -23,17 +24,19 @@ use App\Http\Controllers\ProcessoAvaliacaoController;
 // });
 
 //Route::middleware('auth:sanctum')->group(function() {
-    
+
     //Estágio - Lista servidores
     Route::get('avaliacao/corrente/get-servidores', [AvaliacaoController::class, 'getServidoresAvaliacaoCorrente']);
 
 
     //Formulário de Avaliação
-    Route::get('avaliacao/info/{processo_id}/{servidor_id}', [AvaliacaoController::class, 'info']);
+    Route::get('avaliacao/info', [AvaliacaoController::class, 'info']);
     Route::get('avaliacao/form', [AvaliacaoController::class, 'formulario']);
     Route::post('avaliacao/store', [AvaliacaoController::class, 'store']);
 
-
+    // Rotas Criadas pelo Diego
+    //Rota de Impressao
+    Route::get('imprimir', [ImpressaoController::class, 'imprimir']);
 //});
 
 

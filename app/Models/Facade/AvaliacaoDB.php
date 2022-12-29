@@ -21,7 +21,7 @@ class AvaliacaoDB
                     ])
                     ->where("fai.status", 1)
                     ->get();
-            
+
         return $form;
     }
 

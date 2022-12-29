@@ -24,33 +24,31 @@ class AvaliacaoController extends Controller
         foreach($formulario as $fator) {
             $fator->itens;
         }
-    
+
         return response()->json($formulario);
     }
 
     public function info(Request $request)
     {
-        $formulario = FatorAvaliacaoDB::getFormularioAvaliacao();
-        $processo = ProcessoAvaliacaoDB::getById($request->processo_id);
-        $servidor = ServidorDB::info($request->servidor_id, $processo->processo_id, $processo->dt_inicio_avaliacao_en, $processo->dt_termino_avaliacao_en);
-        $ausencias = ServidorDB::listaAusenciasPorPeriodo($request->servidor_id, $processo->dt_inicio_avaliacao_en, $processo->dt_termino_avaliacao_en);
-
-
-        $notas = AvaliacaoDB::getNotasServidor($processo->processo_id, $request->servidor_id);
-        
-
-        return response()->json(['processo' => $processo, 'formulario' => $formulario, 'notas' => $notas, 'servidor' => $servidor, 'ausencias' => $ausencias]);
-
+        $p = (object) $request->validate([
+            'processo_id' => 'required',
+            'servidor_id' => 'required'
+        ]);
+        return AvaliacaoServidorRegras::info($p);
     }
 
     public function store(Request $request)
     {
+        //Inicia o Database Transaction
+        DB::beginTransaction();
         try {
             $params = (object) $request->all();
             AvaliacaoServidorRegras::adicionarNotas($params);
             ProcessoAvaliacaoRegras::atualizaSituacaoServidor($params);
+            DB::commit();
             return response()->json(['message' => 'Avaliação enviada com sucesso.']);
         } catch(Exception $ex) {
+            DB::rollBack();
             return response()->json(['message' => 'Erro ao tentar enviar a Avaliação do servidor. '.$ex->getMessage()], 500);
         }
     }
@@ -59,7 +57,7 @@ class AvaliacaoController extends Controller
     {
         //$usuario_id = Auth::user()->id;
         $usuario_id = 587;
-            
+
 
         $servidoresGrupo1 = DB::table("usuario_avalia_servidores as uas")
             ->join("srh.sig_servidor as s", "s.id_servidor", "=", "uas.servidor_id")
@@ -80,7 +78,7 @@ class AvaliacaoController extends Controller
                 'pas.status'
             ])
             ->distinct()
-            ->get();        
+            ->get();
 
 
         $servidoresGrupo2 = DB::table("usuario_avalia_unidades as uau")
@@ -108,7 +106,7 @@ class AvaliacaoController extends Controller
 
         $servidores = $servidoresGrupo1->merge($servidoresGrupo2)->sortBy('nome');
 
-        
+
         return response()->json($servidores);
     }
 }
