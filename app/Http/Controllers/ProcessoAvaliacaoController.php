@@ -6,6 +6,7 @@ use App\Models\Facade\ProcessoAvaliacaoDB;
 use App\Models\Regras\ProcessoAvaliacaoRegras;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProcessoAvaliacaoController extends Controller
 {
@@ -22,7 +23,7 @@ class ProcessoAvaliacaoController extends Controller
     }
     public function servidoresGrid(Request $request)
     {
-       
+
         $lista = ProcessoAvaliacaoDB::servidoresGrid($request->id_processo);
         return response()->json($lista);
     }
@@ -108,6 +109,4 @@ class ProcessoAvaliacaoController extends Controller
             return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
         }
     }
-
-    
 }

@@ -2,11 +2,14 @@
 
 namespace App\Models\Regras;
 
+use App\Models\Entity\ArquivoAvaliacaoServidor;
 use App\Models\Entity\AvaliacaoServidor;
 use App\Models\Facade\AvaliacaoDB;
 use App\Models\Facade\FatorAvaliacaoDB;
 use App\Models\Facade\ProcessoAvaliacaoDB;
 use App\Models\Facade\ServidorDB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AvaliacaoServidorRegras
 {
@@ -43,6 +46,47 @@ class AvaliacaoServidorRegras
                 ]);
 
             }
+        }
+    }
+
+
+    public static function gridArquivos(\stdClass $p){
+        return AvaliacaoDB::gridArquivos($p);
+    }
+    public static function uploadArquivo($p){
+
+        for ($i = 0; $i < $p->quantidade; $i++){
+
+            // Cria e instancia as variáveis dinâmicas
+            $arquivo = "arquivo".$i;
+            $$arquivo = "arquivo".$i;
+            $descricao = "descricao".$i;
+            $$descricao = "descricao".$i;
+            $nome = "nome".$i;
+            $$nome = "nome".$i;
+
+            $usuario_cadastro_id = 1; //DIME
+
+            // Verifica se o arquivo veio tratado como string ou como binário
+            if(gettype($p->arquivo0) != "string"){
+                //recebe o caminho real do arquivo
+                $path = $p->file('arquivo'.$i)->getRealPath();
+                $arquivo = file_get_contents($path);
+                $usuario_cadastro_id = 26; // TROCAR PELA AUTENTICAÇÃO!!!
+            }else{
+                $arquivo = $p->$$arquivo;
+            }
+
+            // Salva um novo ArquivoAvaliacaoServidor no banco
+            $av_arquivo = new ArquivoAvaliacaoServidor();
+            $av_arquivo->arquivo = DB::raw("decode('" . base64_encode($arquivo) . "', 'base64')");
+            $av_arquivo->descricao = $p->$$descricao;
+            $av_arquivo->nome_arquivo = $p->$$nome;
+            $av_arquivo->fk_processo_avaliacao = $p->processo_avaliacao_id;
+            $av_arquivo->fk_servidor = $p->servidor_id;
+            $av_arquivo->fk_usuario_cad = $usuario_cadastro_id;
+
+            $av_arquivo->save();
         }
     }
 }

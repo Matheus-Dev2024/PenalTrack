@@ -44,7 +44,7 @@ class ProcessoAvaliacaoDB
                                 ])
                                 ->get();
 
-            
+
         return $itensProcessoAvaliacao;
     }
 
@@ -57,15 +57,15 @@ class ProcessoAvaliacaoDB
         $srh = config('database.connections.conexao_srh.schema');
         $policia = config('database.connections.conexao_banco_unico.schema');
 
-        $listaProcessoAvaliacao = 
+        $listaProcessoAvaliacao =
             DB::table("$srh.sig_servidor as ss")
                 ->join("$policia.unidade as u", 'u.id', '=', 'ss.fk_id_unidade_atual')
                 ->join("$srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
                 ->select(
-                    'ss.id_servidor as servidor', 
+                    'ss.id_servidor as servidor',
                     'ss.nome',
                     'ss.matricula',
-                    'sc.abreviacao as sigla_cargo', 
+                    'sc.abreviacao as sigla_cargo',
                     'sc.nome as cargo',
                     DB::raw("TO_CHAR(ss.dt_admissao, 'DD/MM/YYYY') AS dt_admissao"),
                     'u.nome as unidade'
@@ -89,10 +89,10 @@ class ProcessoAvaliacaoDB
         ->where('pa.id' ,'=', $id_processo)
         ->get();
 
-       
+
         return $itensProcessoAvaliacao;
     }
-    
+
 
     public static function listarServidor()
     {
@@ -116,8 +116,7 @@ class ProcessoAvaliacaoDB
                 'descricao'
             ])
             ->get();
-            
+
         return $descricao;
     }
-
 }

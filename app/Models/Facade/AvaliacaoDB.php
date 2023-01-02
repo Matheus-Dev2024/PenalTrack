@@ -32,4 +32,19 @@ class AvaliacaoDB
         return AvaliacaoServidor::where('fk_processo_avaliacao', $processo_id)->where('fk_servidor', $servidor_id)->get();
     }
 
+
+    public static function gridArquivos(\stdClass $p){
+        //return $p;
+        $sql = DB::table('arquivo_avaliacao_servidor as arquivo')
+            ->where('arquivo.fk_processo_avaliacao', $p->processo_avaliacao_id)
+            ->where('arquivo.fk_servidor', $p->servidor_id)
+            ->select([
+                'id',
+                'nome_arquivo',
+                'descricao'
+            ]);
+
+        return $sql->get();
+    }
+
 }

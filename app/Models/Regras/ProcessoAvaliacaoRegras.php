@@ -2,9 +2,13 @@
 
 namespace App\Models\Regras;
 
+use App\Models\Entity\ArquivoAvaliacaoServidor;
 use App\Models\Entity\ProcessoAvaliacao;
 use App\Models\Entity\ProcessoAvaliacaoServidor;
+use App\Models\Facade\ProcessoAvaliacaoDB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ProcessoAvaliacaoRegras
 {

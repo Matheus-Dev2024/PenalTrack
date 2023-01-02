@@ -109,4 +109,39 @@ class AvaliacaoController extends Controller
 
         return response()->json($servidores);
     }
+
+
+
+
+
+
+    // Retorna os arquivos de uma Avaliação
+    public function GridArquivos(Request $request){
+        $p = (object) $request->validate([
+            'servidor_id' => 'required',
+            'processo_avaliacao_id' => 'required'
+        ]);
+        return response()->json(AvaliacaoServidorRegras::gridArquivos($p));
+    }
+
+    // Faz o upload de um arquivo para o banco
+    public function uploadArquivo(Request $request){
+        $p = (object)$request->all();
+        DB::beginTransaction();
+        try{
+            AvaliacaoServidorRegras::uploadArquivo($request);
+            DB::commit();
+            return response()->json([
+                'message' => 'Arquivo armazenado com sucesso'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            if (config('app.debug')) {
+                return response()->json(['message' => $e->getMessage()], 500);
+            } else {
+                return response()->json(['message' => 'Falha ao gravar arquivos'], 500);
+            }
+        }
+    }
+
 }

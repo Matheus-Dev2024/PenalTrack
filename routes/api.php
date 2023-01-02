@@ -30,13 +30,18 @@ use App\Http\Controllers\ProcessoAvaliacaoController;
 
 
     //Formulário de Avaliação
-    Route::get('avaliacao/info', [AvaliacaoController::class, 'info']);
-    Route::get('avaliacao/form', [AvaliacaoController::class, 'formulario']);
-    Route::post('avaliacao/store', [AvaliacaoController::class, 'store']);
+    Route::controller(AvaliacaoController::class)->group(function () {
+        Route::get('avaliacao/info', 'info');
+        Route::get('avaliacao/form', 'formulario');
+        Route::post('avaliacao/store', 'store');
+        Route::get('avaliacao/arquivos','GridArquivos');
+        Route::post('avaliacao/upload-arquivo', 'uploadArquivo');
+        Route::post('avaliacao/arquivos/{arquivo}/destruir', 'ExcluirArquivo')
+    });
 
-    // Rotas Criadas pelo Diego
-    //Rota de Impressao
+    // Rota de Impressao
     Route::get('imprimir', [ImpressaoController::class, 'imprimir']);
+
 //});
 
 

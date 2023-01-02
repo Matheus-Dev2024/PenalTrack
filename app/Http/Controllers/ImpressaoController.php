@@ -18,7 +18,7 @@ class ImpressaoController extends Controller
         }
 
         return response()->json([
-            'message' => 'Não foi possível identificar o timpo de impressão solicitada'
+            'message' => 'Não foi possível identificar o tipo de impressão solicitada'
         ]);
     }
 
