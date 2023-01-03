@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Entity\ArquivoAvaliacaoServidor;
 use App\Models\Entity\FatorAvaliacao;
 use App\Models\Entity\ProcessoAvaliacao;
 use App\Models\Facade\AvaliacaoDB;
@@ -9,6 +10,7 @@ use App\Models\Facade\FatorAvaliacaoDB;
 use App\Models\Facade\ProcessoAvaliacaoDB;
 use App\Models\Facade\ServidorDB;
 use App\Models\Regras\AvaliacaoServidorRegras;
+use App\Models\Regras\PessoaJuridicaRegras;
 use App\Models\Regras\ProcessoAvaliacaoRegras;
 use Exception;
 use Illuminate\Http\Request;
@@ -111,10 +113,6 @@ class AvaliacaoController extends Controller
     }
 
 
-
-
-
-
     // Retorna os arquivos de uma Avaliação
     public function GridArquivos(Request $request){
         $p = (object) $request->validate([
@@ -142,6 +140,31 @@ class AvaliacaoController extends Controller
                 return response()->json(['message' => 'Falha ao gravar arquivos'], 500);
             }
         }
+    }
+
+    // Exclui um arquivo específico através do ID
+    public function ExcluirArquivo(ArquivoAvaliacaoServidor $arquivo){
+        DB::beginTransaction();
+        try{
+            AvaliacaoServidorRegras::excluirArquivo($arquivo);
+            DB::commit();
+            return response()->json([
+                'message' => "Arquivo excluído com sucesso!"
+            ]);
+        }  catch (\Exception $e) {
+            DB::rollback();
+            if (config('app.debug')) {
+                return response()->json(['message' => $e->getMessage()], 500);
+            } else {
+                return response()->json(['message' => 'Falha ao excluir arquivo'], 500);
+            }
+        }
+    }
+
+
+    //retorna um arquivo para ser baixado
+    public function exibirArquivo(Request $request){
+        return AvaliacaoServidorRegras::exibirArquivo($request);
     }
 
 }

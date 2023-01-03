@@ -7,6 +7,19 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Configurações para o envio de arquivos grandes:
+- Acessar docker > docker-compose > php > php.ini e adicionar as seguintes variáveis:<br>
+<i>
+    file_uploads = On <br>
+    memory_limit = 500M <br>
+    upload_max_filesize = 10M <br>
+    post_max_size = 10M <br> <br>
+</i>
+- Acessar docker > docker-compose > nginx > servidor.conf e adicionar a seguinte variável: <br>
+<i>
+    client_max_body_size 10M; <br>
+</i>
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

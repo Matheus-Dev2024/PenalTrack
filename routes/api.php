@@ -36,7 +36,8 @@ use App\Http\Controllers\ProcessoAvaliacaoController;
         Route::post('avaliacao/store', 'store');
         Route::get('avaliacao/arquivos','GridArquivos');
         Route::post('avaliacao/upload-arquivo', 'uploadArquivo');
-        Route::post('avaliacao/arquivos/{arquivo}/destruir', 'ExcluirArquivo')
+        Route::post('avaliacao/arquivos/{arquivo}/destruir', 'ExcluirArquivo');
+        Route::get('avaliacao/arquivo-download', 'exibirArquivo'); //carrega um arquivo específico para ser exibido em tela
     });
 
     // Rota de Impressao

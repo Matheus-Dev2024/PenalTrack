@@ -4,10 +4,12 @@ namespace App\Models\Regras;
 
 use App\Models\Entity\ArquivoAvaliacaoServidor;
 use App\Models\Entity\AvaliacaoServidor;
+use App\Models\Entity\PessoaJuridicaArquivo;
 use App\Models\Facade\AvaliacaoDB;
 use App\Models\Facade\FatorAvaliacaoDB;
 use App\Models\Facade\ProcessoAvaliacaoDB;
 use App\Models\Facade\ServidorDB;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -88,5 +90,24 @@ class AvaliacaoServidorRegras
 
             $av_arquivo->save();
         }
+    }
+
+    // Exclui >>>!!PERMANENTEMENTE!!<<< um arquivo
+    public static function excluirArquivo(ArquivoAvaliacaoServidor $arquivo){
+        $arquivo->forceDelete();
+    }
+
+    // Baixa um arquivo específico
+    public static function exibirArquivo(Request $request){
+        //dd($request);
+        $arquivo = ArquivoAvaliacaoServidor::find($request->id);
+        $arquivo_resposta = stream_get_contents($arquivo->arquivo, -1);
+
+
+        return response($arquivo_resposta, 200, [
+            'Content-Disposition' => 'attachment; filename="myfile.pdf"',
+            'Content-Type' => mime_content_type($arquivo->arquivo),
+        ]);
+
     }
 }

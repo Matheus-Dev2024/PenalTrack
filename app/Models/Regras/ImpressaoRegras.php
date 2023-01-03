@@ -12,6 +12,6 @@ class ImpressaoRegras
 
         $pdf = Pdf::loadView('impressao.avaliacao_servidor_pdf', compact('dados'));
 
-        return $pdf->setPaper('a4')->stream('documento.pdf');
+        return $pdf->setPaper('a4')->stream('documento.pdf', ['Attachment' => true]);
     }
 }

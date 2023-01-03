@@ -136,6 +136,7 @@
                 <td colspan='3' id='assinatura'>
                 ____________________________ <br>
                 <b>Avaliado</b><br>
+                &nbsp;
                 </td>
                 <td colspan='3' id='assinatura'>
                 ____________________________ <br>
@@ -143,10 +144,23 @@
                 Assinatura e Carimbo
                 </td>
             </tr>
-            ")
+            ");
             @endphp
         </table>
     </div>
+
+{{--    Este trecho de código imprimi a data em português do Brasil no Formato "24 de fevereiro de 1992"--}}
+
+{{--    @php--}}
+{{--        use Carbon\Carbon;--}}
+
+{{--        $date = Carbon::createFromDate(1992, 1, 24);--}}
+{{--        $date->locale('pt_BR');--}}
+{{--        $formattedDate = $date->isoFormat('LL');--}}
+
+{{--        echo $formattedDate; // Imprime "24 de fevereiro de 1992"--}}
+
+{{--    @endphp--}}
 </body>
 </html>
 
