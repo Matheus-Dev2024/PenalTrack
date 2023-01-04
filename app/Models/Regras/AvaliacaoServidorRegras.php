@@ -21,12 +21,25 @@ class AvaliacaoServidorRegras
         $servidor = ServidorDB::info($p->servidor_id, $processo->processo_id, $processo->dt_inicio_avaliacao_en, $processo->dt_termino_avaliacao_en);
         $ausencias = ServidorDB::listaAusenciasPorPeriodo($p->servidor_id, $processo->dt_inicio_avaliacao_en, $processo->dt_termino_avaliacao_en);
 
+        $arquivo_avaliacao = ArquivoAvaliacaoServidor::where('fk_servidor', $p->servidor_id)
+        ->where('fk_processo_avaliacao', $p->processo_id)
+        ->first([
+            'id'
+        ]);
 
         $notas = AvaliacaoDB::getNotasServidor($processo->processo_id, $p->servidor_id);
         $impressao = false;
         if(isset ($notas[0])) $impressao = true;
 
-        return response()->json(['processo' => $processo, 'formulario' => $formulario, 'notas' => $notas, 'servidor' => $servidor, 'ausencias' => $ausencias, 'habilitarimpressao' =>$impressao]);
+        return response()->json([
+            'processo' => $processo,
+            'formulario' => $formulario,
+            'notas' => $notas,
+            'servidor' => $servidor,
+            'ausencias' => $ausencias,
+            'habilitarimpressao' =>$impressao,
+            'arquivo_avaliacao' => $arquivo_avaliacao
+        ]);
     }
 
     public static function adicionarNotas($p)
@@ -56,6 +69,14 @@ class AvaliacaoServidorRegras
         return AvaliacaoDB::gridArquivos($p);
     }
     public static function uploadArquivo($p){
+
+        //procura o arquivo para excluí_lo
+        $arquivo_velho = ArquivoAvaliacaoServidor::where('fk_processo_avaliacao', $p->processo_avaliacao_id)
+            ->where('fk_servidor', $p->servidor_id)
+            ->first();
+
+        if($arquivo_velho != null)
+        $arquivo_velho->forceDelete();
 
         for ($i = 0; $i < $p->quantidade; $i++){
 
