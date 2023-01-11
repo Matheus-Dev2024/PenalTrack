@@ -24,6 +24,7 @@ class CreateProcessoAvaliacaoServidor extends Migration
             $table->integer('dias_ausencia');
             $table->integer('dias_trabalhados');
             $table->integer('dias_prorrogados');
+            $table->float('nota_total');
             $table->integer('status')->default(1);
             $table->timestamps();
         });

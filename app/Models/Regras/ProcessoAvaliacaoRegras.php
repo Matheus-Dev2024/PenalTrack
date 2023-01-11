@@ -2,13 +2,11 @@
 
 namespace App\Models\Regras;
 
-use App\Models\Entity\ArquivoAvaliacaoServidor;
 use App\Models\Entity\ProcessoAvaliacao;
 use App\Models\Entity\ProcessoAvaliacaoServidor;
+use App\Models\Facade\AvaliacaoDB;
 use App\Models\Facade\ProcessoAvaliacaoDB;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class ProcessoAvaliacaoRegras
 {
@@ -68,13 +66,18 @@ class ProcessoAvaliacaoRegras
 
     public static function atualizaSituacaoServidor($p)
     {
+        $notaTotalDoServidor = ProcessoAvaliacaoDB::getNotaTotalServidor($p->processo_avaliacao_id, $p->servidor_id);
+
         ProcessoAvaliacaoServidor::where('fk_processo_avaliacao', $p->processo_avaliacao_id)
                                 ->where('fk_servidor', $p->servidor_id)
                                 ->update([
                                     'dias_ausencia' => $p->dias_ausencia,
                                     'dias_trabalhados' => $p->dias_trabalhados,
                                     'dias_prorrogados' => $p->dias_prorrogados,
+                                    'nota_total' => $notaTotalDoServidor,
                                     'status' => 2
                                 ]);
     }
+
+    
 }

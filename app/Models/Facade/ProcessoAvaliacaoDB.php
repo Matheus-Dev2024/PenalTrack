@@ -119,4 +119,10 @@ class ProcessoAvaliacaoDB
 
         return $descricao;
     }
+
+    public static function getNotaTotalServidor($processo_id, $servidor_id)
+    {
+        $notas = AvaliacaoDB::getNotasServidor($processo_id, $servidor_id);
+        return number_format($notas->sum("nota"), 1);
+    }
 }

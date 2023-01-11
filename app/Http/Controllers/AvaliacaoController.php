@@ -4,13 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Entity\ArquivoAvaliacaoServidor;
 use App\Models\Entity\FatorAvaliacao;
-use App\Models\Entity\ProcessoAvaliacao;
-use App\Models\Facade\AvaliacaoDB;
-use App\Models\Facade\FatorAvaliacaoDB;
-use App\Models\Facade\ProcessoAvaliacaoDB;
-use App\Models\Facade\ServidorDB;
 use App\Models\Regras\AvaliacaoServidorRegras;
-use App\Models\Regras\PessoaJuridicaRegras;
 use App\Models\Regras\ProcessoAvaliacaoRegras;
 use Exception;
 use Illuminate\Http\Request;
@@ -41,6 +35,7 @@ class AvaliacaoController extends Controller
 
     public function store(Request $request)
     {
+
         //Inicia o Database Transaction
         DB::beginTransaction();
         try {
@@ -51,7 +46,7 @@ class AvaliacaoController extends Controller
             return response()->json(['message' => 'Avaliação enviada com sucesso.']);
         } catch(Exception $ex) {
             DB::rollBack();
-            return response()->json(['message' => 'Erro ao tentar enviar a Avaliação do servidor. '.$ex->getMessage()], 500);
+            return response()->json(['message' => 'Opa, algo aconteceu. '.$ex->getMessage()], 500);
         }
     }
 
@@ -61,7 +56,7 @@ class AvaliacaoController extends Controller
         $usuario_id = 587;
 
 
-        $servidoresGrupo1 = DB::table("usuario_avalia_servidores as uas")
+        $servidoresGrupo1 = DB::table("usuario_avalia_servidores as uas")->distinct()
             ->join("srh.sig_servidor as s", "s.id_servidor", "=", "uas.servidor_id")
             ->join("processo_avaliacao_servidor as pas", "pas.fk_servidor", "=", "s.id_servidor")
             ->join("processo_situacao_servidor as pss", "pss.id", "=", "pas.status")
@@ -77,13 +72,13 @@ class AvaliacaoController extends Controller
                 'u.nome as unidade',
                 'c.abreviacao as cargo',
                 'pss.nome as situacao',
+                'pas.nota_total',
                 'pas.status'
             ])
-            ->distinct()
             ->get();
 
 
-        $servidoresGrupo2 = DB::table("usuario_avalia_unidades as uau")
+        $servidoresGrupo2 = DB::table("usuario_avalia_unidades as uau")->distinct()
         // ->join("policia.unidade as u", "u.id", "=", "uau.unidade_id")
             ->join("processo_avaliacao_servidor as pas", "pas.fk_unidade", "=", "uau.unidade_id")
             ->join("policia.unidade as u", "u.id", "=", "pas.fk_unidade")
@@ -100,16 +95,15 @@ class AvaliacaoController extends Controller
                 'u.nome as unidade',
                 'c.abreviacao as cargo',
                 'pss.nome as situacao',
+                'pas.nota_total',
                 'pas.status'
             ])
-            ->distinct()
             ->get();
 
 
         $servidores = $servidoresGrupo1->merge($servidoresGrupo2)->sortBy('nome');
 
-
-        return response()->json($servidores);
+        return response()->json($servidores->values()->all());
     }
 
 

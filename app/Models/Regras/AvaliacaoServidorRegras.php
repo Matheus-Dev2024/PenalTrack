@@ -4,11 +4,11 @@ namespace App\Models\Regras;
 
 use App\Models\Entity\ArquivoAvaliacaoServidor;
 use App\Models\Entity\AvaliacaoServidor;
-use App\Models\Entity\PessoaJuridicaArquivo;
 use App\Models\Facade\AvaliacaoDB;
 use App\Models\Facade\FatorAvaliacaoDB;
 use App\Models\Facade\ProcessoAvaliacaoDB;
 use App\Models\Facade\ServidorDB;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -28,22 +28,42 @@ class AvaliacaoServidorRegras
         ]);
 
         $notas = AvaliacaoDB::getNotasServidor($processo->processo_id, $p->servidor_id);
+
+        $totalDasNotas = ProcessoAvaliacaoDB::getNotaTotalServidor($processo->processo_id, $p->servidor_id);
+
         $impressao = false;
+
         if(isset ($notas[0])) $impressao = true;
 
         return response()->json([
             'processo' => $processo,
             'formulario' => $formulario,
             'notas' => $notas,
+            'total_notas' => $totalDasNotas,
             'servidor' => $servidor,
             'ausencias' => $ausencias,
-            'habilitarimpressao' =>$impressao,
+            'habilitarimpressao' => $impressao,
             'arquivo_avaliacao' => $arquivo_avaliacao
         ]);
     }
 
+    public static function validarForm($p)
+    {
+        if(count($p->notas) == 0) {
+            throw new Exception('É obrigatório registrar as notas antes de salvar o formulário.');
+        }
+
+        foreach($p->notas as $indice => $nota) {
+            if($indice != 0 && empty($nota)) {
+                throw new Exception('É obrigatório registrar a nota de todos os quesitos.');
+            }
+        }
+    }
+
     public static function adicionarNotas($p)
     {
+        self::validarForm($p);
+
 
         AvaliacaoServidor::where('fk_processo_avaliacao', $p->processo_avaliacao_id)
                         ->where('fk_servidor', $p->servidor_id)
