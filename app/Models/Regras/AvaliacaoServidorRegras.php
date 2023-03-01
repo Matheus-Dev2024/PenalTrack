@@ -8,6 +8,7 @@ use App\Models\Facade\AvaliacaoDB;
 use App\Models\Facade\FatorAvaliacaoDB;
 use App\Models\Facade\ProcessoAvaliacaoDB;
 use App\Models\Facade\ServidorDB;
+use App\Models\Facade\TipoArquivoDB;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,9 +34,12 @@ class AvaliacaoServidorRegras
 
         $impressao = false;
 
+        $combo_tipo_arquivo = TipoArquivoDB::combo();
+
         if(isset ($notas[0])) $impressao = true;
 
         return response()->json([
+            'combo_tipo_arquivo' => $combo_tipo_arquivo,
             'processo' => $processo,
             'formulario' => $formulario,
             'notas' => $notas,
@@ -89,14 +93,13 @@ class AvaliacaoServidorRegras
         return AvaliacaoDB::gridArquivos($p);
     }
     public static function uploadArquivo($p){
-
         //procura o arquivo para excluí_lo
-        $arquivo_velho = ArquivoAvaliacaoServidor::where('fk_processo_avaliacao', $p->processo_avaliacao_id)
-            ->where('fk_servidor', $p->servidor_id)
-            ->first();
+        // $arquivo_velho = ArquivoAvaliacaoServidor::where('fk_processo_avaliacao', $p->processo_avaliacao_id)
+        //     ->where('fk_servidor', $p->servidor_id)
+        //     ->first();
 
-        if($arquivo_velho != null)
-        $arquivo_velho->forceDelete();
+        // if($arquivo_velho != null)
+        // $arquivo_velho->forceDelete();
 
         for ($i = 0; $i < $p->quantidade; $i++){
 
@@ -107,6 +110,8 @@ class AvaliacaoServidorRegras
             $$descricao = "descricao".$i;
             $nome = "nome".$i;
             $$nome = "nome".$i;
+            $fk_tipo = "fk_tipo".$i;
+            $$fk_tipo = "fk_tipo".$i;
 
             $usuario_cadastro_id = 1; //DIME
 
@@ -128,6 +133,7 @@ class AvaliacaoServidorRegras
             $av_arquivo->fk_processo_avaliacao = $p->processo_avaliacao_id;
             $av_arquivo->fk_servidor = $p->servidor_id;
             $av_arquivo->fk_usuario_cad = $usuario_cadastro_id;
+            $av_arquivo->fk_tipo_arquivo = $p->$$fk_tipo;
 
             $av_arquivo->save();
         }

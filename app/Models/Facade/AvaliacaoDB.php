@@ -36,12 +36,14 @@ class AvaliacaoDB
     public static function gridArquivos(\stdClass $p){
         //return $p;
         $sql = DB::table('arquivo_avaliacao_servidor as arquivo')
+            ->join('tipo_arquivo as tipo', 'tipo.id', 'arquivo.fk_tipo_arquivo')
             ->where('arquivo.fk_processo_avaliacao', $p->processo_avaliacao_id)
             ->where('arquivo.fk_servidor', $p->servidor_id)
             ->select([
-                'id',
+                'arquivo.id',
                 'nome_arquivo',
-                'descricao'
+                'descricao',
+                'tipo.nome as tipo'
             ]);
 
         return $sql->get();
