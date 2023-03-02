@@ -22,22 +22,24 @@
     <div>
         <table class="dados_servidor">
             <tr>
-                <td>NOME DO AVALIADO: {{$dados->servidor->nome}}</td>
+                <td><strong>NOME DO AVALIADO:</strong> {{$dados->servidor->nome}}</td>
             </tr>
             <tr>
-                <td>MATRÍCULA: {{$dados->servidor->matricula}}</td>
+                <td><strong>MATRÍCULA:</strong> {{$dados->servidor->matricula}}</td>
             </tr>
             <tr>
-                <td>CARGO: {{$dados->servidor->cargo}}</td>
+                <td><strong>CARGO:</strong> {{$dados->servidor->cargo}}</td>
             </tr>
             <tr>
-                <td>LOTAÇÃO: {{$dados->servidor->unidade}}</td>
+                <td><strong>LOTAÇÃO:</strong> {{$dados->servidor->unidade}}</td>
             </tr>
             <tr>
-                <td>AVALIADOR:</td>
+                <td><strong>AVALIADOR:</strong></td>
             </tr>
             <tr>
-                <td>INÍCIO DO ESTÁGIO PROBATÓRIO: {{$dados->processo->dt_inicio_estagio_en}}</td>
+                <td><strong>INÍCIO DO ESTÁGIO PROBATÓRIO: {{$dados->processo->dt_inicio_estagio}}</td>
+            </tr><tr>
+                <td><strong>PERÍODO DE AVALIAÇÃO: </strong>De {{$dados->processo->dt_inicio_avaliacao}} à {{$dados->processo->dt_termino_avaliacao}} </td>
             </tr>
         </table>
         <br>
@@ -118,19 +120,21 @@
                 echo("</tr>");
                 $contador++;
             }
-            echo("<tr>");
-                echo("<td colspan='5'><b>Pontuação total:</b> (somatório dos pontos obtidos em cada quesito)</td>");
-                echo("<td id='item_avaliado'><b>".$nota_total."</b></td>");
-            echo("</tr>");
-
-            echo("<tr>");
-                echo("<td colspan='6'><b>Resultado:</b> (pontuação total igual ou superior a 70 = Satisfatório / Pontuação total inferior a 70 = insatisfatório)</td>");
-            echo("</tr>");
-
             echo("
+            <tr>
+                <td colspan='5'><b>Pontuação total:</b> (somatório dos pontos obtidos em cada quesito)</td><td id='item_avaliado'><b>".$nota_total."</b></td>
+                </tr>
+            <tr>
+            <td colspan='6'><b>Resultado:</b> (pontuação total igual ou superior a 70 = Satisfatório / Pontuação total inferior a 70 = insatisfatório)</td>
+            </tr>
             <tr>
                 <td colspan='6'> <b>Data da Avaliação: </b>". \Illuminate\Support\Carbon::parse($dados->notas[0]->created_at)
                 ->format('d/m/Y H:i:s'). " </td>
+            </tr>
+            <tr>
+                <td colspan='6'>
+                    <strong>Parecer do Avaliador:</strong> $dados->parecer
+                </td>
             </tr>
             <tr>
                 <td colspan='3' id='assinatura'>
