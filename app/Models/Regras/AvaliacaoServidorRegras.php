@@ -4,6 +4,7 @@ namespace App\Models\Regras;
 
 use App\Models\Entity\ArquivoAvaliacaoServidor;
 use App\Models\Entity\AvaliacaoServidor;
+use App\Models\Entity\ProcessoAvaliacaoServidor;
 use App\Models\Facade\AvaliacaoDB;
 use App\Models\Facade\FatorAvaliacaoDB;
 use App\Models\Facade\ProcessoAvaliacaoDB;
@@ -22,15 +23,13 @@ class AvaliacaoServidorRegras
         $servidor = ServidorDB::info($p->servidor_id, $processo->processo_id, $processo->dt_inicio_avaliacao_en, $processo->dt_termino_avaliacao_en);
         $ausencias = ServidorDB::listaAusenciasPorPeriodo($p->servidor_id, $processo->dt_inicio_avaliacao_en, $processo->dt_termino_avaliacao_en);
 
-        $arquivo_avaliacao = ArquivoAvaliacaoServidor::where('fk_servidor', $p->servidor_id)
-        ->where('fk_processo_avaliacao', $p->processo_id)
-        ->first([
-            'id'
-        ]);
-
         $notas = AvaliacaoDB::getNotasServidor($processo->processo_id, $p->servidor_id);
 
         $totalDasNotas = ProcessoAvaliacaoDB::getNotaTotalServidor($processo->processo_id, $p->servidor_id);
+
+        $parecer = ProcessoAvaliacaoServidor::where('fk_processo_avaliacao', $p->processo_id)
+            ->where('fk_servidor', $p->servidor_id)
+            ->first()->parecer_avaliador;
 
         $impressao = false;
 
@@ -47,7 +46,7 @@ class AvaliacaoServidorRegras
             'servidor' => $servidor,
             'ausencias' => $ausencias,
             'habilitarimpressao' => $impressao,
-            'arquivo_avaliacao' => $arquivo_avaliacao
+            'parecer' => $parecer,
         ]);
     }
 
@@ -93,13 +92,6 @@ class AvaliacaoServidorRegras
         return AvaliacaoDB::gridArquivos($p);
     }
     public static function uploadArquivo($p){
-        //procura o arquivo para excluí_lo
-        // $arquivo_velho = ArquivoAvaliacaoServidor::where('fk_processo_avaliacao', $p->processo_avaliacao_id)
-        //     ->where('fk_servidor', $p->servidor_id)
-        //     ->first();
-
-        // if($arquivo_velho != null)
-        // $arquivo_velho->forceDelete();
 
         for ($i = 0; $i < $p->quantidade; $i++){
 

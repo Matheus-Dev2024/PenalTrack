@@ -75,9 +75,10 @@ class ProcessoAvaliacaoRegras
                                     'dias_trabalhados' => $p->dias_trabalhados,
                                     'dias_prorrogados' => $p->dias_prorrogados,
                                     'nota_total' => $notaTotalDoServidor,
+                                    'parecer_avaliador' => $p->parecer_avaliador,
                                     'status' => 2
                                 ]);
     }
 
-    
+
 }
