@@ -7,6 +7,7 @@ use App\Http\Controllers\FatorAvaliacaoController;
 use App\Http\Controllers\FatorAvaliacaoItemController;
 use App\Http\Controllers\ImpressaoController;
 use App\Http\Controllers\ProcessoAvaliacaoController;
+use \App\Http\Controllers\TipoArquivoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +39,17 @@ use App\Http\Controllers\ProcessoAvaliacaoController;
         Route::post('avaliacao/upload-arquivo', 'uploadArquivo');
         Route::post('avaliacao/arquivos/{arquivo}/destruir', 'ExcluirArquivo');
         Route::get('avaliacao/arquivo-download', 'exibirArquivo'); //carrega um arquivo específico para ser exibido em tela
+    });
+
+
+    // Rotas de Tipo de Arquivo
+    Route::controller(TipoArquivoController::class)->group(function() {
+        Route::prefix('tipo-arquivo')->group(function () {
+            Route::get('/grid', 'grid');
+            Route::get('/edit/{tipo}', 'edit');
+            Route::post('/', 'store');
+            Route::delete('/delete', 'destroy');
+        });
     });
 
     // Rota de Impressao
