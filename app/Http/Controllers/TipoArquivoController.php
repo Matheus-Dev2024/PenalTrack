@@ -6,7 +6,10 @@ use App\Models\Entity\TipoArquivo;
 use App\Models\Regras\FatorAvaliacaoRegras;
 use App\Models\TipoArquivoRegras;
 use Exception;
+use http\Env\Response;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TipoArquivoController extends Controller
 {
@@ -16,17 +19,19 @@ class TipoArquivoController extends Controller
         return TipoArquivoRegras::grid();
     }
 
-    public function salvar(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        try {
-            if(!$request->fator_avaliacao) {
-                return response()->json(['error' => 'O campo fator de avaliacao é obrigatório.']);
-            }
+        //dd('try');
 
-            FatorAvaliacaoRegras::salvar($request);
-            return response()->json(["mensagem" => "Fator de Avaliação salvo com sucesso"]);
+        $p = (object)$request->validate(['nome' => 'required']);
+        DB::beginTransaction();
+        try {
+            $tipo = TipoArquivoRegras::salvar($p);
+            DB::commit();
+            return response()->json(["mensagem" => "Novo Tipo de Arquivo salvo com sucesso", "id" => $tipo->id]);
 
         } catch(Exception $ex) {
+            DB::rollBack();
             return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
         }
 

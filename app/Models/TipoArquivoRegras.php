@@ -12,4 +12,12 @@ class TipoArquivoRegras extends Model
     {
         return TipoArquivo::all('id as value', 'nome as text');
     }
+    public static function salvar (\stdClass $p): TipoArquivo
+    {
+        $tipo = new TipoArquivo;
+        $tipo->nome = $p->nome;
+        $tipo->save();
+
+        return $tipo;
+    }
 }
