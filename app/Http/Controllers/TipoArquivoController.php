@@ -37,25 +37,51 @@ class TipoArquivoController extends Controller
 
     }
 
-    public function alterar(Request $request)
+    public function edit($id): JsonResponse
     {
+
+        $tipo_arquivo = TipoArquivo::find($id);
+
+        if($tipo_arquivo != null) {
+            return response()->json([
+                "nome" => $tipo_arquivo->nome,
+            ]);
+        } else {
+            return response()->json([
+                "mensagem" => "Dado solicitado não encontrado.",
+            ]);
+        }
+    }
+
+    public function update(Request $request): JsonResponse
+    {
+        $p = (object)$request->validate([
+            'id' => 'required',
+            'nome' => 'required',
+        ]);
+        DB::beginTransaction();
         try {
-            FatorAvaliacaoRegras::alterar($request);
-            return response()->json(["mensagem" => "Fator de Avaliação alterado com sucesso"]);
+            TipoArquivoRegras::alterar($p);
+            DB::commit();
+            return response()->json(["mensagem" => "Tipo de Arquivo alterado com sucesso!"]);
 
         } catch(Exception $ex) {
+            DB::rollBack();
             return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
         }
 
     }
 
-    public function excluir(Request $request)
+    public function delete(TipoArquivo $tipo)
     {
+        db::beginTransaction();
         try {
-            FatorAvaliacaoRegras::excluir($request->id);
-            return response()->json(["mensagem" => "Fator de Avaliação excluido com sucesso"]);
+            $tipo->delete();
+            DB::commit();
+            return response()->json(["mensagem" => "Tipo de Arquivo Excluído com sucesso"]);
 
         } catch(Exception $ex) {
+            DB::rollBack();
             return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
         }
 

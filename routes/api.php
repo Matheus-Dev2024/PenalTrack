@@ -45,10 +45,11 @@ use \App\Http\Controllers\TipoArquivoController;
     // Rotas de Tipo de Arquivo
     Route::controller(TipoArquivoController::class)->group(function() {
         Route::prefix('tipo-arquivo')->group(function () {
-            Route::get('/grid', 'grid');
-            Route::get('/edit/{tipo}', 'edit');
             Route::post('/', 'store');
-            Route::delete('/delete', 'destroy');
+            Route::get('/grid', 'grid');
+            Route::get('/{id}', 'edit');
+            Route::post('/update', 'update');
+            Route::delete('/{tipo}', 'delete');
         });
     });
 

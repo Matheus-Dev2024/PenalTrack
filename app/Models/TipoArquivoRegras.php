@@ -20,4 +20,10 @@ class TipoArquivoRegras extends Model
 
         return $tipo;
     }
+    public static function alterar (\stdClass $p): void
+    {
+        $tipo = TipoArquivo::find($p->id);
+        $tipo->nome = $p->nome;
+        $tipo->save();
+    }
 }
