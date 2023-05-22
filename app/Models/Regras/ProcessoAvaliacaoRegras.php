@@ -6,31 +6,61 @@ use App\Models\Entity\ProcessoAvaliacao;
 use App\Models\Entity\ProcessoAvaliacaoServidor;
 use App\Models\Facade\AvaliacaoDB;
 use App\Models\Facade\ProcessoAvaliacaoDB;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProcessoAvaliacaoRegras
 {
     public static function salvar(Request $dados)
     {
-        $processo = ProcessoAvaliacao::create([
-            'descricao' => $dados->descricao,
-            'dt_inicio_avaliacao' => $dados->dt_inicio_avaliacao,
-            'dt_termino_avaliacao' => $dados->dt_termino_avaliacao,
-            'dt_inicio_estagio' => $dados->dt_inicio_estagio,
-            'ref_inicio' => $dados->ref_inicio,
-            'ref_termino' => $dados->ref_termino,
-            'instrucao' => $dados->instrucao
-        ]);
+        $novoProcesso = self::salvarProcessoAvaliacao($dados);
+        self::salvarProcessoAvaliacaoServidor($dados, $novoProcesso);
+        return $novoProcesso;
+    }
 
-        foreach ($dados->servidor as $id_servidor) {
-            ProcessoAvaliacaoServidor::create([
-                'fk_processo_avaliacao' => $processo->id,
-                'fk_servidor' => $id_servidor
+    public static function salvarProcessoAvaliacao($dados)
+    {
+        return ProcessoAvaliacao::create([
+                    'descricao' => $dados->descricao,
+                    'dt_inicio_avaliacao' => $dados->dt_inicio_avaliacao,
+                    'dt_termino_avaliacao' => $dados->dt_termino_avaliacao,
+                    'dt_inicio_estagio' => $dados->dt_inicio_estagio,
+                    'ref_inicio' => $dados->ref_inicio,
+                    'ref_termino' => $dados->ref_termino,
+                    'instrucao' => $dados->instrucao
+                ]);
+    }
 
-            ]);
+    public static function salvarProcessoAvaliacaoServidor($dados, $novoProcesso)
+    {
+        //calcular os dias de estágio com base na data início e término de avaliação
+        $data1 = new \DateTime($dados->dt_inicio_avaliacao);
+        $data2 = new \DateTime($dados->dt_termino_avaliacao);
+        $diferenca = $data1->diff($data2);
+        $diasDeEstagio = $diferenca->days;
+
+        //pega o dia de trabalho programado (verificar se esse campo ainda é necessário)
+        $diasDeTrabalhoProgramado = 180;
+
+        //pega todos os servidores que farão estágio, a partir da data início e término da referência
+        $servidoresDoProcesso = ProcessoAvaliacaoDB::listarServidoresGrid($dados->ref_inicio, $dados->ref_termino);
+
+        foreach($servidoresDoProcesso as $servidor) {
+
+            //para cada servidor, localizar a sua unidade de avaliação
+            $info = DB::select("SELECT * FROM srh.sp_info_servidor_estagio_probatorio('$dados->dt_inicio_avaliacao', '$dados->dt_termino_avaliacao', $servidor->servidor)");
+
+            if($info) {
+                ProcessoAvaliacaoServidor::create([
+                    'fk_processo_avaliacao' => $novoProcesso->id,
+                    'fk_servidor' => $servidor->servidor,
+                    'fk_unidade' => $info[0]->fk_id_unidade,
+                    'dias_estagio' => $diasDeEstagio,
+                    'dias_trabalho_programado' => $diasDeTrabalhoProgramado
+                ]);
+            }
         }
-
-        return $processo;
     }
 
 

@@ -16,7 +16,6 @@ class CreateProcessoAvaliacaoServidor extends Migration
         Schema::create('processo_avaliacao_servidor', function (Blueprint $table) {
             $table->id();
             $table->foreignId('fk_processo_avaliacao')->constrained('processo_avaliacao');
-            $table->foreignId('status')->constrained('processo_situacao_servidor');
             $table->foreignId('fk_servidor')->constrained('srh.sig_servidor', 'id_servidor');
             $table->foreignId('fk_unidade')->constrained('policia.unidade');
             $table->integer('dias_estagio');
@@ -25,6 +24,7 @@ class CreateProcessoAvaliacaoServidor extends Migration
             $table->integer('dias_trabalhados');
             $table->integer('dias_prorrogados');
             $table->float('nota_total');
+            // $table->foreignId('status')->constrained('processo_situacao_servidor');
             $table->integer('status')->default(1);
             $table->timestamps();
         });

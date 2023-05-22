@@ -52,6 +52,7 @@ class ProcessoAvaliacaoDB
     /**
      * SRH
      */
+    //public static function listarServidoresGrid($ref_inicio, $ref_termino, $dt_inicio_avaliacao, $dt_fim_avaliacao)
     public static function listarServidoresGrid($ref_inicio, $ref_termino)
     {
         $srh = config('database.connections.conexao_srh.schema');
@@ -68,23 +69,41 @@ class ProcessoAvaliacaoDB
                     'sc.abreviacao as sigla_cargo',
                     'sc.nome as cargo',
                     DB::raw("TO_CHAR(ss.dt_admissao, 'DD/MM/YYYY') AS dt_admissao"),
-                    'u.nome as unidade'
+                    'u.nome as unidade_atual'
                 )
                 ->whereBetween('ss.dt_admissao', [$ref_inicio, $ref_termino])
                 ->whereIn('ss.fk_id_cargo', [24,27,34,40])
                 ->where('ss.status', 1)
                 ->orderBy('ss.nome')
                 ->get();
+
+        /*
+        if($listaProcessoAvaliacao) {
+            foreach($listaProcessoAvaliacao as $i => $item) {
+                $info = DB::select("SELECT * FROM srh.sp_info_servidor_estagio_probatorio('$dt_inicio_avaliacao', '$dt_fim_avaliacao', $item->servidor)");
+
+                if($info) {
+                    $listaProcessoAvaliacao[$i]->id_unidade_avaliacao = $info[0]->fk_id_unidade;
+                    $listaProcessoAvaliacao[$i]->unidade_avaliacao = $info[0]->lotacao;
+                }
+            }
+        }
+        */
+
+
         return $listaProcessoAvaliacao;
     }
 
     public static function servidoresGrid($id_processo)
     {
+        $srh = config('database.connections.conexao_srh.schema');
+        $policia = config('database.connections.conexao_banco_unico.schema');
+
         $itensProcessoAvaliacao = DB::table('processo_avaliacao_servidor as pas')
         ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')
-        ->join('sig_servidor as ss', 'ss.id_servidor', '=', 'pas.fk_servidor')
-        ->join('policia.unidade as u', 'u.id', '=', 'ss.fk_id_unidade_atual')
-        ->join('sig_cargo as sc', 'sc.id', '=', 'ss.fk_id_cargo')
+        ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
+        ->join("$policia.policia.unidade as u", 'u.id', '=', 'ss.fk_id_unidade_atual')
+        ->join("$srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
         ->select('pas.id as id_processo_avaliacao','pas.fk_servidor','sc.abreviacao as sigla_cargo', 'pa.id', 'ss.nome', DB::raw("TO_CHAR(ss.dt_admissao, 'DD/MM/YYYY') AS dt_admissao"),'u.nome as unidade', 'ss.cargo', 'ss.matricula')
         ->where('pa.id' ,'=', $id_processo)
         ->get();

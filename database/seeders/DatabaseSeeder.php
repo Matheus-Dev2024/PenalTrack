@@ -18,12 +18,12 @@ class DatabaseSeeder extends Seeder
             FatorAvaliacaoSeeder::class,
             FatorAvaliacaoItemSeeder::class,
             ProcessoAvaliacaoSeeder::class,
-            ProcessoAvaliacaoServidorSeeder::class,
-            ProcessoSituacaoServidorSeeder::class,
-
-
+            
             UsuarioAvaliaServidoresSeeder::class,
             UsuarioAvaliaUnidadesSeeder::class,
+
+            // ProcessoAvaliacaoServidorSeeder::class,
+            // ProcessoSituacaoServidorSeeder::class,
 
 
 

@@ -24,7 +24,8 @@ use \App\Http\Controllers\TipoArquivoController;
 //     return $request->user();
 // });
 
-//Route::middleware('auth:sanctum')->group(function() {
+// Route::middleware('auth:sanctum')->group(function() {
+Route::group(['middleware' => ['seguranca']], function () {
 
     //Estágio - Lista servidores
     Route::get('avaliacao/corrente/get-servidores', [AvaliacaoController::class, 'getServidoresAvaliacaoCorrente']);
@@ -56,7 +57,7 @@ use \App\Http\Controllers\TipoArquivoController;
     // Rota de Impressao
     Route::get('imprimir', [ImpressaoController::class, 'imprimir']);
 
-//});
+});
 
 
 //Fator de Avaliação

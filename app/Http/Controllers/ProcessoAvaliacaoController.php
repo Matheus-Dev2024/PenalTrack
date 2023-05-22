@@ -18,7 +18,7 @@ class ProcessoAvaliacaoController extends Controller
 
     public function gridServidores(Request $request)
     {
-        $lista = ProcessoAvaliacaoDB::listarServidoresGrid($request->ref_inicio, $request->ref_termino);
+        $lista = ProcessoAvaliacaoDB::listarServidoresGrid($request->ref_inicio, $request->ref_termino, $request->dt_inicio_avaliacao, $request->dt_fim_avaliacao);
         return response()->json($lista);
     }
     public function servidoresGrid(Request $request)
@@ -42,6 +42,8 @@ class ProcessoAvaliacaoController extends Controller
 
     public function salvar(Request $request)
     {
+        $db = DB::beginTransaction();
+
         try {
 
             if (!$request->descricao) {
@@ -67,8 +69,11 @@ class ProcessoAvaliacaoController extends Controller
 
             $processo = ProcessoAvaliacaoRegras::salvar($request);
 
+            DB::commit();
+
             return response()->json(["mensagem" => "Período de Avaliação salvo com sucesso", "id_processo" => $processo->id]);
         } catch (Exception $ex) {
+            DB::rollBack();
             return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde. ".$ex->getMessage()]);
         }
     }
