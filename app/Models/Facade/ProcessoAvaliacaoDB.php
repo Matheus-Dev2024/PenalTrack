@@ -102,12 +102,45 @@ class ProcessoAvaliacaoDB
         $itensProcessoAvaliacao = DB::table('processo_avaliacao_servidor as pas')
         ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')
         ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
+        ->leftJoin("$srh.sig_documentacao_servidor as ds", 'ds.fk_servidor', 'ss.id_servidor')
+        ->leftJoin("$srh.sig_tipo_documento as td", 'ds.fk_tipo_documento' , '=', 'td.id')
         ->join("$policia.policia.unidade as u", 'u.id', '=', 'ss.fk_id_unidade_atual')
         ->join("$srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
-        ->select('pas.id as id_processo_avaliacao','pas.fk_servidor','sc.abreviacao as sigla_cargo', 'pa.id', 'ss.nome', DB::raw("TO_CHAR(ss.dt_admissao, 'DD/MM/YYYY') AS dt_admissao"),'u.nome as unidade', 'ss.cargo', 'ss.matricula')
+        ->select(
+            'pas.id as id_processo_avaliacao',
+            'pas.fk_servidor',
+            'sc.abreviacao as sigla_cargo',
+            'pa.id',
+            'ss.nome',
+            
+             DB::raw("STRING_AGG('<a href=\"#' || ds.id::text || '\" onclick=\"abrirPdfNovaAba(' || ds.id || ')\"><i class=\"glyphicon glyphicon-paperclip\">&nbsp;</i>' || td.nome || '</a> <br>',
+              '')
+                as documentos"),
+            
+                // <button>
+                // <a href="http://www.google.com/15" target="_blank">Google</a>
+                // </button>
+            
+            // DB::raw("STRING_AGG('<a href=\"http://localhost:8001/api/processo-avaliacao/grid-arquivos/' || ds.id::text || '\"><i class=\"glyphicon glyphicon-paperclip\">&nbsp;</i>' || td.nome || '</a> <br>',
+            //  '')
+            //     as documentos"),
+                        
+           
+             DB::raw("TO_CHAR(ss.dt_admissao, 'DD/MM/YYYY') AS dt_admissao"),'u.nome as unidade', 'ss.cargo', 'ss.matricula',)
         ->where('pa.id' ,'=', $id_processo)
+        ->groupBy([
+            'ss.nome',
+            'pas.id',
+            'pas.fk_servidor',
+            'sc.abreviacao',
+            'pa.id',
+            'ss.dt_admissao',
+            'u.nome',
+            'ss.cargo',
+            'ss.matricula',
+            
+        ])
         ->get();
-
 
         return $itensProcessoAvaliacao;
     }

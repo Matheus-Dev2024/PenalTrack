@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Documentacao;
+use App\Models\Facade\DocumentacaoDB;
 use App\Models\Facade\ProcessoAvaliacaoDB;
 use App\Models\Regras\ProcessoAvaliacaoRegras;
 use Exception;
@@ -23,10 +25,22 @@ class ProcessoAvaliacaoController extends Controller
     }
     public function servidoresGrid(Request $request)
     {
-
         $lista = ProcessoAvaliacaoDB::servidoresGrid($request->id_processo);
         return response()->json($lista);
     }
+    
+    public function exibirArquivo(Request $request)
+    {
+        $arquivo = Documentacao::find($request->id);
+        $arquivo_resposta = stream_get_contents($arquivo->arquivo, -1);
+
+        return response($arquivo_resposta, 200, [
+            //'Content-Disposition' => 'attachment',
+            //'Content-Type' => 'application/pdf',
+            'Content-Type' => mime_content_type($arquivo->arquivo),
+        ]);
+    }
+    
     public function pesquisarDescricao()
     {
         $lista = ProcessoAvaliacaoDB::pesquisarDescricao();

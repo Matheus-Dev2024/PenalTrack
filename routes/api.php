@@ -83,6 +83,8 @@ Route::get('processo-avaliacao/edit/{id}', [ProcessoAvaliacaoController::class, 
 Route::post('processo-avaliacao/alterar', [ProcessoAvaliacaoController::class, 'alterar']);
 Route::post('processo-avaliacao/excluir/{id_periodo_avaliacao}', [ProcessoAvaliacaoController::class, 'excluir']);
 Route::get('processo-avaliacao/pesquisardescricao', [ProcessoAvaliacaoController::class, 'pesquisarDescricao']);
+Route::get('processo-avaliacao/grid-arquivos/{id}', [ProcessoAvaliacaoController::class, 'exibirArquivo']);
+
 
 
 

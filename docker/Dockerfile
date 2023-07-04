@@ -33,13 +33,13 @@ RUN pecl install xdebug-3.1.3 \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Create system user to run Composer and Artisan Commands
-RUN useradd -G www-data,root -u $uid -d /home/$user $user
-RUN mkdir -p /home/$user/.composer && \
-    chown -R $user:$user /home/$user
+RUN useradd -G www-data,root -u 1000 -d /home/policiadev policiadev
+RUN mkdir -p /home/policiadev/.composer && \
+    chown -R policiadev:policiadev /home/policiadev
 
 # Set working directory
-RUN chown -R $user:www-data /var/www
+RUN chown -R policiadev:www-data /var/www
 
 WORKDIR /var/www
 
-USER $user
+USER policiadev
