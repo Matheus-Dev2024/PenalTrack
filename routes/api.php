@@ -8,6 +8,8 @@ use App\Http\Controllers\FatorAvaliacaoItemController;
 use App\Http\Controllers\ImpressaoController;
 use App\Http\Controllers\ProcessoAvaliacaoController;
 use \App\Http\Controllers\TipoArquivoController;
+use App\Http\Controllers\AvaliadorController;
+use App\Http\Controllers\UnidadesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -85,6 +87,25 @@ Route::post('processo-avaliacao/excluir/{id_periodo_avaliacao}', [ProcessoAvalia
 Route::get('processo-avaliacao/pesquisardescricao', [ProcessoAvaliacaoController::class, 'pesquisarDescricao']);
 Route::get('processo-avaliacao/grid-arquivos/{id}', [ProcessoAvaliacaoController::class, 'exibirArquivo']);
 
+
+//Avaliador
+Route::get('avaliador/grid-pesquisar-avaliador', [AvaliadorController::class, 'index']);
+Route::get('avaliador/{avaliador}', [AvaliadorController::class, 'show']);
+Route::post('avaliador', [AvaliadorController::class, 'store']);
+Route::post('avaliador/alterar', [AvaliadorController::class, 'update']);
+Route::delete('avaliador/remover-avaliador/{id}', [AvaliadorController::class, 'destroy']);
+
+// unidades
+// Route::get('avaliador/grid-unidades', [AvaliadorController::class, 'gridUnidades']);
+Route::get('avaliador/unidades-grid/{id}', [AvaliadorController::class, 'unidadesGrid']);
+Route::post('avaliador/adicionar-unidades', [AvaliadorController::class, 'adicionarUnidades']);
+Route::delete('avaliador/remover-unidades/{id}', [AvaliadorController::class, 'destroyUnidades']);
+
+// // refatoração das rotas de unidades
+Route::get('unidades', [UnidadesController::class, 'index']);
+// Route::get('unidades/{id}', [UnidadesController::class, 'show']);
+// Route::post('unidades', [UnidadesController::class, 'store']);
+// Route::delete('unidades/{id}', [UnidadesController::class, 'destroy']);
 
 
 
