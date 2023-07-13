@@ -113,18 +113,48 @@ class ProcessoAvaliacaoDB
             'pa.id',
             'ss.nome',
             
-             DB::raw("STRING_AGG('<a href=\"#' || ds.id::text || '\" onclick=\"abrirPdfNovaAba(' || ds.id || ')\"><i class=\"glyphicon glyphicon-paperclip\">&nbsp;</i>' || td.nome || '</a> <br>',
-              '')
-                as documentos"),
             
-                // <button>
-                // <a href="http://www.google.com/15" target="_blank">Google</a>
-                // </button>
             
-            // DB::raw("STRING_AGG('<a href=\"http://localhost:8001/api/processo-avaliacao/grid-arquivos/' || ds.id::text || '\"><i class=\"glyphicon glyphicon-paperclip\">&nbsp;</i>' || td.nome || '</a> <br>',
-            //  '')
-            //     as documentos"),
-                        
+                DB::raw("STRING_AGG(
+                    
+                    
+                    '
+                    <table style=\"width: 100%;\" >
+                    <tr>
+                        <td >
+                            <a href=\"#' || ds.id::text || '\" onclick=\"abrirPdfNovaAba(' || ds.id || ')\">
+                                <i class=\"glyphicon glyphicon-paperclip\">&nbsp;</i>' || td.nome || '
+                            </a>
+                        </td>
+                        <td style=\"text-align: right;\">
+                            <btn onclick=\"deletar(' || ds.id || ')\">
+                                <a href=\"#\" style=\"color: #d9534f;\" class=\"glyphicon glyphicon-trash\"></a>
+                            </btn>
+                            
+                        </td>
+                    </tr>
+                    </table>
+                    
+                    '
+                    
+                    ,
+                  '')
+                    as documentos"
+                ),    
+                
+            //  DB::raw("STRING_AGG(
+                
+            //     '<a href=\"#' || ds.id::text || '\" onclick=\"abrirPdfNovaAba(' || ds.id || ')\">
+            //         <i class=\"glyphicon glyphicon-paperclip\">&nbsp;</i>' || td.nome || '
+            //     </a>
+            //     <btn onclick=\"deletar(' || ds.id || ')\" class=\"btn\">
+            //         <i class=\"glyphicon glyphicon-trash\"></i>
+            //     </btn>
+            //     <br>',
+            //   '')
+            //     as documentos"
+            // ),
+           
            
              DB::raw("TO_CHAR(ss.dt_admissao, 'DD/MM/YYYY') AS dt_admissao"),'u.nome as unidade', 'ss.cargo', 'ss.matricula',)
         ->where('pa.id' ,'=', $id_processo)
