@@ -128,7 +128,7 @@ class ProcessoAvaliacaoDB
                         </td>
                         <td style=\"text-align: right;\">
                             <btn onclick=\"deletar(' || ds.id || ')\">
-                                <a href=\"#\" style=\"color: #d9534f;\" class=\"glyphicon glyphicon-trash\"></a>
+                                <a href=\"#\" class=\"glyphicon glyphicon-trash\"></a>
                             </btn>
                             
                         </td>
