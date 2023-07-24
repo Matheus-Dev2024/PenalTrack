@@ -27,7 +27,7 @@ use App\Http\Controllers\UnidadesController;
 // });
 
 // Route::middleware('auth:sanctum')->group(function() {
-Route::group(['middleware' => ['seguranca']], function () {
+//Route::group(['middleware' => ['seguranca']], function () {
 
     //Estágio - Lista servidores
     Route::get('avaliacao/corrente/get-servidores', [AvaliacaoController::class, 'getServidoresAvaliacaoCorrente']);
@@ -59,7 +59,7 @@ Route::group(['middleware' => ['seguranca']], function () {
     // Rota de Impressao
     Route::get('imprimir', [ImpressaoController::class, 'imprimir']);
 
-});
+//});
 
 
 //Fator de Avaliação

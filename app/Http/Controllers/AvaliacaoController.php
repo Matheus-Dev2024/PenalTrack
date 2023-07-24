@@ -52,8 +52,8 @@ class AvaliacaoController extends Controller
 
     public function getServidoresAvaliacaoCorrente()
     {
-        $usuario_id = Auth::user()->id;
-        //$usuario_id = 587;
+        //$usuario_id = Auth::user()->id;
+        $usuario_id = 587;
 
 
         $servidoresGrupo1 = DB::table("usuario_avalia_servidores as uas")->distinct()

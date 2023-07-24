@@ -9,7 +9,8 @@ class FatorAvaliacaoRegras
     public static function salvar($dados)
     {
         FatorAvaliacao::create([
-            'nome' => $dados->fator_avaliacao
+            'nome' => $dados->fator_avaliacao,
+            'descricao' => $dados->descricao
         ]);
     }
 
