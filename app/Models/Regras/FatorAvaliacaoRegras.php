@@ -18,6 +18,7 @@ class FatorAvaliacaoRegras
     {
         $fator = FatorAvaliacao::find($dados->id);
         $fator->nome = $dados->fator_avaliacao;
+        $fator->descricao = $dados->descricao;
         $fator->save();
     }
 
