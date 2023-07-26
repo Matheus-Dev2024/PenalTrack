@@ -125,6 +125,7 @@ class ProcessoAvaliacaoController extends Controller
             ProcessoAvaliacaoRegras::excluir($request->id_periodo);
             return response()->json(["mensagem" => "Período de avaliacao removido com sucesso"]);
         } catch (Exception $ex) {
+            return $ex;
             return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
         }
     }

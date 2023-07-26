@@ -34,7 +34,6 @@ class FatorAvaliacaoItemController extends Controller
             return response()->json(["mensagem" => "Fator de Avaliação salvo com sucesso"]);
 
         } catch(Exception $ex) {
-            
             return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
         }
         

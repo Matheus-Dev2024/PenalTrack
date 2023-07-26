@@ -42,6 +42,7 @@ class ProcessoAvaliacaoDB
                                         (SELECT COUNT(*) FROM processo_avaliacao_servidor pas WHERE pas.fk_processo_avaliacao = pa.id) AS qtd_servidores
                                     ")
                                 ])
+                                ->whereNull('deleted_at')
                                 ->get();
 
 
