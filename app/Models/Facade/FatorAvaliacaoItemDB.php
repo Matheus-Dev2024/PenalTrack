@@ -14,6 +14,7 @@ class FatorAvaliacaoItemDB extends FatorAvaliacaoItem
         $itensFatorAvaliacao = DB::table('fator_avaliacao_item as i')
             ->join('fator_avaliacao as fa', 'fa.id', '=', 'i.fk_fator_avaliacao')
             ->select('i.*', 'fa.nome as fator_avaliacao')
+            ->orderBy('fa')
             ->get();
             
         return $itensFatorAvaliacao;
