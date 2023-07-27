@@ -54,7 +54,10 @@ class ProcessoAvaliacaoDB
      * SRH
      */
     //public static function listarServidoresGrid($ref_inicio, $ref_termino, $dt_inicio_avaliacao, $dt_fim_avaliacao)
-    public static function listarServidoresGrid($ref_inicio, $ref_termino)
+    
+    
+    
+      public static function listarServidoresGrid($ref_inicio, $ref_termino)
     {
         $srh = config('database.connections.conexao_srh.schema');
         $policia = config('database.connections.conexao_banco_unico.schema');
@@ -92,8 +95,51 @@ class ProcessoAvaliacaoDB
         */
 
 
-        return $listaProcessoAvaliacao;
-    }
+         return $listaProcessoAvaliacao;
+     }
+    
+    
+    
+    // public static function listarServidoresGrid($ref_inicio, $ref_termino)
+    // {
+    //     $srh = config('database.connections.conexao_srh.schema');
+    //     $policia = config('database.connections.conexao_banco_unico.schema');
+
+    //     $listaProcessoAvaliacao =
+    //         DB::table("$srh.sig_servidor as ss")
+    //             ->join("$policia.unidade as u", 'u.id', '=', 'ss.fk_id_unidade_atual')
+    //             ->join("$srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
+    //             ->select(
+    //                 'ss.id_servidor as servidor',
+    //                 'ss.nome',
+    //                 'ss.matricula',
+    //                 'sc.abreviacao as sigla_cargo',
+    //                 'sc.nome as cargo',
+    //                 DB::raw("TO_CHAR(ss.dt_admissao, 'DD/MM/YYYY') AS dt_admissao"),
+    //                 'u.nome as unidade_atual'
+    //             )
+    //             ->whereBetween('ss.dt_admissao', [$ref_inicio, $ref_termino])
+    //             ->whereIn('ss.fk_id_cargo', [24,27,34,40])
+    //             ->where('ss.status', 1)
+    //             ->orderBy('ss.nome')
+    //             ->get();
+
+        /*
+        if($listaProcessoAvaliacao) {
+            foreach($listaProcessoAvaliacao as $i => $item) {
+                $info = DB::select("SELECT * FROM srh.sp_info_servidor_estagio_probatorio('$dt_inicio_avaliacao', '$dt_fim_avaliacao', $item->servidor)");
+
+                if($info) {
+                    $listaProcessoAvaliacao[$i]->id_unidade_avaliacao = $info[0]->fk_id_unidade;
+                    $listaProcessoAvaliacao[$i]->unidade_avaliacao = $info[0]->lotacao;
+                }
+            }
+        }
+        */
+
+
+    //     return $listaProcessoAvaliacao;
+    // }
 
     public static function servidoresGrid($id_processo)
     {
@@ -108,7 +154,7 @@ class ProcessoAvaliacaoDB
         ->join("$policia.policia.unidade as u", 'u.id', '=', 'ss.fk_id_unidade_atual')
         ->join("$srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
         ->select(
-            'pas.id as id_processo_avaliacao',
+            'pas.fk_processo_avaliacao as id_processo_avaliacao',
             'pas.fk_servidor',
             'sc.abreviacao as sigla_cargo',
             'pa.id',

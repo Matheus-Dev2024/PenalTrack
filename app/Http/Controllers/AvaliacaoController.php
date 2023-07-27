@@ -81,11 +81,13 @@ class AvaliacaoController extends Controller
         $servidoresGrupo2 = DB::table("usuario_avalia_unidades as uau")->distinct()
         // ->join("policia.unidade as u", "u.id", "=", "uau.unidade_id")
             ->join("processo_avaliacao_servidor as pas", "pas.fk_unidade", "=", "uau.unidade_id")
+            ->join("processo_avaliacao as pa", "pa.id", "=", "pas.fk_processo_avaliacao")
             ->join("policia.unidade as u", "u.id", "=", "pas.fk_unidade")
             ->join("srh.sig_servidor as s", "s.id_servidor", "=", "pas.fk_servidor")
             ->join("processo_situacao_servidor as pss", "pss.id", "=", "pas.status")
             ->join("srh.sig_cargo as c", "c.id", "=", "s.fk_id_cargo")
             ->where('uau.usuario_id', $usuario_id)
+            ->whereNull('pa.deleted_at')
             ->select([
                 'pas.fk_processo_avaliacao as processo_avaliacao_id',
                 's.id_servidor as servidor_id',
@@ -99,7 +101,19 @@ class AvaliacaoController extends Controller
                 'pas.status'
             ])
             ->get();
-
+            
+            // $novoSelect = DB::table("srh.sig_servidor as ss")
+            //     ->join("processo_avaliacao_servidor as pas", "pas.fk_servidor", "ss.id_servidor")
+            //     ->join("policia.unidade as unidade", "unidade.id", "ss.fk_id_unidade_atual")
+            //     ->select([
+            //         'ss.nome',
+            //         'ss.matricula',
+            //         'unidade.nome as unidade',
+            //         'unidade.id as unidade_id'
+            //     ])
+            //     ->get();
+            
+            // return($novoSelect);
 
         $servidores = $servidoresGrupo1->merge($servidoresGrupo2)->sortBy('nome');
 
