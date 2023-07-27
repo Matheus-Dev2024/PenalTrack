@@ -101,23 +101,41 @@ class AvaliacaoController extends Controller
                 'pas.status'
             ])
             ->get();
-            
-            // $novoSelect = DB::table("srh.sig_servidor as ss")
-            //     ->join("processo_avaliacao_servidor as pas", "pas.fk_servidor", "ss.id_servidor")
-            //     ->join("policia.unidade as unidade", "unidade.id", "ss.fk_id_unidade_atual")
-            //     ->select([
-            //         'ss.nome',
-            //         'ss.matricula',
-            //         'unidade.nome as unidade',
-            //         'unidade.id as unidade_id'
-            //     ])
-            //     ->get();
-            
-            // return($novoSelect);
 
-        $servidores = $servidoresGrupo1->merge($servidoresGrupo2)->sortBy('nome');
+                $unidades_do_avaliador = DB::table("usuario_avalia_unidades as unidades")
+                    ->where('unidades.usuario_id', $usuario_id)
+                    ->get()
+                    ->pluck('unidade_id');
 
-        return response()->json($servidores->values()->all());
+                $novoSelect = DB::table("eprobatorio.processo_avaliacao as pa")
+                    ->join("eprobatorio.processo_avaliacao_servidor as pas", "pas.fk_processo_avaliacao", "pa.id")
+                    ->join("srh.sig_servidor as ss", "ss.id_servidor", "pas.fk_servidor")
+                    ->join("srh.sig_cargo as c", "c.id", "=", "ss.fk_id_cargo")
+                    ->join("processo_situacao_servidor as pss", "pss.id", "=", "pas.status")
+                    ->join(
+                     "policia.unidade as unidade",
+                     "unidade.id","=",
+                    DB::raw("(select fk_unidade from srh.sp_lotacao_com_maior_tempo_de_servico_por_periodo(pa.dt_inicio_avaliacao, pa.dt_termino_avaliacao, ss.id_servidor))"))
+                    ->whereIn('unidade.id', $unidades_do_avaliador)
+                    ->select([
+                        'pa.id as processo_avaliacao_id',
+                        DB::raw('SUBSTRING(pa.descricao, 1, 23) as nome_processo'),
+                        'ss.nome',
+                        'ss.id_servidor as servidor_id',
+                        'ss.matricula',
+                        'c.abreviacao as cargo',
+                        'unidade.nome as unidade',
+                        'unidade.id as unidade_id',
+                        'pss.nome as situacao',
+                        'pas.nota_total',
+                        'pas.status'
+]);
+
+             return($novoSelect->get());
+
+//        $servidores = $servidoresGrupo1->merge($servidoresGrupo2)->sortBy('nome');
+//
+//        return response()->json($servidores->values()->all());
     }
 
 
