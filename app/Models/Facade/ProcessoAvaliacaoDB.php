@@ -154,7 +154,7 @@ class ProcessoAvaliacaoDB
         ->join("$policia.policia.unidade as u", 'u.id', '=', 'ss.fk_id_unidade_atual')
         ->join("$srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
         ->select(
-            'pas.fk_processo_avaliacao as id_processo_avaliacao',
+            'pas.id as id_processo_avaliacao',
             'pas.fk_servidor',
             'sc.abreviacao as sigla_cargo',
             'pa.id',

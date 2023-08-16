@@ -51,9 +51,10 @@ class AvaliacaoController extends Controller
         }
     }
 
-    public function getServidoresAvaliacaoCorrente()
+    public function getServidoresAvaliacaoCorrente(Request $request)
     {
-        return AvaliacaoDB::getListaServidoresDoProcessoAvaliacao();
+        $p = (object) $request->all();
+        return AvaliacaoDB::getListaServidoresDoProcessoAvaliacao($p);
     }
 
 
@@ -103,6 +104,12 @@ class AvaliacaoController extends Controller
                 return response()->json(['message' => 'Falha ao excluir arquivo'], 500);
             }
         }
+    }
+    
+    public function combo()
+    {
+        $comboProcesso = AvaliacaoDB::combo();
+        return compact('comboProcesso');
     }
 
 

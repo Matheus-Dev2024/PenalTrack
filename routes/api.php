@@ -31,6 +31,8 @@ use App\Http\Controllers\UnidadesController;
 
     //Estágio - Lista servidores
     Route::get('avaliacao/corrente/get-servidores', [AvaliacaoController::class, 'getServidoresAvaliacaoCorrente']);
+    Route::get('avaliacao/combo-processo', [AvaliacaoController::class, 'combo']);
+
 
 
     //Formulário de Avaliação
@@ -86,7 +88,7 @@ Route::post('processo-avaliacao/alterar', [ProcessoAvaliacaoController::class, '
 Route::post('processo-avaliacao/excluir/{id_periodo_avaliacao}', [ProcessoAvaliacaoController::class, 'excluir']);
 Route::get('processo-avaliacao/pesquisardescricao', [ProcessoAvaliacaoController::class, 'pesquisarDescricao']);
 Route::get('processo-avaliacao/grid-arquivos/{id}', [ProcessoAvaliacaoController::class, 'exibirArquivo']);
-
+Route::post('processo-avaliacao/salvar-processo-avaliacao-servidor', [ProcessoAvaliacaoController::class, 'salvarProcessoAvaliacaoServidor']);
 
 //Avaliador
 Route::get('avaliador/grid-pesquisar-avaliador', [AvaliadorController::class, 'index']);

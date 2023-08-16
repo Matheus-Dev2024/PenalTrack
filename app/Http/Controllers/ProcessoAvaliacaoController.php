@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Documentacao;
+use App\Models\Entity\ProcessoAvaliacao;
 use App\Models\Facade\DocumentacaoDB;
 use App\Models\Facade\ProcessoAvaliacaoDB;
 use App\Models\Regras\ProcessoAvaliacaoRegras;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 
 class ProcessoAvaliacaoController extends Controller
 {
@@ -52,7 +54,23 @@ class ProcessoAvaliacaoController extends Controller
         $servidor = ProcessoAvaliacaoDB::listarServidor();
         return response()->json($servidor);
     }
-
+    
+    public function salvarProcessoAvaliacaoServidor (Request $request)
+    {
+        DB::beginTransaction();
+        try{
+            $id_servidor = $request->id_servidor;
+            $processo = ProcessoAvaliacao::find($request->id_processo);
+            
+            ProcessoAvaliacaoRegras::salvarProcessoAvaliacaoServidorIndividual($processo, $id_servidor);
+            DB::commit();
+            return response()->json(['message' => 'Servidor adicionado com sucesso.']);
+        }
+        catch (Exception $ex){
+            DB::rollBack();
+            return response()->json(['error' => $ex->getMessage(), 500]);
+        }
+    }
 
     public function salvar(Request $request)
     {
