@@ -61,14 +61,14 @@ class ProcessoAvaliacaoController extends Controller
         try{
             $id_servidor = $request->id_servidor;
             $processo = ProcessoAvaliacao::find($request->id_processo);
-            
+                        
             ProcessoAvaliacaoRegras::salvarProcessoAvaliacaoServidorIndividual($processo, $id_servidor);
             DB::commit();
             return response()->json(['message' => 'Servidor adicionado com sucesso.']);
         }
         catch (Exception $ex){
             DB::rollBack();
-            return response()->json(['error' => $ex->getMessage(), 500]);
+            return response()->json(['error' => 'Erro ao adicionar o servidor', 500]);
         }
     }
 
