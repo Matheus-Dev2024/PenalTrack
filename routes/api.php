@@ -89,6 +89,7 @@ Route::post('processo-avaliacao/excluir/{id_periodo_avaliacao}', [ProcessoAvalia
 Route::get('processo-avaliacao/pesquisardescricao', [ProcessoAvaliacaoController::class, 'pesquisarDescricao']);
 Route::get('processo-avaliacao/grid-arquivos/{id}', [ProcessoAvaliacaoController::class, 'exibirArquivo']);
 Route::post('processo-avaliacao/salvar-processo-avaliacao-servidor', [ProcessoAvaliacaoController::class, 'salvarProcessoAvaliacaoServidor']);
+Route::post('processo-avaliacao/salvar-usuario-avalia-servidor', [ProcessoAvaliacaoController::class, 'salvarUsuarioAvaliaServidor']);
 
 //Avaliador
 Route::get('avaliador/grid-pesquisar-avaliador', [AvaliadorController::class, 'index']);

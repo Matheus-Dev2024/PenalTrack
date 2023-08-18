@@ -7,6 +7,7 @@ use App\Models\Entity\ProcessoAvaliacao;
 use App\Models\Facade\DocumentacaoDB;
 use App\Models\Facade\ProcessoAvaliacaoDB;
 use App\Models\Regras\ProcessoAvaliacaoRegras;
+use App\Models\Regras\UsuarioAvaliaServidorRegras;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -69,6 +70,19 @@ class ProcessoAvaliacaoController extends Controller
         catch (Exception $ex){
             DB::rollBack();
             return response()->json(['error' => 'Erro ao adicionar o servidor', 500]);
+        }
+    }
+    
+    public function salvarUsuarioAvaliaServidor (Request $request)
+    {
+        DB::beginTransaction();
+        try{
+            UsuarioAvaliaServidorRegras::salvar($request);
+            DB::commit();
+            return response()->json(["mensagem" => "Servidor adicionado com sucesso."]);
+        } catch(Exception $ex) {
+            DB::rollback();
+            return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
         }
     }
 
