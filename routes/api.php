@@ -90,6 +90,7 @@ Route::get('processo-avaliacao/pesquisardescricao', [ProcessoAvaliacaoController
 Route::get('processo-avaliacao/grid-arquivos/{id}', [ProcessoAvaliacaoController::class, 'exibirArquivo']);
 Route::post('processo-avaliacao/salvar-processo-avaliacao-servidor', [ProcessoAvaliacaoController::class, 'salvarProcessoAvaliacaoServidor']);
 Route::post('processo-avaliacao/salvar-usuario-avalia-servidor', [ProcessoAvaliacaoController::class, 'salvarUsuarioAvaliaServidor']);
+Route::get('processo-avaliacao/grid-usuario-avalia-servidor', [ProcessoAvaliacaoController::class, 'listaUsuarioAvaliaServidor']);
 
 //Avaliador
 Route::get('avaliador/grid-pesquisar-avaliador', [AvaliadorController::class, 'index']);

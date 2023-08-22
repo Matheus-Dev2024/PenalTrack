@@ -6,6 +6,8 @@ use App\Models\Documentacao;
 use App\Models\Entity\ProcessoAvaliacao;
 use App\Models\Facade\DocumentacaoDB;
 use App\Models\Facade\ProcessoAvaliacaoDB;
+use App\Models\Facade\UsuarioAvaliaServidorDB;
+use App\Models\Facade\UsuarioAvaliaServidoresDB;
 use App\Models\Regras\ProcessoAvaliacaoRegras;
 use App\Models\Regras\UsuarioAvaliaServidorRegras;
 use Exception;
@@ -56,12 +58,22 @@ class ProcessoAvaliacaoController extends Controller
         return response()->json($servidor);
     }
     
+    public function listaUsuarioAvaliaServidor(Request $request) //stdClass 
+    {
+                
+        $p = (object)$request->validate([
+            'usuario_id' => 'required',
+        ]);
+        return response()->json(UsuarioAvaliaServidorDB::grid($p));
+
+    }
+    
     public function salvarProcessoAvaliacaoServidor (Request $request)
     {
         DB::beginTransaction();
         try{
             $id_servidor = $request->id_servidor;
-            $processo = ProcessoAvaliacao::find($request->id_processo);
+            $processo = ProcessoAvaliacao::find($request->processo_avaliacao);
                         
             ProcessoAvaliacaoRegras::salvarProcessoAvaliacaoServidorIndividual($processo, $id_servidor);
             DB::commit();
