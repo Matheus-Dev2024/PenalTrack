@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AvaliadorStoreRequest;
 use App\Models\Entity\Avaliador;
+use App\Models\Entity\UsuarioAvaliaServidores;
 use App\Models\Entity\UsuarioAvaliaUnidades;
 use App\Models\Entity\UsuarioSistema;
 use App\Models\Regras\AvaliadorRegras;
 use App\Models\Facade\AvaliadorDB;
+use App\Models\Regras\UsuarioAvaliaServidorRegras;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -79,7 +81,6 @@ class AvaliadorController extends Controller
 
     public function AdicionarUnidades(Request $request)
     {
-
         try {
             $response  = AvaliadorRegras::adicionarUnidades($request);
             return response()->json([
@@ -94,8 +95,18 @@ class AvaliadorController extends Controller
 
     public function destroyUnidades($request)
     {
-
         $dados =  AvaliadorRegras::removerUnidades($request);
         return response()->json($dados);
     }
+    
+    public function removerServidorIndividualmente(Request $request)
+    {
+        try{
+          UsuarioAvaliaServidorRegras::removerServidorAvaliadoIndividualmente($request->id);
+          return response()->json(["message" => "excluído com sucesso"]);
+        } catch (Exception $ex) {
+            return response()->json(["error" => "erro ao excluir o servidor"], 500);
+        }
+    }
+    
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UsuarioAvaliaServidorRequest;
 use App\Models\Documentacao;
 use App\Models\Entity\ProcessoAvaliacao;
 use App\Models\Facade\DocumentacaoDB;
@@ -33,7 +34,7 @@ class ProcessoAvaliacaoController extends Controller
         $lista = ProcessoAvaliacaoDB::servidoresGrid($request->id_processo);
         return response()->json($lista);
     }
-    
+
     public function exibirArquivo(Request $request)
     {
         $arquivo = Documentacao::find($request->id);
@@ -45,7 +46,7 @@ class ProcessoAvaliacaoController extends Controller
             'Content-Type' => mime_content_type($arquivo->arquivo),
         ]);
     }
-    
+
     public function pesquisarDescricao()
     {
         $lista = ProcessoAvaliacaoDB::pesquisarDescricao();
@@ -57,24 +58,24 @@ class ProcessoAvaliacaoController extends Controller
         $servidor = ProcessoAvaliacaoDB::listarServidor();
         return response()->json($servidor);
     }
-    
-    public function listaUsuarioAvaliaServidor(Request $request) //stdClass 
+
+    public function listaUsuarioAvaliaServidor(Request $request)
     {
-                
+
         $p = (object)$request->validate([
             'usuario_id' => 'required',
         ]);
         return response()->json(UsuarioAvaliaServidorDB::grid($p));
 
     }
-    
+
     public function salvarProcessoAvaliacaoServidor (Request $request)
     {
         DB::beginTransaction();
         try{
             $id_servidor = $request->id_servidor;
             $processo = ProcessoAvaliacao::find($request->processo_avaliacao);
-                        
+
             ProcessoAvaliacaoRegras::salvarProcessoAvaliacaoServidorIndividual($processo, $id_servidor);
             DB::commit();
             return response()->json(['message' => 'Servidor adicionado com sucesso.']);
@@ -84,12 +85,21 @@ class ProcessoAvaliacaoController extends Controller
             return response()->json(['error' => 'Erro ao adicionar o servidor', 500]);
         }
     }
-    
+
     public function salvarUsuarioAvaliaServidor (Request $request)
     {
+        $p = (object) $request->all();
+
         DB::beginTransaction();
         try{
-            UsuarioAvaliaServidorRegras::salvar($request);
+             if(!$request->processo_avaliacao){
+                 return response()->json(['error' => 'O campo processo avaliação é obrigatório.']);
+             }
+             if(!$request->servidor_id){
+                 return response()->json(['error' => 'O campo servidor é obrigatório.']);
+             }
+
+            UsuarioAvaliaServidorRegras::salvar($p);
             DB::commit();
             return response()->json(["mensagem" => "Servidor adicionado com sucesso."]);
         } catch(Exception $ex) {

@@ -3,6 +3,7 @@
 namespace App\Models\Regras;
 
 use App\Models\Entity\Avaliador;
+use App\Models\Entity\UsuarioAvaliaServidores;
 use App\Models\Entity\UsuarioSistema;
 use App\Models\Entity\UsuarioAvaliaUnidades;
 use Illuminate\Support\Facades\Validator;
@@ -94,4 +95,5 @@ class AvaliadorRegras
 
         UsuarioSistema::where(['sistema_id' => 56, 'usuario_id' => $id])->delete();
     }
+    
 }

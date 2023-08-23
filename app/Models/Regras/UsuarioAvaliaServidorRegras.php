@@ -3,10 +3,11 @@
 namespace App\Models\Regras;
 
 use App\Models\Entity\UsuarioAvaliaServidores;
+use stdClass;
 
 class UsuarioAvaliaServidorRegras
 {
-    public static function salvar($dados)
+    public static function salvar(stdClass $dados) 
     {
         UsuarioAvaliaServidores::create([
             'usuario_id' => $dados->usuario_id,
@@ -15,4 +16,10 @@ class UsuarioAvaliaServidorRegras
         ]);
     }
     
+    public static function removerServidorAvaliadoIndividualmente($id)
+    {
+        $servidor = UsuarioAvaliaServidores::find($id);
+        $servidor->delete();
+    }
 }
+
