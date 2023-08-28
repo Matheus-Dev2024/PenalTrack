@@ -10,26 +10,26 @@ use Illuminate\Http\Request;
 class FatorAvaliacaoController extends Controller
 {
 
-    public function grid() 
+    public function grid()
     {
         $lista = FatorAvaliacaoDB::listarFatorAvaliacao();
         return response()->json($lista);
     }
-    
+
     public function salvar(Request $request)
     {
         try {
             if(!$request->fator_avaliacao) {
                 return response()->json(['error' => 'O campo fator de avaliacao é obrigatório.']);
             }
-            
+
             FatorAvaliacaoRegras::salvar($request);
             return response()->json(["mensagem" => "Fator de Avaliação salvo com sucesso"]);
 
         } catch(Exception $ex) {
             return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
         }
-        
+
     }
 
     public function alterar(Request $request)
@@ -41,7 +41,7 @@ class FatorAvaliacaoController extends Controller
         } catch(Exception $ex) {
             return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
         }
-        
+
     }
 
     public function excluir(Request $request)
@@ -53,7 +53,7 @@ class FatorAvaliacaoController extends Controller
         } catch(Exception $ex) {
             return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
         }
-        
+
     }
 
 }

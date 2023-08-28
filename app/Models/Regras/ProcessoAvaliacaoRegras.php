@@ -34,38 +34,34 @@ class ProcessoAvaliacaoRegras
 
     public static function salvarProcessoAvaliacaoServidor($dados, $novoProcesso)
     {
+        //calcular os dias de estágio com base na data início e término de avaliação
+        $data1 = new \DateTime($dados->dt_inicio_avaliacao);
+        $data2 = new \DateTime($dados->dt_termino_avaliacao);
+        $diferenca = $data1->diff($data2);
+        $diasDeEstagio = $diferenca->days;
+
+        //pega o dia de trabalho programado (verificar se esse campo ainda é necessário)
+        $diasDeTrabalhoProgramado = 180;
+
         //pega todos os servidores que farão estágio, a partir da data início e término da referência
         $servidoresDoProcesso = ProcessoAvaliacaoDB::listarServidoresGrid($dados->ref_inicio, $dados->ref_termino);
 
         foreach($servidoresDoProcesso as $servidor) {
+
             //para cada servidor, localizar a sua unidade de avaliação
-            self::salvarProcessoAvaliacaoServidorIndividual($novoProcesso, $servidor->servidor);
-        }
-    }
-    
-    public static function salvarProcessoAvaliacaoServidorIndividual(ProcessoAvaliacao $processo, Int $id_servidor)
-    {
-        //calcular os dias de estágio com base na data início e término de avaliação
-        $data1 = new \DateTime($processo->dt_inicio_avaliacao);
-        $data2 = new \DateTime($processo->dt_termino_avaliacao);
-        $diferenca = $data1->diff($data2);
-        $diasDeEstagio = $diferenca->days;
-        
-        //pega o dia de trabalho programado (verificar se esse campo ainda é necessário)
-        $diasDeTrabalhoProgramado = 180;
-        
-        $info = DB::select("SELECT * FROM srh.sp_info_servidor_estagio_probatorio('$processo->dt_inicio_avaliacao', '$processo->dt_termino_avaliacao', $id_servidor)");
+            $info = DB::select("SELECT * FROM srh.sp_info_servidor_estagio_probatorio('$dados->dt_inicio_avaliacao', '$dados->dt_termino_avaliacao', $servidor->servidor)");
+
             if($info) {
                 ProcessoAvaliacaoServidor::create([
-                    'fk_processo_avaliacao' => $processo->id,
-                    'fk_servidor' => $id_servidor,
+                    'fk_processo_avaliacao' => $novoProcesso->id,
+                    'fk_servidor' => $servidor->servidor,
                     'fk_unidade' => $info[0]->fk_id_unidade,
                     'dias_estagio' => $diasDeEstagio,
                     'dias_trabalho_programado' => $diasDeTrabalhoProgramado
                 ]);
             }
+        }
     }
-    
 
 
     public static function editar($id)
