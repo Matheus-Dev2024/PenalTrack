@@ -1,6 +1,12 @@
 <?php
 
+use App\Http\Controllers\AvaliacaoController;
+use App\Http\Controllers\AvaliadorController;
 use App\Http\Controllers\DocumentacaoController;
+use App\Http\Controllers\FatorAvaliacaoController;
+use App\Http\Controllers\FatorAvaliacaoItemController;
+use App\Http\Controllers\ImpressaoController;
+use App\Http\Controllers\ProcessoAvaliacaoController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\CargoController;
 use \App\Http\Controllers\ServidorController;
