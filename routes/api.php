@@ -1,21 +1,15 @@
 <?php
 
 use App\Http\Controllers\AvaliacaoController;
-use App\Http\Controllers\AvaliadorController;
-use App\Http\Controllers\DocumentacaoController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FatorAvaliacaoController;
 use App\Http\Controllers\FatorAvaliacaoItemController;
 use App\Http\Controllers\ImpressaoController;
 use App\Http\Controllers\ProcessoAvaliacaoController;
-use App\Http\Controllers\RelatorioController;
-use App\Http\Controllers\CargoController;
-use \App\Http\Controllers\ServidorController;
-use App\Http\Controllers\UnidadeController;
-use App\Http\Controllers\TipoDocumentacaoController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Route;
-use PhpParser\Node\Expr\Cast\Object_;
+use \App\Http\Controllers\TipoArquivoController;
+use App\Http\Controllers\AvaliadorController;
+use App\Http\Controllers\UnidadesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,63 +29,37 @@ use PhpParser\Node\Expr\Cast\Object_;
 // Route::middleware('auth:sanctum')->group(function() {
 //Route::group(['middleware' => ['seguranca']], function () {
 
-    //Estágio - Lista servidores
-    Route::get('avaliacao/corrente/get-servidores', [AvaliacaoController::class, 'getServidoresAvaliacaoCorrente']);
-    Route::get('avaliacao/combo-processo', [AvaliacaoController::class, 'combo']);
+//Estágio - Lista servidores
+Route::get('avaliacao/corrente/get-servidores', [AvaliacaoController::class, 'getServidoresAvaliacaoCorrente']);
+Route::get('avaliacao/combo-processo', [AvaliacaoController::class, 'combo']);
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+
+
+//Formulário de Avaliação
+Route::controller(AvaliacaoController::class)->group(function () {
+    Route::get('avaliacao/info', 'info');
+    Route::get('avaliacao/form', 'formulario');
+    Route::post('avaliacao/store', 'store');
+    Route::get('avaliacao/arquivos','GridArquivos');
+    Route::post('avaliacao/upload-arquivo', 'uploadArquivo');
+    Route::post('avaliacao/arquivos/{arquivo}/destruir', 'ExcluirArquivo');
+    Route::get('avaliacao/arquivo-download', 'exibirArquivo'); //carrega um arquivo específico para ser exibido em tela
 });
 
 
-//Portaria
-Route::get('/portaria/emitentes', [App\Http\Controllers\Portaria\EmitenteController::class, 'emitentes']);
-
-//Ordem de Serviço
-Route::get('/ordem-servico/emitentes', [App\Http\Controllers\OrdemServico\EmitenteController::class, 'emitentes']);
-
-//Publicação
-Route::get('/publicacao/boletim/documentos/para/envio', [App\Http\Controllers\Publicacao\PublicacaoController::class, 'listaDocumentosParaEnvio']);
-Route::post('/publicacao/store', [App\Http\Controllers\Publicacao\PublicacaoController::class, 'store']);
-Route::post('/publicacao/manual/store', [App\Http\Controllers\Publicacao\PublicacaoController::class, 'storePortariaManual']);
-Route::post('/publicacao/delete/{publicacao}', [App\Http\Controllers\Publicacao\PublicacaoController::class, 'delete']);
-Route::get('/publicacao/preview', [App\Http\Controllers\Publicacao\PublicacaoController::class, 'preview']);
-Route::get('/publicacao/get-boletins-por-ano', [App\Http\Controllers\Publicacao\PublicacaoController::class, 'getBoletinsPorAno']);
-Route::get('/publicacao/open-boletim', [App\Http\Controllers\Publicacao\PublicacaoController::class, 'openBoletim']);
-
-//Tipo Documentação
-Route::get('/tipo-documentacao/grid', [TipoDocumentacaoController::class, 'grid']);
-Route::put('/tipo-documentacao/store', [TipoDocumentacaoController::class, 'store']);
-Route::put('/tipo-documentacao/update', [TipoDocumentacaoController::class, 'update']);
-Route::put('/tipo-documentacao/delete/{id}', [TipoDocumentacaoController::class, 'delete']);
-Route::get('/tipo-documentacao/combo-tipo-documentacao', [TipoDocumentacaoController::class, 'combo']);
-
-//Documentação
-Route::post('/documentacao/store', [DocumentacaoController::class, 'store']);
-Route::post('/documentacao/update', [DocumentacaoController::class, 'update']);
-Route::post('/documentacao/delete/{id}', [DocumentacaoController::class, 'delete']);
-Route::get('/documentacao/arquivo-download/{id}', [DocumentacaoController::class, 'exibirArquivo']);
-
-//Boletim
-Route::post('/boletim/store', [App\Http\Controllers\Publicacao\BoletimController::class, 'store']);
-
-// ROTAS PARA CARGO
-Route::controller(CargoController::class)->group(function () {
-    Route::prefix('cargo')->group(function () {
-        Route::get('/', 'cargosAtivos');
+// Rotas de Tipo de Arquivo
+Route::controller(TipoArquivoController::class)->group(function() {
+    Route::prefix('tipo-arquivo')->group(function () {
+        Route::post('/', 'store');
+        Route::get('/grid', 'grid');
+        Route::get('/{id}', 'edit');
+        Route::post('/update', 'update');
+        Route::delete('/{tipo}', 'delete');
     });
 });
 
-// ROTAS PARA CARGO
-Route::controller(UnidadeController::class)->group(function () {
-    Route::prefix('unidade')->group(function () {
-        Route::get('/', 'unidadesAtivas');
-        Route::get('/{unidade}', 'show');
-    });
-});
-
-    // Rota de Impressao
-    Route::get('imprimir', [ImpressaoController::class, 'imprimir']);
+// Rota de Impressao
+Route::get('imprimir', [ImpressaoController::class, 'imprimir']);
 
 //});
 
@@ -146,10 +114,3 @@ Route::get('unidades', [UnidadesController::class, 'index']);
 
 
 
-// ROTAS PARA SERVIDOR
-Route::controller(ServidorController::class)->group(function () {
-    Route::prefix('servidor')->group(function () {
-        Route::get('/', 'grid');
-        Route::get('/busca-cpf/{cpf}', 'buscarPorCpf'); //exibe um servidor por um CPF
-    });
-});
