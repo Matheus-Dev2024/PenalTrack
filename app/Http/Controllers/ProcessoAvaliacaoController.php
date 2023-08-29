@@ -71,10 +71,11 @@ class ProcessoAvaliacaoController extends Controller
 
     public function salvarProcessoAvaliacaoServidor (Request $request)
     {
+        //dd($request->all());
         DB::beginTransaction();
         try{
             $id_servidor = $request->id_servidor;
-            $processo = ProcessoAvaliacao::find($request->processo_avaliacao);
+            $processo = ProcessoAvaliacao::find($request->id_processo);
 
             ProcessoAvaliacaoRegras::salvarProcessoAvaliacaoServidorIndividual($processo, $id_servidor);
             DB::commit();

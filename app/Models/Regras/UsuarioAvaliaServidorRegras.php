@@ -7,7 +7,7 @@ use stdClass;
 
 class UsuarioAvaliaServidorRegras
 {
-    public static function salvar(stdClass $dados) 
+    public static function salvar(stdClass $dados)
     {
         UsuarioAvaliaServidores::create([
             'usuario_id' => $dados->usuario_id,
@@ -15,10 +15,12 @@ class UsuarioAvaliaServidorRegras
             'fk_processo_avaliacao' => $dados->processo_avaliacao
         ]);
     }
-    
+
     public static function removerServidorAvaliadoIndividualmente($id)
     {
+        //dd($id);
         $servidor = UsuarioAvaliaServidores::find($id);
+        //dd($servidor);
         $servidor->delete();
     }
 }

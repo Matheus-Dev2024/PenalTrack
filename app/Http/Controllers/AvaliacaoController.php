@@ -105,7 +105,7 @@ class AvaliacaoController extends Controller
             }
         }
     }
-    
+
     public function combo()
     {
         $comboProcesso = AvaliacaoDB::combo();
