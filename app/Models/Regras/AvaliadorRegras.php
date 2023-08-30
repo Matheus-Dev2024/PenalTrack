@@ -14,26 +14,51 @@ use Illuminate\Validation\ValidationException;
 class AvaliadorRegras
 {
 
-    public static function salvar($dados)
+    public static function salvar(\stdClass $dados)
     {
 
         $senha2 = password_hash($dados->senha2, PASSWORD_BCRYPT);
+        $dados->senha2 = $senha2;
 
-        // Cadastra o usuário
-        $avaliador = Avaliador::create([
-            'cpf' => $dados->cpf,
-            'nome' => $dados->nome,
-            'nascimento' => $dados->nascimento,
-            'email' => $dados->email,
-            'senha' => " ",
-            'senha2' => $senha2,
-            'dt_cadastro' => date('Y-m-d H:i:s')
-        ]);
-       
+        // Limpa o CPF para poder pesquisar se o usuário já existe.
+        $dados->cpf = str_replace(['.', '-'], '', $dados->cpf);
+
+        // Cria um avaliador em branco para guardar os dados
+        $avaliadorNovo = new Avaliador();
+
+        // Pesquisa todos os possiveis usuários com o CPF informado
+        $possiveisAvaliadores = Avaliador::where('cpf', $dados->cpf)
+            ->where('excluido', false)
+            ->orderBy('id')
+            ->get();
+
+        // Se houver mais de um usuário com o CPF informado, desativa os mais novos, mantendo apenas o usuário mais antigo
+        if(count($possiveisAvaliadores->toArray()) > 0){
+            foreach ($possiveisAvaliadores as $key => $avaliador) {
+                //Atualiza os dados do usuário mais atingo
+                if($key == 0){
+                    $avaliadorNovo = self::atualizarDadosAvaliador($avaliador, $dados);
+                    $avaliador->save();
+                }
+                //desabilita os usuários mais novos
+                if($key > 0){
+                    $avaliador->excluido = true;
+                    $avaliador->save();
+                }
+            }
+        }
+        // Se não localizar usuário com o cpf informado, cria um usuário.
+        else{
+            $avaliadorNovo = self::atualizarDadosAvaliador($avaliadorNovo, $dados);
+            $avaliadorNovo->dt_cadastro = date('Y-m-d H:i:s');
+            $avaliadorNovo->cpf = $dados->cpf;
+            $avaliadorNovo->save();
+        }
+
         // Cria as unidades para o determinado usuário
         foreach ($dados->usuario_unidades as $unidade) {
             UsuarioAvaliaUnidades::create([
-                'usuario_id' => $avaliador->id,
+                'usuario_id' => $avaliadorNovo->id,
                 'unidade_id' => $unidade['id']
             ]);
         }
@@ -41,10 +66,10 @@ class AvaliadorRegras
         //Adiciona o usuário no sistema estágio probatório (56)
         UsuarioSistema::create([
             'sistema_id' => 56,
-            'usuario_id' => $avaliador->id
+            'usuario_id' => $avaliadorNovo->id
         ]);
 
-        return $avaliador;
+        return response()->json(["id" => $avaliadorNovo->id, "mensagem" => "Avaliador cadastrado com sucesso!"], 418);
     }
 
     public static function adicionarUnidades($dados)
@@ -56,7 +81,7 @@ class AvaliadorRegras
         ]);
     }
 
-    
+
 
     public static function alterar($dados)
     {
@@ -95,5 +120,17 @@ class AvaliadorRegras
 
         UsuarioSistema::where(['sistema_id' => 56, 'usuario_id' => $id])->delete();
     }
-    
+
+    // Esta funcao sera chamada quando for necessario alterar os dados de um avaliador.
+    private static function atualizarDadosAvaliador(Avaliador $avaliador, \stdClass $dados) :Avaliador
+    {
+        // Atualiza os dados do avaliador
+        $avaliador->nome = $dados->nome;
+        $avaliador->nascimento = $dados->nascimento;
+        $avaliador->email = $dados->email;
+        $avaliador->senha = "";
+        $avaliador->senha2 = $dados->senha2;
+        return $avaliador;
+    }
+
 }

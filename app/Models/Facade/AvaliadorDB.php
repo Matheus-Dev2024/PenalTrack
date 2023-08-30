@@ -56,6 +56,5 @@ class AvaliadorDB
 
         return $listaAvaliador;
     }
-    
 
 }

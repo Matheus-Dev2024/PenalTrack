@@ -33,14 +33,13 @@ class AvaliadorController extends Controller
     {
         try {
             DB::beginTransaction();
-            $avaliador = AvaliadorRegras::salvar($request);
+            $resposta = AvaliadorRegras::salvar((object)$request->all());
 
             DB::commit();
-            return response()->json(["id" => $avaliador->id, "mensagem" => "Avaliador cadastrado com sucesso"]);
+            return $resposta;
 
         } catch (Exception $ex) {
             DB::rollBack();
-
             return response()->json(["error" => $ex->getMessage()]);
         }
     }
@@ -55,7 +54,8 @@ class AvaliadorController extends Controller
 
         } catch (Exception $ex) {
             DB::rollBack();
-            return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
+            //return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
+            return response()->json(["error" => $ex->getMessage()]);
         }
     }
 
@@ -66,7 +66,8 @@ class AvaliadorController extends Controller
 
             return response()->json(["mensagem" => "Usuário excluído com sucesso"], 200);
         } catch (Exception $ex) {
-            return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
+            //return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
+            return response()->json(["error" => $ex->getMessage()]);
         }
     }
 
@@ -87,7 +88,8 @@ class AvaliadorController extends Controller
             ]);
         } catch (Exception $ex) {
 
-            return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
+            //return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
+            return response()->json(["error" => $ex->getMessage()]);
         }
     }
 
