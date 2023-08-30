@@ -41,7 +41,7 @@ class AvaliadorController extends Controller
         } catch (Exception $ex) {
             DB::rollBack();
 
-            return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
+            return response()->json(["error" => $ex->getMessage()]);
         }
     }
 

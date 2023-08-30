@@ -71,7 +71,7 @@ class AvaliadorStoreRequest extends FormRequest
             }
 
             $usuario = Avaliador::where('email', request()->email)->first();
-            
+
             if ($usuario) {
                 $usuarioSistema = UsuarioSistema::where('sistema_id', "56")->where('usuario_id', $usuario->id)->first();
 
