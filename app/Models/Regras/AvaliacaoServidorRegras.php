@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\DB;
 
 class AvaliacaoServidorRegras
 {
-    public static function info (\stdClass $p){
+    public static function informacao (\stdClass $p){
         $formulario = FatorAvaliacaoDB::getFormularioAvaliacao();
         $processo = ProcessoAvaliacaoDB::getById($p->processo_id);
         $servidor = ServidorDB::info($p->servidor_id, $processo->processo_id, $processo->dt_inicio_avaliacao_en, $processo->dt_termino_avaliacao_en);

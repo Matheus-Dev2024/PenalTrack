@@ -3,11 +3,8 @@
 namespace App\Models\Regras;
 
 use App\Models\Entity\Avaliador;
-use App\Models\Entity\UsuarioAvaliaServidores;
 use App\Models\Entity\UsuarioSistema;
 use App\Models\Entity\UsuarioAvaliaUnidades;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 
 
 

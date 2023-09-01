@@ -62,7 +62,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'model' => \PoliciaCivil\Seguranca\Models\Entity\Usuario::class,
         ],
 
         // 'users' => [

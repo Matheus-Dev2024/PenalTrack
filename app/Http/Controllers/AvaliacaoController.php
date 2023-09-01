@@ -31,7 +31,7 @@ class AvaliacaoController extends Controller
             'processo_id' => 'required',
             'servidor_id' => 'required'
         ]);
-        return AvaliacaoServidorRegras::info($p);
+        return AvaliacaoServidorRegras::informacao($p);
     }
 
     public function store(Request $request)

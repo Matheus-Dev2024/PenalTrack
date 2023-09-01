@@ -27,13 +27,13 @@ use App\Http\Controllers\UnidadesController;
 // });
 
 // Route::middleware('auth:sanctum')->group(function() {
-//Route::group(['middleware' => ['seguranca']], function () {
+Route::group(['middleware' => ['seguranca']], function () {
 
-//Estágio - Lista servidores
-Route::get('avaliacao/corrente/get-servidores', [AvaliacaoController::class, 'getServidoresAvaliacaoCorrente']);
-Route::get('avaliacao/combo-processo', [AvaliacaoController::class, 'combo']);
+    //Estágio - Lista servidores
+    Route::get('avaliacao/corrente/get-servidores', [AvaliacaoController::class, 'getServidoresAvaliacaoCorrente']);
+    Route::get('avaliacao/combo-processo', [AvaliacaoController::class, 'combo']);
 
-
+});
 
 //Formulário de Avaliação
 Route::controller(AvaliacaoController::class)->group(function () {

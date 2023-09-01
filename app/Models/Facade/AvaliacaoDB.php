@@ -6,6 +6,7 @@ use App\Models\Entity\AvaliacaoServidor;
 use App\Models\Entity\ServidoresAvaliadosIndividualmente;
 use App\Models\Entity\UsuarioAvaliaUnidades;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AvaliacaoDB
@@ -54,8 +55,8 @@ class AvaliacaoDB
 
     public static function getListaServidoresDoProcessoAvaliacao(\stdClass $p) :\illuminate\http\JsonResponse
     {
-        //$usuario_id = Auth::user()->id;
-        $usuario_id = 587;
+        $usuario_id = Auth::user()->id;
+        //$usuario_id = 587;
 
         $select = [
             'pa.id as processo_avaliacao_id','pa.dt_inicio_avaliacao',

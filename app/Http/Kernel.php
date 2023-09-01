@@ -40,9 +40,7 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            // a linha abaixo foi comentada para conectar no front eprobatorio devido problemas de autenticação
-            
-            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
