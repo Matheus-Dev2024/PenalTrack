@@ -10,7 +10,12 @@ class ProcessoAvaliacao extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
     protected $table = "processo_avaliacao";
     protected $guarded = [];
-    
+
+    public function periodo()
+    {
+        return $this->belongsTo(PeriodoProcessoAvaliacao::class);
+    }
 }

@@ -1,15 +1,15 @@
 <?php
 
 use App\Http\Controllers\AvaliacaoController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AvaliadorController;
 use App\Http\Controllers\FatorAvaliacaoController;
 use App\Http\Controllers\FatorAvaliacaoItemController;
 use App\Http\Controllers\ImpressaoController;
+use App\Http\Controllers\PeriodoProcessoAvaliacaoController;
 use App\Http\Controllers\ProcessoAvaliacaoController;
-use \App\Http\Controllers\TipoArquivoController;
-use App\Http\Controllers\AvaliadorController;
+use App\Http\Controllers\TipoArquivoController;
 use App\Http\Controllers\UnidadesController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,7 +40,7 @@ Route::controller(AvaliacaoController::class)->group(function () {
     Route::get('avaliacao/info', 'info');
     Route::get('avaliacao/form', 'formulario');
     Route::post('avaliacao/store', 'store');
-    Route::get('avaliacao/arquivos','GridArquivos');
+    Route::get('avaliacao/arquivos', 'GridArquivos');
     Route::post('avaliacao/upload-arquivo', 'uploadArquivo');
     Route::post('avaliacao/arquivos/{arquivo}/destruir', 'ExcluirArquivo');
     Route::get('avaliacao/arquivo-download', 'exibirArquivo'); //carrega um arquivo específico para ser exibido em tela
@@ -48,7 +48,7 @@ Route::controller(AvaliacaoController::class)->group(function () {
 
 
 // Rotas de Tipo de Arquivo
-Route::controller(TipoArquivoController::class)->group(function() {
+Route::controller(TipoArquivoController::class)->group(function () {
     Route::prefix('tipo-arquivo')->group(function () {
         Route::post('/', 'store');
         Route::get('/grid', 'grid');
@@ -91,6 +91,9 @@ Route::get('processo-avaliacao/grid-arquivos/{id}', [ProcessoAvaliacaoController
 Route::post('processo-avaliacao/salvar-processo-avaliacao-servidor', [ProcessoAvaliacaoController::class, 'salvarProcessoAvaliacaoServidor']);
 Route::post('processo-avaliacao/salvar-usuario-avalia-servidor', [ProcessoAvaliacaoController::class, 'salvarUsuarioAvaliaServidor']);
 Route::get('processo-avaliacao/grid-usuario-avalia-servidor', [ProcessoAvaliacaoController::class, 'listaUsuarioAvaliaServidor']);
+
+//Período do processo de avaliação
+Route::get('periodo-processo-avaliacao/combo', [PeriodoProcessoAvaliacaoController::class, 'combo']);
 
 //Avaliador
 Route::get('avaliador/grid-pesquisar-avaliador', [AvaliadorController::class, 'index']);
