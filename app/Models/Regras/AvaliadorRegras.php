@@ -3,15 +3,16 @@
 namespace App\Models\Regras;
 
 use App\Models\Entity\Avaliador;
-use App\Models\Entity\UsuarioSistema;
+use App\Models\Entity\UsuarioAvaliaServidores;
 use App\Models\Entity\UsuarioAvaliaUnidades;
-
+use App\Models\Entity\UsuarioSistema;
+use stdClass;
 
 
 class AvaliadorRegras
 {
 
-    public static function salvar(\stdClass $dados)
+    public static function salvar(stdClass $dados)
     {
 
         $senha2 = password_hash($dados->senha2, PASSWORD_BCRYPT);
@@ -30,22 +31,21 @@ class AvaliadorRegras
             ->get();
 
         // Se houver mais de um usuário com o CPF informado, desativa os mais novos, mantendo apenas o usuário mais antigo
-        if(count($possiveisAvaliadores->toArray()) > 0){
+        if (count($possiveisAvaliadores->toArray()) > 0) {
             foreach ($possiveisAvaliadores as $key => $avaliador) {
                 //Atualiza os dados do usuário mais atingo
-                if($key == 0){
+                if ($key == 0) {
                     $avaliadorNovo = self::atualizarDadosAvaliador($avaliador, $dados);
                     $avaliador->save();
                 }
                 //desabilita os usuários mais novos
-                if($key > 0){
+                if ($key > 0) {
                     $avaliador->excluido = true;
                     $avaliador->save();
                 }
             }
-        }
-        // Se não localizar usuário com o cpf informado, cria um usuário.
-        else{
+        } // Se não localizar usuário com o cpf informado, cria um usuário.
+        else {
             $avaliadorNovo = self::atualizarDadosAvaliador($avaliadorNovo, $dados);
             $avaliadorNovo->dt_cadastro = date('Y-m-d H:i:s');
             $avaliadorNovo->cpf = $dados->cpf;
@@ -69,6 +69,17 @@ class AvaliadorRegras
         return response()->json(["id" => $avaliadorNovo->id, "mensagem" => "Avaliador cadastrado com sucesso!"], 418);
     }
 
+    private static function atualizarDadosAvaliador(Avaliador $avaliador, stdClass $dados): Avaliador
+    {
+        // Atualiza os dados do avaliador
+        $avaliador->nome = $dados->nome;
+        $avaliador->nascimento = $dados->nascimento;
+        $avaliador->email = $dados->email;
+        $avaliador->senha = "";
+        $avaliador->senha2 = $dados->senha2;
+        return $avaliador;
+    }
+
     public static function adicionarUnidades($dados)
     {
         // Adicionar a unidade para o determinado avaliador
@@ -77,8 +88,6 @@ class AvaliadorRegras
             'unidade_id' => $dados->id_unidade
         ]);
     }
-
-
 
     public static function alterar($dados)
     {
@@ -107,27 +116,22 @@ class AvaliadorRegras
         }
     }
 
+    // Esta funcao sera chamada quando for necessario alterar os dados de um avaliador.
+
     public static function removerAvaliador($id)
     {
         $avaliadorUnidades = UsuarioAvaliaUnidades::where('usuario_id', $id)->get();
+        $avaliadorServidores = UsuarioAvaliaServidores::where('usuario_id', $id)->get();
+
+        $avaliadorServidores->each(function ($avaliadorServidore) {
+            $avaliadorServidore->delete();
+        });
 
         $avaliadorUnidades->each(function ($avaliadorUnidade) {
             $avaliadorUnidade->delete();
         });
 
         UsuarioSistema::where(['sistema_id' => 56, 'usuario_id' => $id])->delete();
-    }
-
-    // Esta funcao sera chamada quando for necessario alterar os dados de um avaliador.
-    private static function atualizarDadosAvaliador(Avaliador $avaliador, \stdClass $dados) :Avaliador
-    {
-        // Atualiza os dados do avaliador
-        $avaliador->nome = $dados->nome;
-        $avaliador->nascimento = $dados->nascimento;
-        $avaliador->email = $dados->email;
-        $avaliador->senha = "";
-        $avaliador->senha2 = $dados->senha2;
-        return $avaliador;
     }
 
 }
