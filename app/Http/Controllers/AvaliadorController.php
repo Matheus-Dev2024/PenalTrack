@@ -15,9 +15,12 @@ use Illuminate\Support\Facades\DB;
 
 class AvaliadorController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $listaAvaliador = AvaliadorDB::PesquisaAvaliador();
+        $p = (object)$request->validate([
+            'id_usuario' => 'required'
+        ]);
+        $listaAvaliador = AvaliadorDB::PesquisaAvaliador($p);
 
         return response()->json($listaAvaliador);
     }

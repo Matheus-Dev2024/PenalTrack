@@ -60,7 +60,7 @@ class AvaliadorRegras
                 'unidade_id' => $unidade['id']
             ]);
         }
-        
+
         //Adiciona o usuário no sistema estágio probatório (56)
         UsuarioSistema::create([
             'sistema_id' => 56,

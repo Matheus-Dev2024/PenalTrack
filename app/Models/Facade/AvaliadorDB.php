@@ -2,7 +2,9 @@
 
 namespace App\Models\Facade;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 
 class AvaliadorDB
 {
@@ -42,14 +44,16 @@ class AvaliadorDB
         return $listaUnidades;
     }
 
-    public static function PesquisaAvaliador()
+    public static function PesquisaAvaliador(stdClass $usuarioLogado): Collection
         // usuario avalia unidades onde o id é igual ao 56(estágio probatório)
     {
         $listaAvaliador = DB::table('seguranca.usuario as u')
             ->join('seguranca.usuario_sistema as us', 'u.id', '=', 'us.usuario_id')
+            ->join('eprobatorio.usuario_avaliador_intermediario as uai', 'u.id', '=', 'uai.usuario_cadastrado')
             ->join('eprobatorio.usuario_avalia_unidades as uau', 'u.id', '=', 'uau.usuario_id')
             ->select('u.id', 'u.nome', 'u.email', 'u.status')
             ->where('us.sistema_id', '=', 56)
+            ->where('uai.usuario_cadastrou', '=', $usuarioLogado->id_usuario)
             ->groupBy('u.id')
             ->orderBy('u.id')
             ->get();
