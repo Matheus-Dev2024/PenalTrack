@@ -3,6 +3,7 @@
 namespace App\Models\Regras;
 
 use App\Models\Entity\Avaliador;
+use App\Models\Entity\UsuarioAvaliadorIntermediario;
 use App\Models\Entity\UsuarioAvaliaServidores;
 use App\Models\Entity\UsuarioAvaliaUnidades;
 use App\Models\Entity\UsuarioSistema;
@@ -59,14 +60,20 @@ class AvaliadorRegras
                 'unidade_id' => $unidade['id']
             ]);
         }
-
+        
         //Adiciona o usuário no sistema estágio probatório (56)
         UsuarioSistema::create([
             'sistema_id' => 56,
             'usuario_id' => $avaliadorNovo->id
         ]);
 
-        return response()->json(["id" => $avaliadorNovo->id, "mensagem" => "Avaliador cadastrado com sucesso!"], 418);
+        //registra o usuário que cadastrou e o usuario cadastrado
+        UsuarioAvaliadorIntermediario::create([
+            'usuario_cadastrou' => $dados->usuario_cad,
+            'usuario_cadastrado' => $avaliadorNovo->id
+        ]);
+
+        return response()->json(["id" => $avaliadorNovo->id, "mensagem" => "Avaliador cadastrado com sucesso!"], 201);
     }
 
     private static function atualizarDadosAvaliador(Avaliador $avaliador, stdClass $dados): Avaliador
