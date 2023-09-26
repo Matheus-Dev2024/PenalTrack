@@ -8,6 +8,7 @@ use App\Models\Entity\ProcessoAvaliacaoServidor;
 use App\Models\Facade\ProcessoAvaliacaoDB;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ProcessoAvaliacaoRegras
@@ -60,7 +61,7 @@ class ProcessoAvaliacaoRegras
 
         //pega o dia de trabalho programado (verificar se esse campo ainda é necessário)
         $diasDeTrabalhoProgramado = 180;
-        
+
         //para utilizar a função 'srh.sp_info_servidor_estagio_probatorio', o formato da data precisa ser "d-m-y"
         $info = DB::select("SELECT * FROM srh.sp_info_servidor_estagio_probatorio('$dataInicioString', '$dataFinalString', $id_servidor)");
         if ($info) {
@@ -108,6 +109,7 @@ class ProcessoAvaliacaoRegras
 
     public static function atualizaSituacaoServidor($p)
     {
+        $usuarioLogado = Auth::id();
         $notaTotalDoServidor = ProcessoAvaliacaoDB::getNotaTotalServidor($p->processo_avaliacao_id, $p->servidor_id);
 
         ProcessoAvaliacaoServidor::where('fk_processo_avaliacao', $p->processo_avaliacao_id)
@@ -118,9 +120,9 @@ class ProcessoAvaliacaoRegras
                 'dias_prorrogados' => $p->dias_prorrogados,
                 'nota_total' => $notaTotalDoServidor,
                 'parecer_avaliador' => $p->parecer_avaliador,
+                'fk_avaliador' => $usuarioLogado,
                 'status' => 2
             ]);
     }
-
 
 }

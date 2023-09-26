@@ -18,6 +18,7 @@ class CreateProcessoAvaliacaoServidor extends Migration
             $table->foreignId('fk_processo_avaliacao')->constrained('processo_avaliacao');
             $table->foreignId('fk_servidor')->constrained('srh.sig_servidor', 'id_servidor');
             $table->foreignId('fk_unidade')->constrained('policia.unidade');
+            $table->foreignId('fk_avaliador')->constrained('seguranca.usuario');
             $table->integer('dias_estagio');
             $table->integer('dias_trabalho_programado');
             $table->integer('dias_ausencia');

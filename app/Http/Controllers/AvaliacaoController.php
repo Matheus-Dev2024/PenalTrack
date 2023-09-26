@@ -9,7 +9,6 @@ use App\Models\Regras\AvaliacaoServidorRegras;
 use App\Models\Regras\ProcessoAvaliacaoRegras;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AvaliacaoController extends Controller
@@ -18,7 +17,7 @@ class AvaliacaoController extends Controller
     {
         $formulario = FatorAvaliacao::all();
 
-        foreach($formulario as $fator) {
+        foreach ($formulario as $fator) {
             $fator->itens;
         }
 
@@ -27,7 +26,7 @@ class AvaliacaoController extends Controller
 
     public function info(Request $request)
     {
-        $p = (object) $request->validate([
+        $p = (object)$request->validate([
             'processo_id' => 'required',
             'servidor_id' => 'required'
         ]);
@@ -40,27 +39,28 @@ class AvaliacaoController extends Controller
         //Inicia o Database Transaction
         DB::beginTransaction();
         try {
-            $params = (object) $request->all();
+            $params = (object)$request->all();
             AvaliacaoServidorRegras::adicionarNotas($params);
             ProcessoAvaliacaoRegras::atualizaSituacaoServidor($params);
             DB::commit();
             return response()->json(['message' => 'Avaliação enviada com sucesso.']);
-        } catch(Exception $ex) {
+        } catch (Exception $ex) {
             DB::rollBack();
-            return response()->json(['message' => 'Opa, algo aconteceu. '.$ex->getMessage()], 500);
+            return response()->json(['message' => 'Opa, algo aconteceu. ' . $ex->getMessage()], 500);
         }
     }
 
     public function getServidoresAvaliacaoCorrente(Request $request)
     {
-        $p = (object) $request->all();
+        $p = (object)$request->all();
         return AvaliacaoDB::getListaServidoresDoProcessoAvaliacao($p);
     }
 
 
     // Retorna os arquivos de uma Avaliação
-    public function GridArquivos(Request $request){
-        $p = (object) $request->validate([
+    public function GridArquivos(Request $request)
+    {
+        $p = (object)$request->validate([
             'servidor_id' => 'required',
             'processo_avaliacao_id' => 'required'
         ]);
@@ -68,16 +68,17 @@ class AvaliacaoController extends Controller
     }
 
     // Faz o upload de um arquivo para o banco
-    public function uploadArquivo(Request $request){
+    public function uploadArquivo(Request $request)
+    {
         $p = (object)$request->all();
         DB::beginTransaction();
-        try{
+        try {
             AvaliacaoServidorRegras::uploadArquivo($request);
             DB::commit();
             return response()->json([
                 'message' => 'Arquivo armazenado com sucesso'
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollback();
             if (config('app.debug')) {
                 return response()->json(['message' => $e->getMessage()], 500);
@@ -88,15 +89,16 @@ class AvaliacaoController extends Controller
     }
 
     // Exclui um arquivo específico através do ID
-    public function ExcluirArquivo(ArquivoAvaliacaoServidor $arquivo){
+    public function ExcluirArquivo(ArquivoAvaliacaoServidor $arquivo)
+    {
         DB::beginTransaction();
-        try{
+        try {
             AvaliacaoServidorRegras::excluirArquivo($arquivo);
             DB::commit();
             return response()->json([
                 'message' => "Arquivo excluído com sucesso!"
             ]);
-        }  catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollback();
             if (config('app.debug')) {
                 return response()->json(['message' => $e->getMessage()], 500);
@@ -114,7 +116,8 @@ class AvaliacaoController extends Controller
 
 
     //retorna um arquivo para ser baixado
-    public function exibirArquivo(Request $request){
+    public function exibirArquivo(Request $request)
+    {
         return AvaliacaoServidorRegras::exibirArquivo($request);
     }
 

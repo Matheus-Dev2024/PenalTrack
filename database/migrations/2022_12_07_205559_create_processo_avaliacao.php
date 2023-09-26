@@ -22,6 +22,7 @@ class CreateProcessoAvaliacao extends Migration
             $table->date('ref_inicio');
             $table->date('ref_termino');
             $table->string('instrucao', 800);
+            $table->foreignId('fk_periodo_processo')->constrained('periodos_processo');
             $table->timestamps();
         });
     }
