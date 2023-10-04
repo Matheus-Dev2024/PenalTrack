@@ -21,6 +21,12 @@ class ProcessoAvaliacaoController extends Controller
         return response()->json($lista);
     }
 
+    public function acompanhamentoServidoresGrid(Request $request)
+    {
+        $p = (object)$request->all();
+        return ProcessoAvaliacaoDB::acompanhamentoServidoresGrid($p);
+    }
+
     public function servidoresGrid(Request $request)
     {
         $lista = ProcessoAvaliacaoDB::servidoresGrid($request->id_processo);
@@ -170,6 +176,12 @@ class ProcessoAvaliacaoController extends Controller
         }
     }
 
+    public function comboUnidadeDoProcesso()
+    {
+        $comboUnidadeProcesso = ProcessoAvaliacaoDB::comboUnidade();
+        return $comboUnidadeProcesso;
+    }
+
     public function excluir(Request $request)
     {
         try {
@@ -179,5 +191,18 @@ class ProcessoAvaliacaoController extends Controller
             return $ex;
             return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
         }
+    }
+
+    public function getServidoresProcesso()
+    {
+        $oServidor = ProcessoAvaliacaoDB::getServidoresProcesso();
+        return $oServidor;
+    }
+
+    public function comboProcessoTelaAcompanhamento()
+    {
+        //método criado sómente para a tela de acompanhamento do estágio probatório devido retornar id e name
+        $comboProcesso = ProcessoAvaliacaoDB::comboProcessoTelaAcompanhamento();
+        return $comboProcesso;
     }
 }

@@ -60,4 +60,18 @@ class AvaliadorDB
 
         return $listaAvaliador;
     }
+
+    public static function comboAvaliadorServidor()
+    {
+        $policia = config('database.connections.conexao_banco_unico.schema');
+        return DB::table('processo_avaliacao_servidor as pas')
+            ->LeftJoin("$policia.seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
+            ->orderBy('su.nome')
+            ->distinct()
+            ->whereNotNull('pas.fk_avaliador')
+            ->get([
+                'pas.fk_avaliador as id',
+                'su.nome as name'
+            ]);
+    }
 }

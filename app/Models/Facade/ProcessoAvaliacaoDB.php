@@ -3,6 +3,8 @@
 namespace App\Models\Facade;
 
 use Illuminate\Support\Facades\DB;
+use stdClass;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ProcessoAvaliacaoDB
 {
@@ -148,6 +150,7 @@ class ProcessoAvaliacaoDB
         $itensProcessoAvaliacao = DB::table('processo_avaliacao_servidor as pas')
             ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')
             ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
+            ->LeftJoin("$policia.seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
             ->leftJoin("$srh.sig_documentacao_servidor as ds", 'ds.fk_servidor', 'ss.id_servidor')
             ->leftJoin("$srh.sig_tipo_documento as td", 'ds.fk_tipo_documento', '=', 'td.id')
             ->join("$policia.policia.unidade as u", 'u.id', '=', 'ss.fk_id_unidade_atual')
@@ -158,6 +161,9 @@ class ProcessoAvaliacaoDB
                 'sc.abreviacao as sigla_cargo',
                 'pa.id',
                 'ss.nome',
+                'su.nome as nome_avaliador',
+                'pas.status',
+                'pas.nota_total',
 
 
                 DB::raw("STRING_AGG(
@@ -213,6 +219,8 @@ class ProcessoAvaliacaoDB
                 'u.nome',
                 'ss.cargo',
                 'ss.matricula',
+                'su.nome'
+
 
             ])
             ->get();
@@ -233,6 +241,20 @@ class ProcessoAvaliacaoDB
         return $servidor;
     }
 
+    public static function getServidoresProcesso()
+    {
+        $srh = config('database.connections.conexao_srh.schema');
+        return DB::table('processo_avaliacao_servidor as pas')
+        ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')
+        ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
+        ->distinct()
+        ->whereNull('pa.deleted_at')
+        ->get([
+            'pas.fk_servidor as id',
+            'ss.nome as name'
+        ]);
+    }
+
 
     public static function pesquisarDescricao()
     {
@@ -250,5 +272,89 @@ class ProcessoAvaliacaoDB
     {
         $notas = AvaliacaoDB::getNotasServidor($processo_id, $servidor_id);
         return number_format($notas->sum("nota"), 1);
+    }
+
+    public static function acompanhamentoServidoresGrid(stdClass $p): JsonResponse
+    {
+        $srh = config('database.connections.conexao_srh.schema');
+        $policia = config('database.connections.conexao_banco_unico.schema');
+
+        $sql = DB::table('processo_avaliacao_servidor as pas')
+            ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')
+            ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
+            ->LeftJoin("$policia.seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
+            ->leftJoin("$srh.sig_documentacao_servidor as ds", 'ds.fk_servidor', 'ss.id_servidor')
+            ->leftJoin("$srh.sig_tipo_documento as td", 'ds.fk_tipo_documento', '=', 'td.id')
+            ->join("$policia.policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
+            ->join("$srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
+            ->select(
+                'pas.id as id_processo_avaliacao',
+                'pas.fk_servidor',
+                'sc.abreviacao as sigla_cargo',
+                'pa.id',
+                'ss.nome',
+                'su.nome as nome_avaliador',
+                'pas.status',
+                'pas.nota_total',
+                'pas.fk_unidade',
+                'pas.fk_avaliador',
+                'pa.descricao',
+
+                DB::raw("TO_CHAR(ss.dt_admissao, 'DD/MM/YYYY') AS dt_admissao"), 'u.nome as unidade', 'ss.cargo', 'ss.matricula',)
+            ->whereNull('pa.deleted_at')
+            ->groupBy([
+                'ss.nome',
+                'pas.id',
+                'pas.fk_servidor',
+                'sc.abreviacao',
+                'pa.id',
+                'ss.dt_admissao',
+                'u.nome',
+                'ss.cargo',
+                'ss.matricula',
+                'su.nome'
+            ]);
+
+        if (isset($p->processo_avaliacao)) {
+            $sql->where('pa.id', $p->processo_avaliacao);
+        }
+        if (isset($p->processo_avaliacao_unidade)) {
+            $sql->where('pas.fk_unidade', $p->processo_avaliacao_unidade);
+        }
+        if (isset($p->avaliador)) {
+            $sql->where('pas.fk_avaliador', $p->avaliador);
+        }
+        if (isset($p->servidor)) {
+            $sql->where('pas.fk_servidor', $p->servidor);
+        }
+        $v = $sql->paginate(15);
+        //if (!count($v->toArray()) > 0)
+        if($v->isEmpty() || (isset($v->data) && count($v->data) > 0)) 
+            return response()->json(['mensagem' => 'Verifique se existe um servidor, unidade ou o avaliador existe no processo selecionado.'], 412);
+        return response()->json($v);
+    }
+
+    public static function comboUnidade()
+    {
+        $policia = config('database.connections.conexao_banco_unico.schema');
+        return DB::table('processo_avaliacao_servidor as pas')
+            ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')
+            ->join("$policia.policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
+            ->orderBy('u.nome')
+            ->whereNull('pa.deleted_at')
+            ->distinct()
+            ->get([
+                'pas.fk_unidade as id',
+                'u.nome as name'
+            ]);
+    }
+    public static function comboProcessoTelaAcompanhamento(){
+        return DB::table('processo_avaliacao')
+            ->orderBy('descricao')
+            ->whereNull('deleted_at')
+            ->get([
+                'id as id',
+                'descricao as name'
+            ]);
     }
 }

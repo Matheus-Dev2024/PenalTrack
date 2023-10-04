@@ -112,4 +112,10 @@ class AvaliadorController extends Controller
         }
     }
 
+    public function comboAvaliador()
+    {
+        $comboAvaliador = AvaliadorDB::comboAvaliadorServidor();
+        return $comboAvaliador;
+    }
+
 }

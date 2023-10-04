@@ -27,13 +27,13 @@ use Illuminate\Support\Facades\Route;
 // });
 
 // Route::middleware('auth:sanctum')->group(function() {
-Route::group(['middleware' => ['seguranca']], function () {
+//Route::group(['middleware' => ['seguranca']], function () {
 
-    //Estágio - Lista servidores
-    Route::get('avaliacao/corrente/get-servidores', [AvaliacaoController::class, 'getServidoresAvaliacaoCorrente']);
-    Route::get('avaliacao/combo-processo', [AvaliacaoController::class, 'combo']);
+//Estágio - Lista servidores
+Route::get('avaliacao/corrente/get-servidores', [AvaliacaoController::class, 'getServidoresAvaliacaoCorrente']);
+Route::get('avaliacao/combo-processo', [AvaliacaoController::class, 'combo']);
 
-});
+//});
 
 //Formulário de Avaliação
 Route::controller(AvaliacaoController::class)->group(function () {
@@ -91,6 +91,13 @@ Route::get('processo-avaliacao/grid-arquivos/{id}', [ProcessoAvaliacaoController
 Route::post('processo-avaliacao/salvar-processo-avaliacao-servidor', [ProcessoAvaliacaoController::class, 'salvarProcessoAvaliacaoServidor']);
 Route::post('processo-avaliacao/salvar-usuario-avalia-servidor', [ProcessoAvaliacaoController::class, 'salvarUsuarioAvaliaServidor']);
 Route::get('processo-avaliacao/grid-usuario-avalia-servidor', [ProcessoAvaliacaoController::class, 'listaUsuarioAvaliaServidor']);
+
+//Rotas da tela de Acompanhamento de Processo
+Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/grid', [ProcessoAvaliacaoController::class, 'acompanhamentoServidoresGrid']);
+Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/combo-unidade', [ProcessoAvaliacaoController::class, 'comboUnidadeDoProcesso']);
+Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/combo-avaliador', [AvaliadorController::class, 'comboAvaliador']);
+Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/combo-processo', [ProcessoAvaliacaoController::class, 'comboProcessoTelaAcompanhamento']);
+Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/servidores-processo', [ProcessoAvaliacaoController::class, 'getServidoresProcesso']);
 
 //Período do processo de avaliação
 Route::get('periodo-processo-avaliacao/combo', [PeriodoProcessoAvaliacaoController::class, 'combo']);
