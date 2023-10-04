@@ -97,6 +97,7 @@ Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/grid', [Process
 Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/combo-unidade', [ProcessoAvaliacaoController::class, 'comboUnidadeDoProcesso']);
 Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/combo-avaliador', [AvaliadorController::class, 'comboAvaliador']);
 Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/combo-processo', [ProcessoAvaliacaoController::class, 'comboProcessoTelaAcompanhamento']);
+Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/combo-status', [ProcessoAvaliacaoController::class, 'comboStatusTelaAcompanhamento']);
 Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/servidores-processo', [ProcessoAvaliacaoController::class, 'getServidoresProcesso']);
 
 //Período do processo de avaliação

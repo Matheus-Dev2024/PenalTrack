@@ -205,4 +205,10 @@ class ProcessoAvaliacaoController extends Controller
         $comboProcesso = ProcessoAvaliacaoDB::comboProcessoTelaAcompanhamento();
         return $comboProcesso;
     }
+
+    public function comboStatusTelaAcompanhamento()
+    {
+        $comboStatusProcesso = ProcessoAvaliacaoDB::comboStatusTelaAcompanhamento();
+        return $comboStatusProcesso;
+    }
 }

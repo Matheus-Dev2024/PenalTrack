@@ -327,7 +327,11 @@ class ProcessoAvaliacaoDB
         if (isset($p->servidor)) {
             $sql->where('pas.fk_servidor', $p->servidor);
         }
-        $v = $sql->paginate(15);
+        if (isset($p->status)) {
+            $sql->where('pas.status', $p->status);
+        }
+        
+        $v = $sql->paginate();
         //if (!count($v->toArray()) > 0)
         if($v->isEmpty() || (isset($v->data) && count($v->data) > 0)) 
             return response()->json(['mensagem' => 'Verifique se existe um servidor, unidade ou o avaliador existe no processo selecionado.'], 412);
@@ -355,6 +359,14 @@ class ProcessoAvaliacaoDB
             ->get([
                 'id as id',
                 'descricao as name'
+            ]);
+    }
+
+    public static function comboStatusTelaAcompanhamento(){
+        return DB::table('processo_situacao_servidor')
+            ->get([
+                'id as id',
+                'nome as name'
             ]);
     }
 }
