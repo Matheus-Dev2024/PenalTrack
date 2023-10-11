@@ -18,4 +18,9 @@ class ProcessoAvaliacao extends Model
     {
         return $this->belongsTo(PeriodoProcessoAvaliacao::class);
     }
+
+    public function processoServidor()
+    {
+        return $this->hasMany(ProcessoAvaliacaoServidor::class);
+    }
 }

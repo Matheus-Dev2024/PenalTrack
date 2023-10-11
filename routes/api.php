@@ -5,6 +5,7 @@ use App\Http\Controllers\AvaliadorController;
 use App\Http\Controllers\FatorAvaliacaoController;
 use App\Http\Controllers\FatorAvaliacaoItemController;
 use App\Http\Controllers\ImpressaoController;
+use App\Http\Controllers\PdfController;
 use App\Http\Controllers\PeriodoProcessoAvaliacaoController;
 use App\Http\Controllers\ProcessoAvaliacaoController;
 use App\Http\Controllers\TipoArquivoController;
@@ -61,8 +62,10 @@ Route::controller(TipoArquivoController::class)->group(function () {
 // Rota de Impressao
 Route::get('imprimir', [ImpressaoController::class, 'imprimir']);
 
-//});
+//Relatorio comissão
+Route::get('relatorio-comissao/{fk_servidor}', [PdfController::class, 'gerarRelatorioComissao']);
 
+//});
 
 //Fator de Avaliação
 Route::get('fator-avaliacao/grid', [FatorAvaliacaoController::class, 'grid']);

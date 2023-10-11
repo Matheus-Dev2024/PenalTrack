@@ -95,7 +95,6 @@ class ProcessoAvaliacaoDB
         }
         */
 
-
         return $listaProcessoAvaliacao;
     }
 

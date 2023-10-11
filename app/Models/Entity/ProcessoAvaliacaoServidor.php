@@ -10,5 +10,10 @@ class ProcessoAvaliacaoServidor extends Model
     use HasFactory;
     protected $table = "processo_avaliacao_servidor";
     protected $guarded = [];
+
+    public function processo()
+    {
+        return $this->hasOne(ProcessoAvaliacao::class);
+    }
     
 }
