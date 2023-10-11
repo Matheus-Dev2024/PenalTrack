@@ -15,7 +15,7 @@
     <div>
         <div class='header_title'>POLÍCIA CIVIL DO ESTADO DO PARÁ</div>
         <div class='header_title'>DIRETORIA DE RECURSOS HUMANOS</div>
-        <div class='header_title'>DIVISÃO DE INFORMAÇÃO FUNCIONAL</div>
+        {{-- <div class='header_title'>DIVISÃO DE INFORMAÇÃO FUNCIONAL</div> --}}
         <br>
         <div class='header_title'>FICHA DE ACOMPANHAMENTO E AVALIACAO</div>
         <br>
@@ -66,7 +66,8 @@
                 <th>QUESITOS</th>
                 @php
                     $periodos = [];
-                    $totalNotasPorIndices = []; 
+                    $totalNotasPorIndices = [];
+                    $totalGeral = []; 
                 @endphp
                 @foreach($dadosItensAvaliacao as $item => $itens)
                     @foreach($itens as $item)
@@ -102,8 +103,49 @@
                 @endforeach
             </tr>
     </table>
-    
+                @php
+                    // calcula o total geral e guarda dentro da variável totalGeral
+                    $totalGeral = 0;
+                    foreach ($totalNotasPorIndices as $periodo => $totalNota) {
+                        $totalGeral += $totalNota;
+                    }
+                    echo $totalGeral;
 
+                    // define os limites de cada pontuação
+                    $faixaPlenamenteSatisfatorio = [540, 600];
+                    $faixaSatisfatorio = [420, 539];
+                    $faixaInsatisfatorio = [0, 419];
+
+                    // faz a comparação do totalGeral com os limites acima
+                    $plenamenteSatisfatorioChecked = ($totalGeral >= $faixaPlenamenteSatisfatorio[0] && $totalGeral <= $faixaPlenamenteSatisfatorio[1]) ? '(X)' : '( )';
+                    $satisfatorioChecked = ($totalGeral >= $faixaSatisfatorio[0] && $totalGeral <= $faixaSatisfatorio[1]) ? '(X)' : '( )';
+                    $insatisfatorioChecked = ($totalGeral >= $faixaInsatisfatorio[0] && $totalGeral <= $faixaInsatisfatorio[1]) ? '(X)' : '( )';
+
+                @endphp
+
+    <br>
+
+    <table class="instrucoes dados_servidor">
+        <thead>
+            <tr>
+                <td>
+                    <b> GRAUS DE DESEMPENHO</b>
+                </td>
+            </tr>
+        </thead>
+        <tr>
+            <td>
+                <b> {!! $plenamenteSatisfatorioChecked !!} Plenamente Satisfatório <br> de 540 - 600 pontos</b>
+            </td>
+            <td>
+                <b> {!! $satisfatorioChecked !!} Satisfatório <br> de 420 - 539 pontos</b>
+            </td>
+            <td>
+                <b> {!! $insatisfatorioChecked !!} Insatisfatório <br> até 419 pontos</b>
+            </td>
+        </tr>
+    </table>
+    
     {{-- <table class="instrucoes dados_servidor">
         <thead>
             <tr>
