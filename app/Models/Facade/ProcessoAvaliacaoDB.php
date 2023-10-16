@@ -244,14 +244,14 @@ class ProcessoAvaliacaoDB
     {
         $srh = config('database.connections.conexao_srh.schema');
         return DB::table('processo_avaliacao_servidor as pas')
-        ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')
-        ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
-        ->distinct()
-        ->whereNull('pa.deleted_at')
-        ->get([
-            'pas.fk_servidor as id',
-            'ss.nome as name'
-        ]);
+            ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')
+            ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
+            ->distinct()
+            ->whereNull('pa.deleted_at')
+            ->get([
+                'pas.fk_servidor as id',
+                'ss.nome as name'
+            ]);
     }
 
 
@@ -329,10 +329,10 @@ class ProcessoAvaliacaoDB
         if (isset($p->status)) {
             $sql->where('pas.status', $p->status);
         }
-        
-        $v = $sql->paginate();
+
+        $v = $sql->paginate(40);
         //if (!count($v->toArray()) > 0)
-        if($v->isEmpty() || (isset($v->data) && count($v->data) > 0)) 
+        if ($v->isEmpty() || (isset($v->data) && count($v->data) > 0))
             return response()->json(['mensagem' => 'Verifique se existe um servidor, unidade ou o avaliador existe no processo selecionado.'], 412);
         return response()->json($v);
     }
@@ -351,7 +351,9 @@ class ProcessoAvaliacaoDB
                 'u.nome as name'
             ]);
     }
-    public static function comboProcessoTelaAcompanhamento(){
+
+    public static function comboProcessoTelaAcompanhamento()
+    {
         return DB::table('processo_avaliacao')
             ->orderBy('descricao')
             ->whereNull('deleted_at')
@@ -361,7 +363,8 @@ class ProcessoAvaliacaoDB
             ]);
     }
 
-    public static function comboStatusTelaAcompanhamento(){
+    public static function comboStatusTelaAcompanhamento()
+    {
         return DB::table('processo_situacao_servidor')
             ->get([
                 'id as id',
