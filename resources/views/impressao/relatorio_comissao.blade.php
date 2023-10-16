@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Avaliação de Servidor</title>
-    <link rel="stylesheet" href="css/impressaoAvaliacao.css">
+    <link rel="stylesheet" href="css/relatorioComissao.css">
 </head>
 <body>
 <div id='cabecalho'>
@@ -14,8 +14,8 @@
     <img src="images/estado.png" width='70' height='90' style='float: right' alt='Logo Estado'>
     <div>
         <div class='header_title'>POLÍCIA CIVIL DO ESTADO DO PARÁ</div>
-        <div class='header_title'>DIRETORIA DE RECURSOS HUMANOS</div>
-        {{-- <div class='header_title'>DIVISÃO DE INFORMAÇÃO FUNCIONAL</div> --}}
+        <div class='header_title'>COMISSÃO DE ACOMPANHAMENTO E AVALIAÇÃO</div>
+        <div class='header_title'> DE ESTÁGIO PROBATÓRIO</div>
         <br>
         <div class='header_title'>FICHA DE ACOMPANHAMENTO E AVALIACAO</div>
         <br>
@@ -43,7 +43,7 @@
         @endforeach
     </table>
     <br>
-    <div><strong> RESULTADO FINAL DA AVALIAÇÃO DE DESEMPENHO</strong></div>
+    <div style="text-align: center;" ><strong> RESULTADO FINAL DA AVALIAÇÃO DE DESEMPENHO</strong></div>
     <br>
 
     <table class="instrucoes dados_servidor">
@@ -63,7 +63,7 @@
     <table class="instrucoes dados_servidor">
         <thead>
             <tr>
-                <th>QUESITOS</th>
+                <th style="width: 5%; ">QUESITOS</th>
                 @php
                     $periodos = [];
                     $totalNotasPorIndices = [];
@@ -77,7 +77,7 @@
                                 $periodos[] = $item['periodo'];
                                 $totalNotasPorIndices[$item['periodo']] = 0; // Inicia o total para coluna periodo
                             @endphp
-                            <td><b>{{ $item['periodo'] }}</b></td>
+                            <td><b style="font-size: 12px;">{{ $item['periodo'] }}</b></td>
                         @endif
                     @endforeach
                 @endforeach
@@ -109,7 +109,7 @@
                     foreach ($totalNotasPorIndices as $periodo => $totalNota) {
                         $totalGeral += $totalNota;
                     }
-                    echo $totalGeral;
+                    // echo $totalGeral; 
 
                     // define os limites de cada pontuação
                     $faixaPlenamenteSatisfatorio = [540, 600];
@@ -122,29 +122,32 @@
                     $insatisfatorioChecked = ($totalGeral >= $faixaInsatisfatorio[0] && $totalGeral <= $faixaInsatisfatorio[1]) ? '(X)' : '( )';
 
                 @endphp
-
     <br>
 
-    <table class="instrucoes dados_servidor">
-        <thead>
+    @if (count($periodos) == 6)
+        <table class="instrucoes dados_servidor">
+            <thead>
+                <tr>
+                    <th colspan="3">
+                        <b> GRAUS DE DESEMPENHO</b>
+                    </th>
+                </tr>
+            </thead>
             <tr>
                 <td>
-                    <b> GRAUS DE DESEMPENHO</b>
+                    <b> {!! $plenamenteSatisfatorioChecked !!} Plenamente Satisfatório <br> de 540 - 600 pontos</b>
+                </td>
+                <td>
+                    <b> {!! $satisfatorioChecked !!} Satisfatório <br> de 420 - 539 pontos</b>
+                </td>
+                <td>
+                    <b> {!! $insatisfatorioChecked !!} Insatisfatório <br> até 419 pontos</b>
                 </td>
             </tr>
-        </thead>
-        <tr>
-            <td>
-                <b> {!! $plenamenteSatisfatorioChecked !!} Plenamente Satisfatório <br> de 540 - 600 pontos</b>
-            </td>
-            <td>
-                <b> {!! $satisfatorioChecked !!} Satisfatório <br> de 420 - 539 pontos</b>
-            </td>
-            <td>
-                <b> {!! $insatisfatorioChecked !!} Insatisfatório <br> até 419 pontos</b>
-            </td>
-        </tr>
-    </table>
+        </table>
+    @else
+        <p> O servidor ainda não completou todos os períodos de avaliação.</p>
+    @endif
     
     {{-- <table class="instrucoes dados_servidor">
         <thead>
