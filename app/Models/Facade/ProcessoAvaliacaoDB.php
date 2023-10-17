@@ -298,6 +298,27 @@ class ProcessoAvaliacaoDB
                 'pas.fk_unidade',
                 'pas.fk_avaliador',
                 'pa.descricao',
+                DB::raw("STRING_AGG(
+
+
+                    '
+                    <table style=\"width: 100%;\" >
+                    <tr>
+                        <td >
+                            <a href=\"#' || ds.id::text || '\" onclick=\"abrirDocumentacaoPdfNovaAba(' || ds.id || ')\">
+                                <i class=\"glyphicon glyphicon-paperclip\">&nbsp;</i>' || td.nome || '
+                            </a>
+                        </td>
+                        
+                    </tr>
+                    </table>
+
+                    '
+
+                    ,
+                  '')
+                    as documentos"
+                ),
 
                 DB::raw("TO_CHAR(ss.dt_admissao, 'DD/MM/YYYY') AS dt_admissao"), 'u.nome as unidade', 'ss.cargo', 'ss.matricula',)
             ->whereNull('pa.deleted_at')
@@ -330,7 +351,7 @@ class ProcessoAvaliacaoDB
             $sql->where('pas.status', $p->status);
         }
 
-        $v = $sql->paginate(40);
+        $v = $sql->paginate(50);
         //if (!count($v->toArray()) > 0)
         if ($v->isEmpty() || (isset($v->data) && count($v->data) > 0))
             return response()->json(['mensagem' => 'Verifique se existe um servidor, unidade ou o avaliador existe no processo selecionado.'], 412);
