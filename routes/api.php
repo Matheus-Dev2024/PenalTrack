@@ -111,7 +111,7 @@ Route::get('avaliador/grid-pesquisar-avaliador', [AvaliadorController::class, 'i
 Route::get('avaliador/{avaliador}', [AvaliadorController::class, 'show']);
 Route::post('avaliador', [AvaliadorController::class, 'store']);
 Route::post('avaliador/alterar', [AvaliadorController::class, 'update']);
-Route::delete('avaliador/remover-avaliador/{id}', [AvaliadorController::class, 'destroy']);
+Route::post('avaliador/remover-avaliador/{id}', [AvaliadorController::class, 'destroy']);
 Route::delete('avaliador/remover-servidor-individual/{id}', [AvaliadorController::class, 'removerServidorIndividualmente']);
 
 // unidades
