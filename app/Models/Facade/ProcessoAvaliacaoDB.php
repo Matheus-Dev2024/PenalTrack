@@ -248,6 +248,7 @@ class ProcessoAvaliacaoDB
             ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
             ->distinct()
             ->whereNull('pa.deleted_at')
+            ->orderBy('ss.nome')
             ->get([
                 'pas.fk_servidor as id',
                 'ss.nome as name'
