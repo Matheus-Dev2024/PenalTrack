@@ -59,7 +59,6 @@ class ProcessoAvaliacaoController extends Controller
 
     public function listaUsuarioAvaliaServidor(Request $request)
     {
-
         $p = (object)$request->validate([
             'usuario_id' => 'required',
         ]);
@@ -93,7 +92,7 @@ class ProcessoAvaliacaoController extends Controller
     public function salvarUsuarioAvaliaServidor(Request $request)
     {
         $p = (object)$request->all();
-
+        
         DB::beginTransaction();
         try {
             if (!$request->processo_avaliacao) {

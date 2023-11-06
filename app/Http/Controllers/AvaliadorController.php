@@ -39,7 +39,7 @@ class AvaliadorController extends Controller
             $resposta = AvaliadorRegras::salvar((object)$request->all());
 
             DB::commit();
-            return $resposta;
+            return response()->json(["mensagem" => "Avaliador salvo com sucesso"]);
 
         } catch (Exception $ex) {
             DB::rollBack();
