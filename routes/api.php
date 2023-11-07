@@ -112,13 +112,13 @@ Route::get('avaliador/{avaliador}', [AvaliadorController::class, 'show']);
 Route::post('avaliador', [AvaliadorController::class, 'store']);
 Route::post('avaliador/alterar', [AvaliadorController::class, 'update']);
 Route::post('avaliador/remover-avaliador/{id}', [AvaliadorController::class, 'destroy']);
-Route::delete('avaliador/remover-servidor-individual/{id}', [AvaliadorController::class, 'removerServidorIndividualmente']);
+Route::post('avaliador/remover-servidor-individual/{id}', [AvaliadorController::class, 'removerServidorIndividualmente']);
 
 // unidades
 // Route::get('avaliador/grid-unidades', [AvaliadorController::class, 'gridUnidades']);
 Route::get('avaliador/unidades-grid/{id}', [AvaliadorController::class, 'unidadesGrid']);
 Route::post('avaliador/adicionar-unidades', [AvaliadorController::class, 'adicionarUnidades']);
-Route::delete('avaliador/remover-unidades/{id}', [AvaliadorController::class, 'destroyUnidades']);
+Route::post('avaliador/remover-unidades/{id}', [AvaliadorController::class, 'destroyUnidades']);
 
 // // refatoração das rotas de unidades
 Route::get('unidades', [UnidadesController::class, 'index']);
