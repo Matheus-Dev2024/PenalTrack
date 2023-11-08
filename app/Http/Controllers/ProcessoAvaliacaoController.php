@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Documentacao;
 use App\Models\Entity\ProcessoAvaliacao;
+use App\Models\Entity\Servidor;
 use App\Models\Facade\ProcessoAvaliacaoDB;
 use App\Models\Facade\UsuarioAvaliaServidorDB;
 use App\Models\Facade\UsuarioAvaliaServidoresDB;
@@ -74,13 +75,14 @@ class ProcessoAvaliacaoController extends Controller
 
     public function salvarProcessoAvaliacaoServidor(Request $request)
     {
-        //dd($request->all());
         DB::beginTransaction();
         try {
             $id_servidor = $request->id_servidor;
             $processo = ProcessoAvaliacao::find($request->id_processo);
+            $servidor = Servidor::find($id_servidor);
+            $data_exercicio = $servidor->dt_admissao;
 
-            ProcessoAvaliacaoRegras::salvarProcessoAvaliacaoServidorIndividual($processo, $id_servidor);
+            ProcessoAvaliacaoRegras::salvarProcessoAvaliacaoServidorIndividual($processo, $id_servidor, $data_exercicio);
             DB::commit();
             return response()->json(['message' => 'Servidor adicionado com sucesso.']);
         } catch (Exception $ex) {
@@ -92,7 +94,7 @@ class ProcessoAvaliacaoController extends Controller
     public function salvarUsuarioAvaliaServidor(Request $request)
     {
         $p = (object)$request->all();
-        
+
         DB::beginTransaction();
         try {
             if (!$request->processo_avaliacao) {
