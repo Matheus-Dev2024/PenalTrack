@@ -51,11 +51,11 @@ Route::controller(AvaliacaoController::class)->group(function () {
 // Rotas de Tipo de Arquivo
 Route::controller(TipoArquivoController::class)->group(function () {
     Route::prefix('tipo-arquivo')->group(function () {
-        Route::post('/', 'store');
+        Route::post('/store', 'store');
         Route::get('/grid', 'grid');
         Route::get('/{id}', 'edit');
         Route::post('/update', 'update');
-        Route::delete('/{tipo}', 'delete');
+        Route::post('/delete/{tipo}', 'delete');
     });
 });
 
