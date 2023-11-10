@@ -25,10 +25,14 @@ class AvaliadorController extends Controller
         return response()->json($listaAvaliador);
     }
 
-    public function show(Avaliador $avaliador)
+    public function show($avaliador_id)
     {
+<<<<<<< HEAD
         //os usuários que possuem foto o sistema retorna um erro (encoding model Type is not supported in file), por isso foi setado null nesta variável
         $avaliador->foto_deprecated = null;
+=======
+        $avaliador = Avaliador::find($avaliador_id);
+>>>>>>> a7c8952 (Ajustes na tela do Avaliador)
         return response()->json($avaliador);
     }
 

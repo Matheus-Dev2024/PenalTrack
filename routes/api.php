@@ -108,7 +108,7 @@ Route::get('periodo-processo-avaliacao/combo', [PeriodoProcessoAvaliacaoControll
 
 //Avaliador
 Route::get('avaliador/grid-pesquisar-avaliador', [AvaliadorController::class, 'index']);
-Route::get('avaliador/{avaliador}', [AvaliadorController::class, 'show']);
+Route::get('avaliador/{avaliador_id}', [AvaliadorController::class, 'show']);
 Route::post('avaliador', [AvaliadorController::class, 'store']);
 Route::post('avaliador/alterar', [AvaliadorController::class, 'update']);
 Route::post('avaliador/remover-avaliador/{id}', [AvaliadorController::class, 'destroy']);
