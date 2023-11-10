@@ -125,6 +125,3 @@ Route::get('unidades', [UnidadesController::class, 'index']);
 // Route::get('unidades/{id}', [UnidadesController::class, 'show']);
 // Route::post('unidades', [UnidadesController::class, 'store']);
 // Route::delete('unidades/{id}', [UnidadesController::class, 'destroy']);
-
-
-
