@@ -73,7 +73,7 @@ class AvaliadorRegras
             'usuario_cadastrado' => $avaliadorNovo->id
         ]);
 
-        return response()->json(["id" => $avaliadorNovo->id, "mensagem" => "Avaliador cadastrado com sucesso!"], 201);
+        return $avaliadorNovo->id;
     }
 
     private static function atualizarDadosAvaliador(Avaliador $avaliador, stdClass $dados): Avaliador

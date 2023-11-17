@@ -20,9 +20,6 @@ class AvaliadorDB
         }
     }
 
-<<<<<<< HEAD
-=======
-
     public static function listarUnidades()
     {
         
@@ -35,7 +32,6 @@ class AvaliadorDB
         return $listaUnidades;
     }
 
->>>>>>> a7c8952 (Ajustes na tela do Avaliador)
     public static function UnidadesGrid($id)
     {
 
@@ -47,17 +43,6 @@ class AvaliadorDB
             ->get();
 
         return $avaliadorUnidades;
-    }
-
-    public static function listarUnidades()
-    {
-
-        $listaUnidades = DB::table('policia.unidade')
-            ->select('id', 'nome')
-            ->where('status', '=', 1)
-            ->get();
-
-        return $listaUnidades;
     }
 
     public static function PesquisaAvaliador(stdClass $usuarioLogado): Collection
