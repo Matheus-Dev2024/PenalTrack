@@ -18,20 +18,21 @@ class UsuarioAvaliaServidorDB
             'pa.descricao',
             'ss.nome'
         ];
-        
+
         $sql = DB::table('usuario_avalia_servidores as uas')
         ->join('processo_avaliacao as pa', 'pa.id', '=', 'uas.fk_processo_avaliacao')
         ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'uas.servidor_id')
         ->where('uas.usuario_id', '=', $p->usuario_id)
+        ->orderBy('ss.nome')
         ->select($select);
-        
+
         // if(isset($p->usuario_id)){
         //    $sql->where('uas.usuario_id', '=', $p->usuario_id);
         // }
         // if(isset($p->processo_avaliacao)){
         //     $sql->where('uas.fk_processo_avaliacao', '=', $p->processo_avaliacao);
         // }
-        
-        return $sql->get(); 
+
+        return $sql->get();
     }
 }

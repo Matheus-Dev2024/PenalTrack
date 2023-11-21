@@ -144,7 +144,7 @@ class ProcessoAvaliacaoDB
     public static function servidoresGrid($id_processo)
     {
         $srh = config('database.connections.conexao_srh.schema');
-        $policia = config('database.connections.conexao_banco_unico.schema');
+        $policia = config('database.connections.conexao_banco_unico.database');
 
         $itensProcessoAvaliacao = DB::table('processo_avaliacao_servidor as pas')
             ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')

@@ -52,6 +52,7 @@ class AvaliadorDB
             ->join('seguranca.usuario_sistema as us', 'u.id', '=', 'us.usuario_id')
             ->join('eprobatorio.usuario_avaliador_intermediario as uai', 'u.id', '=', 'uai.usuario_cadastrado')
             ->join('eprobatorio.usuario_avalia_unidades as uau', 'u.id', '=', 'uau.usuario_id')
+            //->join('eprobatorio.usuario_avalia_unidades as uau', 'u.id', '=', 'uau.usuario_id') // Descomentar esta linha para mostrar somente avaliadores com unidades para avaliar
             ->select('u.id', 'u.nome', 'u.email', 'u.status')
             ->where('us.sistema_id', '=', 56)
             ->where('uai.usuario_cadastrou', '=', $usuarioLogado->id_usuario)

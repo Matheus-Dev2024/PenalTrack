@@ -76,7 +76,7 @@ class AvaliadorStoreRequest extends FormRequest
                 $usuarioSistema = UsuarioSistema::where('sistema_id', "56")->where('usuario_id', $usuario->id)->first();
 
                 if ($usuarioSistema) {
-                    $validator->errors()->add('email', "Avaliador já está cadastrado");
+                    $validator->errors()->add('email', "O email já está sendo utilizado por outro avaliador!");
                 }
             }
 

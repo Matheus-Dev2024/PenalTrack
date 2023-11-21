@@ -96,17 +96,6 @@ class AvaliacaoDB
             }
             $servidoresPorAvaliador = $servidoresPorAvaliador->select($select)->get()->toArray();
 
-            // Verifica a unidade em que os servidorres trabalharam mais tempo
-            foreach ($servidoresPorAvaliador as $servidor){
-                $unidade = DB::select(DB::raw("select fk_unidade, unidade from srh.sp_lotacao_com_maior_tempo_de_servico_por_periodo(:inicio, :termino, :id)"),[
-                    'inicio' => $servidor->dt_inicio_avaliacao,
-                    'termino' => $servidor->dt_termino_avaliacao,
-                    'id' => $servidor->id
-                ]);
-                $servidor->unidade_id = $unidade[0]->fk_unidade;
-                $servidor->unidade = $unidade[0]->unidade;
-            }
-
             // Converte o array em colection para poder fazer o merge mais abaixo
             $servidoresPorAvaliador = new Collection($servidoresPorAvaliador);
 
@@ -130,6 +119,17 @@ class AvaliacaoDB
 
         // Une os servidores que serão avaliados expecificamente pelo usuário logado com os servidores das unidades que deverão ser avaliadas pelo usuário logado.
         $servidores = $servidoresPorAvaliador->merge($servidoresPorUnidade)->sortBy('nome');
+
+        // Verifica a unidade em que os servidorres trabalharam mais tempo
+        foreach ($servidores as $servidor){
+            $unidade = DB::select(DB::raw("select fk_unidade, unidade from srh.sp_lotacao_com_maior_tempo_de_servico_por_periodo(:inicio, :termino, :id)"),[
+                'inicio' => $servidor->dt_inicio_avaliacao,
+                'termino' => $servidor->dt_termino_avaliacao,
+                'id' => $servidor->id
+            ]);
+            $servidor->unidade_id = $unidade[0]->fk_unidade;
+            $servidor->unidade = $unidade[0]->unidade;
+        }
 
         return response()->json($servidores->values()->all());
     }

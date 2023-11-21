@@ -46,6 +46,22 @@ Route::controller(AvaliacaoController::class)->group(function () {
     Route::post('avaliacao/arquivos/{arquivo}/destruir', 'ExcluirArquivo');
     Route::get('avaliacao/arquivo-download', 'exibirArquivo'); //carrega um arquivo específico para ser exibido em tela
 });
+    //Formulário de Avaliação
+    Route::controller(AvaliacaoController::class)->group(function () {
+        Route::get('avaliacao/info', 'info');
+        Route::get('avaliacao/form', 'formulario');
+        Route::post('avaliacao/store', 'store');
+        Route::get('avaliacao/arquivos','GridArquivos');
+        Route::post('avaliacao/upload-arquivo', 'uploadArquivo');
+        Route::post('avaliacao/arquivos/{arquivo}/destruir', 'ExcluirArquivo');
+        Route::get('avaliacao/arquivo-download', 'exibirArquivo'); //carrega um arquivo específico para ser exibido em tela
+    });
+
+    // Rota de Impressao
+    Route::get('imprimir', [ImpressaoController::class, 'imprimir']);
+
+
+//});
 
 
 // Rotas de Tipo de Arquivo
@@ -59,8 +75,6 @@ Route::controller(TipoArquivoController::class)->group(function () {
     });
 });
 
-// Rota de Impressao
-Route::get('imprimir', [ImpressaoController::class, 'imprimir']);
 
 //Relatorio comissão
 Route::get('relatorio-comissao/{fk_servidor}', [PdfController::class, 'gerarRelatorioComissao']);

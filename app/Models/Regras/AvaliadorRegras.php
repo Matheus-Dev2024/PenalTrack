@@ -8,6 +8,7 @@ use App\Models\Entity\UsuarioAvaliaServidores;
 use App\Models\Entity\UsuarioAvaliaUnidades;
 use App\Models\Entity\UsuarioSistema;
 use stdClass;
+use PoliciaCivil\Seguranca\Models\Entity\SegGrupo;
 
 
 class AvaliadorRegras
@@ -53,12 +54,21 @@ class AvaliadorRegras
             $avaliadorNovo->save();
         }
 
-        // Cria as unidades para o determinado usuário
+        // Cria as unidades para o avaliador novo
         foreach ($dados->usuario_unidades as $unidade) {
             UsuarioAvaliaUnidades::create([
                 'usuario_id' => $avaliadorNovo->id,
                 'unidade_id' => $unidade['id']
             ]);
+        }
+
+        // Verifica se esse usuario ja possui permissao para o sistema eprobatorio
+        $usuarioSistema = UsuarioSistema::where('sistema_id', 56)->where('usuario_id', $avaliadorNovo->id)->first();
+        if(isset($usuarioSistema)){
+            return response()->json([
+                "usuario" => $usuarioSistema->id,
+                "errors" => (object)['avaliador' => 'Este Avaliador já encontra-se cadastrado!']
+            ], 409);
         }
 
         //Adiciona o usuário no sistema estágio probatório (56)
@@ -85,6 +95,14 @@ class AvaliadorRegras
         $avaliador->senha = "";
         $avaliador->senha2 = $dados->senha2;
         return $avaliador;
+        // Atribui o perfil a esse usuário
+        $novoGrupo = SegGrupo::create([
+            'usuario_id' => $avaliador->id,
+            'perfil_id' => '1' //Utiliza o perfil root, pois o segurança não funciona. Deveria utilizar o 2, que é 'avaliador'
+        ]);
+        $novoGrupo->save();
+
+        return response()->json(["id" => $avaliador->id, "message" => "Avaliador cadastrado com sucesso!"]);
     }
 
     public static function adicionarUnidades($dados)
