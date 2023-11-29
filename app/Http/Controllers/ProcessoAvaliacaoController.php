@@ -30,8 +30,15 @@ class ProcessoAvaliacaoController extends Controller
 
     public function servidoresGrid(Request $request)
     {
-        $lista = ProcessoAvaliacaoDB::servidoresGrid($request->id_processo);
-        return response()->json($lista);
+        try {
+            DB::beginTransaction();
+            $lista = ProcessoAvaliacaoDB::servidoresGrid($request->id_processo);
+            //DB::commit();
+            return response()->json($lista);
+        }catch (Exception $e){
+            DB::rollBack();
+            return($e->getMessage());
+        }
     }
 
     public function exibirArquivo(Request $request)
@@ -179,8 +186,12 @@ class ProcessoAvaliacaoController extends Controller
 
     public function comboUnidadeDoProcesso()
     {
-        $comboUnidadeProcesso = ProcessoAvaliacaoDB::comboUnidade();
-        return $comboUnidadeProcesso;
+        try {
+            $comboUnidadeProcesso = ProcessoAvaliacaoDB::comboUnidade();
+            return $comboUnidadeProcesso;
+        }catch (Exception $e){
+            return $e->getMessage();
+        }
     }
 
     public function excluir(Request $request)

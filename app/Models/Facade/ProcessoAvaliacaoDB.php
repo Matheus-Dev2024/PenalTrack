@@ -149,10 +149,10 @@ class ProcessoAvaliacaoDB
         $itensProcessoAvaliacao = DB::table('processo_avaliacao_servidor as pas')
             ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')
             ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
-            ->LeftJoin("$policia.seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
+            ->LeftJoin("seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
             ->leftJoin("$srh.sig_documentacao_servidor as ds", 'ds.fk_servidor', 'ss.id_servidor')
             ->leftJoin("$srh.sig_tipo_documento as td", 'ds.fk_tipo_documento', '=', 'td.id')
-            ->join("$policia.policia.unidade as u", 'u.id', '=', 'ss.fk_id_unidade_atual')
+            ->join("policia.unidade as u", 'u.id', '=', 'ss.fk_id_unidade_atual')
             ->join("$srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
             ->select(
                 'pas.id as id_processo_avaliacao',
@@ -281,12 +281,19 @@ class ProcessoAvaliacaoDB
 
         $sql = DB::table('processo_avaliacao_servidor as pas')
             ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')
-            ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
-            ->LeftJoin("$policia.seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
-            ->leftJoin("$srh.sig_documentacao_servidor as ds", 'ds.fk_servidor', 'ss.id_servidor')
-            ->leftJoin("$srh.sig_tipo_documento as td", 'ds.fk_tipo_documento', '=', 'td.id')
-            ->join("$policia.policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
-            ->join("$srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
+            // Descomentar as linhas abaixo e comentar as posteriores para funcionar em desenvolvimento
+//            ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
+//            ->LeftJoin("$policia.seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
+//            ->leftJoin("$srh.sig_documentacao_servidor as ds", 'ds.fk_servidor', 'ss.id_servidor')
+//            ->leftJoin("$srh.sig_tipo_documento as td", 'ds.fk_tipo_documento', '=', 'td.id')
+//            ->join("$policia.policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
+//            ->join("$srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
+            ->join("srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
+            ->LeftJoin("seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
+            ->leftJoin("srh.sig_documentacao_servidor as ds", 'ds.fk_servidor', 'ss.id_servidor')
+            ->leftJoin("srh.sig_tipo_documento as td", 'ds.fk_tipo_documento', '=', 'td.id')
+            ->join("policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
+            ->join("srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
             ->select(
                 'pas.id as id_processo_avaliacao',
                 'pas.fk_servidor',
@@ -310,7 +317,7 @@ class ProcessoAvaliacaoDB
                                 <i class=\"glyphicon glyphicon-paperclip\">&nbsp;</i>' || td.nome || '
                             </a>
                         </td>
-                        
+
                     </tr>
                     </table>
 
@@ -364,7 +371,7 @@ class ProcessoAvaliacaoDB
         $policia = config('database.connections.conexao_banco_unico.schema');
         return DB::table('processo_avaliacao_servidor as pas')
             ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')
-            ->join("$policia.policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
+            ->join("policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
             ->orderBy('u.nome')
             ->whereNull('pa.deleted_at')
             ->distinct()

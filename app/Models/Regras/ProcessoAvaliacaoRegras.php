@@ -53,8 +53,8 @@ class ProcessoAvaliacaoRegras
         $dataInicio = new DateTime(date('Y-m-d', strtotime("+{$periodoProcesso->dia_inicial} days", strtotime($data_exercicio))));
         $dataFinal = new DateTime(date('Y-m-d', strtotime("+{$periodoProcesso->dia_final} days", strtotime($data_exercicio))));
 
-        $dataInicioString = $dataInicio->format('d-m-y');
-        $dataFinalString = $dataFinal->format('d-m-y');
+        $dataInicioString = $dataInicio->format('Y-m-d');
+        $dataFinalString = $dataFinal->format('Y-m-d');
 
         $diferenca = $dataInicio->diff($dataFinal);
         $diasDeEstagio = $diferenca->days;

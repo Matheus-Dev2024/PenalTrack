@@ -14,6 +14,7 @@ class PdfController extends Controller
         $dadosItensAvaliacao = ProcessoAvaliacaoServidorDB::dadosItensAvaliacaoRelatorio($fk_servidor);
 
         //return compact('dadosServidor', 'dadosAvaliacao', 'dadosItensAvaliacao');
+        //return view('impressao.relatorio_comissao', compact('dadosServidor', 'dadosAvaliacao', 'dadosItensAvaliacao'));
         $pdf = Pdf::loadView('impressao.relatorio_comissao', compact('dadosServidor', 'dadosAvaliacao', 'dadosItensAvaliacao'));
         $pdf->setPaper('a4', 'portrait')->setWarnings(false)->save('myfile.pdf');
         return $pdf->stream(

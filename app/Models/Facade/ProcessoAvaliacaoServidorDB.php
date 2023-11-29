@@ -31,8 +31,8 @@ class ProcessoAvaliacaoServidorDB
         $sql = DB::table('processo_avaliacao_servidor as pas')
             ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')
             ->join('periodos_processo as pp', 'pp.id', '=', 'pa.fk_periodo_processo')
-            ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
-            ->LeftJoin("$policia.seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
+            ->join("srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
+            ->LeftJoin("seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
             ->select(
                 'su.nome as nome_avaliador',
                 'pas.status',
@@ -58,11 +58,11 @@ class ProcessoAvaliacaoServidorDB
             ->join('fator_avaliacao as fa', 'fa.id', '=', 'fai.fk_fator_avaliacao')
             ->join('processo_avaliacao as pa', 'pa.id', '=', 'a.fk_processo_avaliacao')
             ->join('periodos_processo as pp', 'pp.id', '=', 'pa.fk_periodo_processo')
-            ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'a.fk_servidor')
+            ->join("srh.sig_servidor as ss", 'ss.id_servidor', '=', 'a.fk_servidor')
             ->select(
                 'fa.nome',
-                DB::raw('SUM(a.nota) as nota_total'), 
-                
+                DB::raw('SUM(a.nota) as nota_total'),
+
                 'pp.nome as periodo'
             )
             ->groupBy('fa.nome','pp.nome')
@@ -73,10 +73,10 @@ class ProcessoAvaliacaoServidorDB
             $resultado = $sql->get();
 
             $agrupados = [];
-        
+
             foreach ($resultado as $result) {
                 $nome = $result->nome;
-        
+
                 if (!isset($agrupados[$nome])) {
                     $agrupados[$nome] = [];
                 }
@@ -86,7 +86,7 @@ class ProcessoAvaliacaoServidorDB
                     'periodo' => $result->periodo,
                 ];
             }
-        
+
             return $agrupados;
     }
 

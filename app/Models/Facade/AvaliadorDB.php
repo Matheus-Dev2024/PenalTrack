@@ -22,7 +22,7 @@ class AvaliadorDB
 
     public static function listarUnidades()
     {
-        
+
         $listaUnidades = DB::table('policia.unidade')
             ->select('id', 'nome')
             ->where('status', '=', 1)
@@ -65,15 +65,22 @@ class AvaliadorDB
 
     public static function comboAvaliadorServidor()
     {
-        $policia = config('database.connections.conexao_banco_unico.schema');
-        return DB::table('processo_avaliacao_servidor as pas')
-            ->LeftJoin("$policia.seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
+        $avaliador_por_servidor = DB::table('usuario_avalia_servidores as uas')
+            ->LeftJoin("seguranca.usuario as su", 'su.id', '=', 'uas.usuario_id')
             ->orderBy('su.nome')
-            ->distinct()
-            ->whereNotNull('pas.fk_avaliador')
-            ->get([
-                'pas.fk_avaliador as id',
+            ->select([
+                'uas.usuario_id as id',
                 'su.nome as name'
             ]);
+        $avaliador_por_unidade = DB::table('usuario_avalia_unidades as uau')
+            ->LeftJoin("seguranca.usuario as su", 'su.id', '=', 'uau.usuario_id')
+            ->orderBy('su.nome')
+            ->select([
+                'uau.usuario_id as id',
+                'su.nome as name'
+            ]);
+
+        $avaliadores = $avaliador_por_unidade->union($avaliador_por_servidor)->get();
+        return $avaliadores;
     }
 }
