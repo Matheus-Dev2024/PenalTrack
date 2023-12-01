@@ -151,6 +151,7 @@ class ProcessoAvaliacaoDB
             ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
             ->LeftJoin("$policia.seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
             ->leftJoin("$srh.sig_documentacao_servidor as ds", 'ds.fk_servidor', 'ss.id_servidor')
+            ->where('ds.exibicao_documento', '=', 2)
             ->leftJoin("$srh.sig_tipo_documento as td", 'ds.fk_tipo_documento', '=', 'td.id')
             ->join("$policia.policia.unidade as u", 'u.id', '=', 'ss.fk_id_unidade_atual')
             ->join("$srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
@@ -283,7 +284,10 @@ class ProcessoAvaliacaoDB
             ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')
             ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
             ->LeftJoin("$policia.seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
-            ->leftJoin("$srh.sig_documentacao_servidor as ds", 'ds.fk_servidor', 'ss.id_servidor')
+            ->leftJoin("$srh.sig_documentacao_servidor as ds", function ($join) {
+                $join->on('ds.fk_servidor', '=', 'ss.id_servidor')
+                    ->where('ds.exibicao_documento', '=', 2);
+            })
             ->leftJoin("$srh.sig_tipo_documento as td", 'ds.fk_tipo_documento', '=', 'td.id')
             ->join("$policia.policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
             ->join("$srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
