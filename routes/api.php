@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AvaliacaoController;
 use App\Http\Controllers\AvaliadorController;
+use App\Http\Controllers\ComissaoController;
 use App\Http\Controllers\FatorAvaliacaoController;
 use App\Http\Controllers\FatorAvaliacaoItemController;
 use App\Http\Controllers\ImpressaoController;
@@ -65,7 +66,13 @@ Route::get('imprimir', [ImpressaoController::class, 'imprimir']);
 //Relatorio comissão
 Route::get('relatorio-comissao/{fk_servidor}', [PdfController::class, 'gerarRelatorioComissao']);
 
-//});
+//Comissao
+Route::get('comissao/grid', [ComissaoController::class, 'grid']);
+Route::post('comissao/alterar', [ComissaoController::class, 'alterar']);
+Route::get('vincular-servidor/grid', [ComissaoController::class, 'vincularServidoresGrid']);
+Route::post('vincular-servidor/store', [ComissaoController::class, 'vincularServidoresStore']);
+Route::post('vincular-servidor/excluir', [ComissaoController::class, 'excluir']);
+
 
 //Fator de Avaliação
 Route::get('fator-avaliacao/grid', [FatorAvaliacaoController::class, 'grid']);

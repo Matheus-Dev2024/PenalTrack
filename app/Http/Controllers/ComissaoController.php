@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Entity\Comissao;
 use App\Models\Facade\ComissaoDB;
 use App\Models\Regras\ComissaoRegras;
+use App\Models\Regras\ServidorComissaoRegras;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +18,12 @@ class ComissaoController extends Controller
         return response()->json($lista);
     }
 
+    public function vincularServidoresGrid(Request $request)
+    {
+        $p = (object)$request->all();
+        return ComissaoDB::vincularServidoresGrid($p);
+    }
+
     public function alterar(Request $request)
     {
         try {
@@ -26,6 +33,18 @@ class ComissaoController extends Controller
         } catch (Exception $ex) {
             return response()->json(["error" => $ex->getMessage()]);
         }
-
     }
+
+    public function vincularServidoresStore(Request $request)
+    {
+        try {
+
+            ServidorComissaoRegras::salvar($request);
+            return response()->json(["mensagem" => "Servidor vinculado a uma comissão com sucesso!"]);
+
+        } catch(Exception $ex) {
+            return response()->json(["error" => $ex->getMessage()]);
+        }
+    }
+
 }

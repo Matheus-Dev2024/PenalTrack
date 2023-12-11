@@ -363,6 +363,7 @@ class ProcessoAvaliacaoDB
         return response()->json($v);
     }
 
+
     public static function comboUnidade()
     {
         $policia = config('database.connections.conexao_banco_unico.schema');
