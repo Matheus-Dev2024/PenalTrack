@@ -72,6 +72,7 @@ Route::post('comissao/alterar', [ComissaoController::class, 'alterar']);
 Route::get('vincular-servidor/grid', [ComissaoController::class, 'vincularServidoresGrid']);
 Route::post('vincular-servidor/store', [ComissaoController::class, 'vincularServidoresStore']);
 Route::post('vincular-servidor/excluir', [ComissaoController::class, 'excluir']);
+Route::get('visualizar-comissao/grid/{comissao_id}', [ComissaoController::class, 'gridVisualizarComissao']);
 
 
 //Fator de Avaliação

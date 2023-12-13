@@ -47,4 +47,10 @@ class ComissaoController extends Controller
         }
     }
 
+    public function gridVisualizarComissao(Request $request)
+    {
+        $lista = ComissaoDB::gridVisualizarComissao($request->comissao_id);
+        return response()->json($lista);
+    }
+
 }

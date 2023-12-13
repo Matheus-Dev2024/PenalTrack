@@ -9,17 +9,71 @@ use stdClass;
 
 class ComissaoDB
 {
+
     public static function grid()
     {
         $srh = config('database.connections.conexao_srh.schema');
         $lista = DB::table('comissao')
         ->leftJoin("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'comissao.presidente')
+        //->leftJoin("servidor_comissao as sc", 'sc.fk_comissao', '=', 'comissao.id')
+        ->leftJoin("servidor_comissao as sc", function($join) {
+            $join->on('sc.fk_comissao', '=', 'comissao.id')
+                ->whereNull('sc.deleted_at');
+        })
             ->select([
-                'id',
+                'comissao.id as comissao_id',
                 'numero_comissao',
-                'ss.nome as presidente'
+                'ss.nome as presidente',
+                DB::raw('COUNT(CASE WHEN sc.deleted_at IS NULL THEN sc.fk_servidor END) as total_servidores'),
+
+                DB::raw("STRING_AGG(
+                    DISTINCT
+
+                    '
+                    <table style=\"width: 100%;\" >
+                    <tr>
+                        <td >
+                            <a href=\"#' || comissao.id::text || '\" onclick=\"visualizarComissao(' || comissao.id || ')\">
+                                <i class=\"glyphicon glyphicon-eye-open\">&nbsp;</i>
+                            </a>
+                        </td>
+                    </tr>
+                    </table>
+
+                    '
+
+                    ,
+                  '')
+                    as pagina_comissao"
+                ), 
             ])
+            ->groupBy('comissao.id', 'comissao.numero_comissao', 'ss.nome')
             ->orderBy('numero_comissao')
+            ->get();
+        return $lista;
+    }
+    
+    public static function gridVisualizarComissao($comissao_id)
+    {
+        //dd($comissao_id);
+        $srh = config('database.connections.conexao_srh.schema');
+        $lista = DB::table('servidor_comissao as sc')
+        ->join("comissao", "comissao.id", "=", "sc.fk_comissao")
+        ->leftJoin("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'sc.fk_servidor')
+        ->join("$srh.sig_cargo as sgc", 'sgc.id', '=', 'ss.fk_id_cargo')
+        ->leftJoin("$srh.sig_servidor as presidente", 'presidente.id_servidor', '=', 'comissao.presidente')
+            ->select([
+                'comissao.id',
+                'sc.fk_servidor',
+                'ss.nome as nome_servidor',
+                'ss.matricula',
+                'ss.cargo',
+                'sgc.abreviacao as sigla_cargo',
+                'presidente.nome as nome_presidente'
+            ])
+            ->whereNull("sc.deleted_at")
+            ->orderBy('nome_servidor')
+            ->where('sc.fk_comissao', '=', $comissao_id)
             ->get();
         return $lista;
     }
@@ -63,7 +117,6 @@ class ComissaoDB
         if (isset($p->processo_avaliacao)) {
             $sql->where('pa.id', $p->processo_avaliacao);
         }
-
 
         $v = $sql->paginate(50);
         //if (!count($v->toArray()) > 0)
