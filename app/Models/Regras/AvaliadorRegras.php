@@ -7,13 +7,14 @@ use App\Models\Entity\UsuarioAvaliadorIntermediario;
 use App\Models\Entity\UsuarioAvaliaServidores;
 use App\Models\Entity\UsuarioAvaliaUnidades;
 use App\Models\Entity\UsuarioSistema;
+use Illuminate\Http\JsonResponse;
 use stdClass;
 
 
 class AvaliadorRegras
 {
 
-    public static function salvar(stdClass $dados)
+    public static function salvar(stdClass $dados) : JsonResponse
     {
 
         $senha2 = password_hash($dados->senha2, PASSWORD_BCRYPT);
@@ -40,10 +41,10 @@ class AvaliadorRegras
                     $avaliador->save();
                 }
                 //desabilita os usuários mais novos
-                if ($key > 0) {
-                    $avaliador->excluido = true;
-                    $avaliador->save();
-                }
+                // if ($key > 0) {
+                //     $avaliador->excluido = true;
+                //     $avaliador->save();
+                // }
             }
         } // Se não localizar usuário com o cpf informado, cria um usuário.
         else {
@@ -73,7 +74,7 @@ class AvaliadorRegras
             'usuario_cadastrado' => $avaliadorNovo->id
         ]);
 
-        return response()->json(["id" => $avaliadorNovo->id, "mensagem" => "Avaliador cadastrado com sucesso!"], 201);
+        return response()->json(["id" => $avaliadorNovo->id, "mensagem" => "Avaliador cadastrado com sucesso!"], 200);
     }
 
     private static function atualizarDadosAvaliador(Avaliador $avaliador, stdClass $dados): Avaliador
@@ -82,7 +83,7 @@ class AvaliadorRegras
         $avaliador->nome = $dados->nome;
         $avaliador->nascimento = $dados->nascimento;
         $avaliador->email = $dados->email;
-        $avaliador->senha = "";
+        //$avaliador->senha = "";
         $avaliador->senha2 = $dados->senha2;
         return $avaliador;
     }

@@ -25,27 +25,8 @@ class ComissaoDB
                 'numero_comissao',
                 'ss.nome as presidente',
                 DB::raw('COUNT(CASE WHEN sc.deleted_at IS NULL THEN sc.fk_servidor END) as total_servidores'),
+                "comissao.id as comissao_id",
 
-                DB::raw("STRING_AGG(
-                    DISTINCT
-
-                    '
-                    <table style=\"width: 100%;\" >
-                    <tr>
-                        <td >
-                            <a href=\"#' || comissao.id::text || '\" onclick=\"visualizarComissao(' || comissao.id || ')\">
-                                <i class=\"glyphicon glyphicon-eye-open\">&nbsp;</i>
-                            </a>
-                        </td>
-                    </tr>
-                    </table>
-
-                    '
-
-                    ,
-                  '')
-                    as pagina_comissao"
-                ), 
             ])
             ->groupBy('comissao.id', 'comissao.numero_comissao', 'ss.nome')
             ->orderBy('numero_comissao')
