@@ -132,12 +132,31 @@ class AvaliacaoServidorRegras
 
             $av_arquivo->save();
         }
+        // Muda o status para pendencia após anexar um documento do tipo ficha de avaliação (fk_tipo=2)
+            $processo_avaliacao_servidor = ProcessoAvaliacaoServidor::where('fk_processo_avaliacao', '=', $p->processo_avaliacao_id)
+            ->where('fk_servidor', '=', $p->servidor_id)
+            ->first();
+            if ($processo_avaliacao_servidor) {
+                if ($p->$$fk_tipo == 2) {
+                    $processo_avaliacao_servidor->status = 3;
+                } elseif ($p->$$fk_tipo == 5) {
+                    $processo_avaliacao_servidor->status = 4;   
+                }
+                $processo_avaliacao_servidor->save();
+            }
     }
 
     // Exclui >>>!!PERMANENTEMENTE!!<<< um arquivo
     public static function excluirArquivo(ArquivoAvaliacaoServidor $arquivo)
     {
         $arquivo->forceDelete();
+        $processo_avaliacao_servidor = ProcessoAvaliacaoServidor::where('fk_processo_avaliacao', '=', $arquivo->fk_processo_avaliacao)
+        ->where('fk_servidor', '=', $arquivo->fk_servidor)
+        ->first();
+        if ($arquivo->fk_tipo_arquivo == 2 || $arquivo->fk_tipo_arquivo == 5) {
+            $processo_avaliacao_servidor->status = 1;
+            $processo_avaliacao_servidor->save();
+        }
     }
 
     // Baixa um arquivo específico
