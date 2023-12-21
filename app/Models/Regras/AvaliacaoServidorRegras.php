@@ -154,7 +154,7 @@ class AvaliacaoServidorRegras
         ->where('fk_servidor', '=', $arquivo->fk_servidor)
         ->first();
         if ($arquivo->fk_tipo_arquivo == 2 || $arquivo->fk_tipo_arquivo == 5) {
-            $processo_avaliacao_servidor->status = 1;
+            $processo_avaliacao_servidor->status = 2;
             $processo_avaliacao_servidor->save();
         }
     }
