@@ -89,6 +89,7 @@ class AvaliacaoDB
         ->join("srh.sig_servidor as ss", "ss.id_servidor", "pas.fk_servidor")
         ->join("srh.sig_cargo as c", "c.id", "=", "ss.fk_id_cargo")
         ->join("processo_situacao_servidor as pss", "pss.id", "=", "pas.status")
+        ->whereNull("pa.deleted_at")
         ->orderBy("pa.id");
 
         // Select que retorna os servidores que serão avaliados pelo usuário logado
@@ -97,6 +98,9 @@ class AvaliacaoDB
             ->whereIn('uas.servidor_id', $servidores_avaliados_por_este_usuario);
         if (isset($p->descricao)) {
             $servidoresPorAvaliador->where('pa.id', $p->descricao);
+        }
+        if (isset($p->status)) {
+            $servidoresPorAvaliador->where('pas.status', $p->status);
         }
         $servidoresPorAvaliador = $servidoresPorAvaliador->select($select);
 
@@ -123,6 +127,9 @@ class AvaliacaoDB
             if (isset($p->descricao)) {
                 $servidoresPorUnidade->where('pa.id', $p->descricao);
             }
+            if (isset($p->status)) {
+                $servidoresPorUnidade->where('pas.status', $p->status);
+            }
 
         // Une os servidores que serão avaliados expecificamente pelo usuário logado com os servidores das unidades que deverão ser avaliadas pelo usuário logado.
         $servidores = $servidoresPorAvaliador->union($servidoresPorUnidade)->get()->sortBy('nome');
@@ -130,13 +137,24 @@ class AvaliacaoDB
         return response()->json($servidores->values()->all());
     }
 
-    public static function combo(){
+    public static function comboProcesso() : Collection
+    {
         return DB::table('processo_avaliacao')
             ->orderBy('descricao')
             ->whereNull('deleted_at')
             ->get([
+                DB::raw('UPPER(descricao) as text'),
                 'id as value',
-                'descricao as text'
+            ]);
+    }
+
+    public static function comboStatus() : Collection
+    {
+        return DB::table('processo_situacao_servidor')
+            ->orderBy('id')
+            ->get([
+                DB::raw('UPPER(nome) as text'),
+                'id as value',
             ]);
     }
 

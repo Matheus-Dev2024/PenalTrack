@@ -136,11 +136,11 @@ class AvaliacaoServidorRegras
             $processo_avaliacao_servidor = ProcessoAvaliacaoServidor::where('fk_processo_avaliacao', '=', $p->processo_avaliacao_id)
             ->where('fk_servidor', '=', $p->servidor_id)
             ->first();
-            if ($processo_avaliacao_servidor) {
-                if ($p->$$fk_tipo == 2) {
-                    $processo_avaliacao_servidor->status = 3;
-                } elseif ($p->$$fk_tipo == 5) {
-                    $processo_avaliacao_servidor->status = 4;   
+            if ($processo_avaliacao_servidor) { 
+                if ($p->$$fk_tipo == 2) { // FORMULARIO ASSINADO PELO AVALIADOR
+                    $processo_avaliacao_servidor->status = 3;  // Aguardando Assinatura do Avaliado
+                } elseif ($p->$$fk_tipo == 3) { // FORMULÁRIO COM CIÊNCIA E ASSINATURA DO AVALIADOR
+                    $processo_avaliacao_servidor->status = 4; // CONCLUIDO  
                 }
                 $processo_avaliacao_servidor->save();
             }
@@ -149,21 +149,49 @@ class AvaliacaoServidorRegras
     // Exclui >>>!!PERMANENTEMENTE!!<<< um arquivo
     public static function excluirArquivo(ArquivoAvaliacaoServidor $arquivo)
     {
-        $arquivo->forceDelete();
         $processo_avaliacao_servidor = ProcessoAvaliacaoServidor::where('fk_processo_avaliacao', '=', $arquivo->fk_processo_avaliacao)
         ->where('fk_servidor', '=', $arquivo->fk_servidor)
         ->first();
-        if ($arquivo->fk_tipo_arquivo == 2 || $arquivo->fk_tipo_arquivo == 5) {
-            $processo_avaliacao_servidor->status = 2;
-            $processo_avaliacao_servidor->save();
+
+        // se o arquivo for assinado apenas pelo avaliador, verifica se existe um arquivo de ciência. Caso exista, apenas exclui o arquivo assinado pelo
+        // avaliador, mantendo o status. Caso não exista arquivo de ciência, muda o status para pendente.
+        if ($arquivo->fk_tipo_arquivo == 2 ) { // FORMULARIO ASSINADO PELO AVALIADOR
+            $formulario_ciencia_assinatura = ArquivoAvaliacaoServidor::where('fk_servidor', $arquivo->fk_servidor)
+            ->where('fk_processo_avaliacao', $arquivo->fk_processo_avaliacao)
+                ->where('fk_tipo_arquivo', 3) // FORMULÁRIO COM CIÊNCIA E ASSINATURA DO AVALIADOR
+                ->first();
+            
+            if(!$formulario_ciencia_assinatura){
+                $processo_avaliacao_servidor->status = 2; // PENDENTE
+                $processo_avaliacao_servidor->save();
+            }
         }
+
+        // Se o tipo do arquivo for 3 (Com ciência e assinatura do avaliador), e existir um arquivo tipo 2 (sem ciência), asltera o status para 3 (aguardando assinatura)
+        // Caso não haja um arquivo tipo 2, muda o status para Pendente.
+        if ($arquivo->fk_tipo_arquivo == 3) { // FORMULÁRIO COM CIÊNCIA E ASSINATURA DO AVALIADOR
+            $formulario_ciencia_assinatura = ArquivoAvaliacaoServidor::where('fk_servidor', $arquivo->fk_servidor)
+            ->where('fk_processo_avaliacao', $arquivo->fk_processo_avaliacao)
+                ->where('fk_tipo_arquivo', 2) // FORMULARIO ASSINADO PELO AVALIADOR
+                ->first();
+            
+            if($formulario_ciencia_assinatura){
+                $processo_avaliacao_servidor->status = 3; // Aguardando Assinatura do Avaliado
+                $processo_avaliacao_servidor->save();
+            }else{
+                $processo_avaliacao_servidor->status = 2; // PENDENTE
+                $processo_avaliacao_servidor->save();
+            }
+        }
+
+        $arquivo->forceDelete();
     }
 
     // Baixa um arquivo específico
-    public static function exibirArquivo(Request $request)
+    public static function exibirArquivo(\stdClass $parametros)
     {
-        //dd($request);
-        $arquivo = ArquivoAvaliacaoServidor::find($request->id);
+        //dd($parametros);
+        $arquivo = ArquivoAvaliacaoServidor::find($parametros->id);
         $arquivo_resposta = stream_get_contents($arquivo->arquivo, -1);
 
 

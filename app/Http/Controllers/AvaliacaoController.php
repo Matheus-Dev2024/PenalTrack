@@ -8,6 +8,7 @@ use App\Models\Facade\AvaliacaoDB;
 use App\Models\Regras\AvaliacaoServidorRegras;
 use App\Models\Regras\ProcessoAvaliacaoRegras;
 use Exception;
+use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -108,17 +109,23 @@ class AvaliacaoController extends Controller
         }
     }
 
-    public function combo()
+    public function comboProcesso() : array
     {
-        $comboProcesso = AvaliacaoDB::combo();
+        $comboProcesso = AvaliacaoDB::comboProcesso();
         return compact('comboProcesso');
+    }
+
+    public function comboStatus() : Collection 
+    {
+        return AvaliacaoDB::comboStatus();
     }
 
 
     //retorna um arquivo para ser baixado
     public function exibirArquivo(Request $request)
-    {
-        return AvaliacaoServidorRegras::exibirArquivo($request);
+    {   
+        $p = (object)$request->all();
+        return AvaliacaoServidorRegras::exibirArquivo($p);
     }
 
 }

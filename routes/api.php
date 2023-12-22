@@ -32,8 +32,7 @@ use Illuminate\Support\Facades\Route;
 //Route::group(['middleware' => ['seguranca']], function () {
 
 //Estágio - Lista servidores
-Route::get('avaliacao/corrente/get-servidores', [AvaliacaoController::class, 'getServidoresAvaliacaoCorrente']);
-Route::get('avaliacao/combo-processo', [AvaliacaoController::class, 'combo']);
+
 
 //});
 
@@ -46,6 +45,9 @@ Route::controller(AvaliacaoController::class)->group(function () {
     Route::post('avaliacao/upload-arquivo', 'uploadArquivo');
     Route::post('avaliacao/arquivos/{arquivo}/destruir', 'ExcluirArquivo');
     Route::get('avaliacao/arquivo-download', 'exibirArquivo'); //carrega um arquivo específico para ser exibido em tela
+    Route::get('avaliacao/corrente/get-servidores','getServidoresAvaliacaoCorrente');
+    Route::get('avaliacao/combo-processo',  'comboProcesso');
+    Route::get('avaliacao/combo-status',  'comboStatus');
 });
 
 
