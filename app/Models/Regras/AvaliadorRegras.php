@@ -3,6 +3,7 @@
 namespace App\Models\Regras;
 
 use App\Models\Entity\Avaliador;
+use App\Models\Entity\Grupo;
 use App\Models\Entity\UsuarioAvaliadorIntermediario;
 use App\Models\Entity\UsuarioAvaliaServidores;
 use App\Models\Entity\UsuarioAvaliaUnidades;
@@ -14,7 +15,7 @@ use stdClass;
 class AvaliadorRegras
 {
 
-    public static function salvar(stdClass $dados) : JsonResponse
+    public static function salvar(stdClass $dados): JsonResponse
     {
 
         $senha2 = password_hash($dados->senha2, PASSWORD_BCRYPT);
@@ -72,6 +73,13 @@ class AvaliadorRegras
         UsuarioAvaliadorIntermediario::create([
             'usuario_cadastrou' => $dados->usuario_cad,
             'usuario_cadastrado' => $avaliadorNovo->id
+        ]);
+
+        //registra o usuário cadastrado na tabela grupo que relaciona o perfil do novo usuário, no sistema e-probatório é necessário para carregar os menus
+        // perfil criado como perfil eprobatorio no ambiente de desenvolvimento (38)
+        Grupo::create([
+            'fk_usuario' => $avaliadorNovo->id,
+            'fk_perfil' => 28
         ]);
 
         return response()->json(["id" => $avaliadorNovo->id, "mensagem" => "Avaliador cadastrado com sucesso!"], 200);
