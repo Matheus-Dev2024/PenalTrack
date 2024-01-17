@@ -76,10 +76,10 @@ class AvaliadorRegras
         ]);
 
         //registra o usuário cadastrado na tabela grupo que relaciona o perfil do novo usuário, no sistema e-probatório é necessário para carregar os menus
-        // perfil criado como perfil eprobatorio no ambiente de desenvolvimento (38)
+        // perfil criado como perfil eprobatorio no ambiente de desenvolvimento (1)
         Grupo::create([
-            'fk_usuario' => $avaliadorNovo->id,
-            'fk_perfil' => 28
+            'usuario_id' => $avaliadorNovo->id,
+            'perfil_id' => 1
         ]);
 
         return response()->json(["id" => $avaliadorNovo->id, "mensagem" => "Avaliador cadastrado com sucesso!"], 200);
