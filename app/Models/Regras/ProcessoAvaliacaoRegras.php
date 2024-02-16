@@ -92,6 +92,8 @@ class ProcessoAvaliacaoRegras
         $processo->ref_inicio = $dados->ref_inicio;
         $processo->ref_termino = $dados->ref_termino;
         $processo->instrucao = $dados->instrucao;
+        $processo->fk_periodo_processo = $dados->fk_periodo_processo;
+
         $processo->save();
     }
 

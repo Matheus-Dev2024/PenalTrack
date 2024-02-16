@@ -149,8 +149,13 @@ class ProcessoAvaliacaoDB
         $itensProcessoAvaliacao = DB::table('processo_avaliacao_servidor as pas')
             ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')
             ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
-            ->LeftJoin("seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
-            ->leftJoin("$srh.sig_documentacao_servidor as ds", 'ds.fk_servidor', 'ss.id_servidor')
+            ->LeftJoin("$policia.seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
+            //a função de callback serve para para executar o where() somente dentro do LeftJoin || a exibicao_documento = 2 é para exibir no estágio
+            ->leftJoin("$srh.sig_documentacao_servidor as ds", function ($join) {
+                $join->on('ds.fk_servidor', '=', 'ss.id_servidor')
+                ->where('ds.exibicao_documento', '=', 2);
+            })
+            //->where('ds.exibicao_documento', '=', 2)
             ->leftJoin("$srh.sig_tipo_documento as td", 'ds.fk_tipo_documento', '=', 'td.id')
             ->join("policia.unidade as u", 'u.id', '=', 'ss.fk_id_unidade_atual')
             ->join("$srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
@@ -365,6 +370,7 @@ class ProcessoAvaliacaoDB
             return response()->json(['mensagem' => 'Verifique se existe um servidor, unidade ou o avaliador existe no processo selecionado.'], 412);
         return response()->json($v);
     }
+
 
     public static function comboUnidade()
     {

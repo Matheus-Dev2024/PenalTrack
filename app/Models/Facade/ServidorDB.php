@@ -158,6 +158,7 @@ class ServidorDB
             ->join('srh.sig_cargo as c', 'c.id', '=', 's.fk_id_cargo')
             ->join('processo_avaliacao_servidor as pas', 'pas.fk_servidor', '=', 's.id_servidor')
             ->join('policia.unidade as u', 'u.id', '=', 'pas.fk_unidade')
+            ->leftJoin('processo_situacao_servidor as pss', 'pss.id', '=', 'pas.status')
             ->select([
                 's.id_servidor',
                 's.nome',
@@ -167,6 +168,7 @@ class ServidorDB
                 'u.nome as unidade',
                 'pas.fk_processo_avaliacao',
                 'pas.status',
+                'pss.nome as nome_status'
                 //'pas.dias_estagio',
                 //'pas.dias_trabalho_programado',
                 //'pas.dias_ausencia',

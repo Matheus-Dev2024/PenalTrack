@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AvaliacaoController;
 use App\Http\Controllers\AvaliadorController;
+use App\Http\Controllers\ComissaoController;
 use App\Http\Controllers\FatorAvaliacaoController;
 use App\Http\Controllers\FatorAvaliacaoItemController;
 use App\Http\Controllers\ImpressaoController;
@@ -31,8 +32,7 @@ use Illuminate\Support\Facades\Route;
 //Route::group(['middleware' => ['seguranca']], function () {
 
 //Estágio - Lista servidores
-Route::get('avaliacao/corrente/get-servidores', [AvaliacaoController::class, 'getServidoresAvaliacaoCorrente']);
-Route::get('avaliacao/combo-processo', [AvaliacaoController::class, 'combo']);
+
 
 //});
 
@@ -45,6 +45,9 @@ Route::controller(AvaliacaoController::class)->group(function () {
     Route::post('avaliacao/upload-arquivo', 'uploadArquivo');
     Route::post('avaliacao/arquivos/{arquivo}/destruir', 'ExcluirArquivo');
     Route::get('avaliacao/arquivo-download', 'exibirArquivo'); //carrega um arquivo específico para ser exibido em tela
+    Route::get('avaliacao/corrente/get-servidores','getServidoresAvaliacaoCorrente');
+    Route::get('avaliacao/combo-processo',  'comboProcesso');
+    Route::get('avaliacao/combo-status',  'comboStatus');
 });
 
 
@@ -65,7 +68,14 @@ Route::get('imprimir', [ImpressaoController::class, 'imprimir']);
 //Relatorio comissão
 Route::get('relatorio-comissao/{fk_servidor}', [PdfController::class, 'gerarRelatorioComissao']);
 
-//});
+//Comissao
+Route::get('comissao/grid', [ComissaoController::class, 'grid']);
+Route::post('comissao/alterar', [ComissaoController::class, 'alterar']);
+Route::get('vincular-servidor/grid', [ComissaoController::class, 'vincularServidoresGrid']);
+Route::post('vincular-servidor/store', [ComissaoController::class, 'vincularServidoresStore']);
+Route::post('vincular-servidor/excluir', [ComissaoController::class, 'excluir']);
+Route::get('visualizar-comissao/grid/{comissao_id}', [ComissaoController::class, 'gridVisualizarComissao']);
+
 
 //Fator de Avaliação
 Route::get('fator-avaliacao/grid', [FatorAvaliacaoController::class, 'grid']);
