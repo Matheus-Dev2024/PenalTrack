@@ -33,7 +33,7 @@ class ComissaoDB
             ->get();
         return $lista;
     }
-    
+
     public static function gridVisualizarComissao($comissao_id)
     {
         //dd($comissao_id);
@@ -61,16 +61,24 @@ class ComissaoDB
 
     public static function vincularServidoresGrid(stdClass $p): JsonResponse
     {
-        $srh = config('database.connections.conexao_srh.schema');
-        $policia = config('database.connections.conexao_banco_unico.schema');
+        //$srh = config('database.connections.conexao_srh.schema');
+        //$policia = config('database.connections.conexao_banco_unico.schema');
 
         $sql = DB::table('processo_avaliacao_servidor as pas')
             ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')
-            ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
+
+            // Descomente as linhas abaixo e comente as quatro proximas para funcionar em desenvolvimento
+//            ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
+//            ->LeftJoin("$policia.seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
+//            ->join("$policia.policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
+//            ->join("$srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
+
+            ->join("srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
+            ->LeftJoin("seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
+            ->join("policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
+            ->join("srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
+
             ->LeftJoin("servidor_comissao", 'servidor_comissao.fk_servidor', '=', 'ss.id_servidor')
-            ->LeftJoin("$policia.seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
-            ->join("$policia.policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
-            ->join("$srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
             ->select(
                 'pas.id as id_processo_avaliacao',
                 'pas.fk_servidor',

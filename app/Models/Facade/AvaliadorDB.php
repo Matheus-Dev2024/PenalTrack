@@ -55,7 +55,7 @@ class AvaliadorDB
             //->join('eprobatorio.usuario_avalia_unidades as uau', 'u.id', '=', 'uau.usuario_id') // Descomentar esta linha para mostrar somente avaliadores com unidades para avaliar
             ->select('u.id', 'u.nome', 'u.email', 'u.status')
             ->where('us.sistema_id', '=', 56)
-            ->where('uai.usuario_cadastrou', '=', $usuarioLogado->id_usuario)
+            //->where('uai.usuario_cadastrou', '=', $usuarioLogado->id_usuario) // Exibe apenas os avaliadores que o usuario cadastrou
             ->groupBy('u.id')
             ->orderBy('u.id')
             ->get();

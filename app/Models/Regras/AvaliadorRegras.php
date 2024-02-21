@@ -64,6 +64,19 @@ class AvaliadorRegras
             ]);
         }
 
+        //registra o usuário que cadastrou e o usuario cadastrado
+        UsuarioAvaliadorIntermediario::create([
+            'usuario_cadastrou' => $dados->usuario_cad,
+            'usuario_cadastrado' => $avaliadorNovo->id
+        ]);
+
+        //registra o usuário cadastrado na tabela grupo que relaciona o perfil do novo usuário, no sistema e-probatório é necessário para carregar os menus
+        // perfil criado como perfil eprobatorio no ambiente de desenvolvimento (1)
+        Grupo::create([
+            'usuario_id' => $avaliadorNovo->id,
+            'perfil_id' => 1
+        ]);
+
         // Verifica se esse usuario ja possui permissao para o sistema eprobatorio
         $usuarioSistema = UsuarioSistema::where('sistema_id', 56)->where('usuario_id', $avaliadorNovo->id)->first();
         if(isset($usuarioSistema)){
@@ -77,19 +90,6 @@ class AvaliadorRegras
         UsuarioSistema::create([
             'sistema_id' => 56,
             'usuario_id' => $avaliadorNovo->id
-        ]);
-
-        //registra o usuário que cadastrou e o usuario cadastrado
-        UsuarioAvaliadorIntermediario::create([
-            'usuario_cadastrou' => $dados->usuario_cad,
-            'usuario_cadastrado' => $avaliadorNovo->id
-        ]);
-
-        //registra o usuário cadastrado na tabela grupo que relaciona o perfil do novo usuário, no sistema e-probatório é necessário para carregar os menus
-        // perfil criado como perfil eprobatorio no ambiente de desenvolvimento (1)
-        Grupo::create([
-            'usuario_id' => $avaliadorNovo->id,
-            'perfil_id' => 1
         ]);
 
         return response()->json(["id" => $avaliadorNovo->id, "mensagem" => "Avaliador cadastrado com sucesso!"], 200);
@@ -156,6 +156,15 @@ class AvaliadorRegras
     {
         $avaliadorUnidades = UsuarioAvaliaUnidades::where('usuario_id', $id)->get();
         $avaliadorServidores = UsuarioAvaliaServidores::where('usuario_id', $id)->get();
+        $avaliadorGrupo = SegGrupo::where('usuario_id', $id)->get();
+        $avaliadorIntermediario = UsuarioAvaliadorIntermediario::where('usuario_cadastrado', $id)->get();
+
+        $avaliadorGrupo->each(function ($avaGrupo) {
+            $avaGrupo->delete();
+        });
+        $avaliadorIntermediario->each(function ($avaInter) {
+            $avaInter->delete();
+        });
 
         $avaliadorServidores->each(function ($avaliadorServidore) {
             $avaliadorServidore->delete();

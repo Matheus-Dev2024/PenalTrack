@@ -28,7 +28,7 @@ class AvaliadorController extends Controller
     public function show($avaliador_id)
     {
         $avaliador = Avaliador::find($avaliador_id);
-        
+
         //os usuários que possuem foto o sistema retorna um erro (encoding model Type is not supported in file), por isso foi setado null nesta variável
         $avaliador->foto_deprecated = null;
 
@@ -39,18 +39,18 @@ class AvaliadorController extends Controller
     {
         try {
             DB::beginTransaction();
-            $avaliadorId = AvaliadorRegras::salvar((object)$request->all());
+            $resposta = AvaliadorRegras::salvar((object)$request->all());
 
             DB::commit();
 
-            return response()->json(["id" => $avaliadorId, "mensagem" => "Avaliador cadastrado com sucesso"]);
+            return $resposta;
 
         } catch (Exception $ex) {
             DB::rollBack();
             return response()->json(["error" => $ex->getMessage()]);
         }
     }
-    
+
 
     public function update(Request $request): JsonResponse
     {
@@ -69,11 +69,13 @@ class AvaliadorController extends Controller
 
     public function destroy($id): JsonResponse
     {
+        DB::beginTransaction();
         try {
             AvaliadorRegras::removerAvaliador($id);
-
+            DB::commit();
             return response()->json(["mensagem" => "Usuário excluído com sucesso"], 200);
         } catch (Exception $ex) {
+            DB::rollBack();
             //return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
             return response()->json(["error" => $ex->getMessage()]);
         }
