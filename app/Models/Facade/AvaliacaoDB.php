@@ -5,31 +5,31 @@ namespace App\Models\Facade;
 use App\Models\Entity\AvaliacaoServidor;
 use App\Models\Entity\ServidoresAvaliadosIndividualmente;
 use App\Models\Entity\UsuarioAvaliaUnidades;
-use Illuminate\Database\Query\Builder;
+use illuminate\http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 
 class AvaliacaoDB
 {
     public static function getFormulario()
     {
         $form = DB::table("fator_avaliacao as fa")
-                    ->join("fator_avaliacao_item as fai", "fai.fk_fator_avaliacao", "=", "fa.id")
-                    ->select([
-                        "fa.id as fator_avaliacao_id",
-                        "fa.nome as fator",
-                        "fa.descricao as descricao_fator",
-                        "fai.id as fator_avaliacao_item_id",
-                        "fai.pergunta",
-                        "fai.status as status_item"
-                    ])
-                    ->where("fai.status", 1)
-                    ->get();
+            ->join("fator_avaliacao_item as fai", "fai.fk_fator_avaliacao", "=", "fa.id")
+            ->select([
+                "fa.id as fator_avaliacao_id",
+                "fa.nome as fator",
+                "fa.descricao as descricao_fator",
+                "fai.id as fator_avaliacao_item_id",
+                "fai.pergunta",
+                "fai.status as status_item"
+            ])
+            ->where("fai.status", 1)
+            ->get();
 
         return $form;
     }
-
 
 
     public static function getNotasServidor($processo_id, $servidor_id)
@@ -38,7 +38,8 @@ class AvaliacaoDB
     }
 
 
-    public static function gridArquivos(\stdClass $p){
+    public static function gridArquivos(stdClass $p)
+    {
         //return $p;
         $sql = DB::table('arquivo_avaliacao_servidor as arquivo')
             ->join('tipo_arquivo as tipo', 'tipo.id', 'arquivo.fk_tipo_arquivo')
@@ -54,13 +55,13 @@ class AvaliacaoDB
         return $sql->get();
     }
 
-    public static function getListaServidoresDoProcessoAvaliacao(\stdClass $p) :\illuminate\http\JsonResponse
+    public static function getListaServidoresDoProcessoAvaliacao(stdClass $p): JsonResponse
     {
         $usuario_id = Auth::user()->id;
         //$usuario_id = 587;
 
         $select = [
-            'pa.id as processo_avaliacao_id','pa.dt_inicio_avaliacao',
+            'pa.id as processo_avaliacao_id', 'pa.dt_inicio_avaliacao',
             'pa.dt_termino_avaliacao',
             DB::raw('SUBSTRING(pa.descricao, 1, 23) as nome_processo'),
             'ss.nome',
@@ -71,7 +72,8 @@ class AvaliacaoDB
             //'unidade.id as unidade_id',
             'pss.nome as situacao',
             'pas.nota_total',
-            'pas.status'
+            'pas.status',
+            
         ];
 
         // Lista de Unidades que o servidor logado deverá Avaliar
@@ -85,12 +87,12 @@ class AvaliacaoDB
             ->pluck('servidor_id')->toArray();
 
         $sql = DB::table("eprobatorio.processo_avaliacao as pa")
-        ->join("eprobatorio.processo_avaliacao_servidor as pas", "pas.fk_processo_avaliacao", "pa.id")
-        ->join("srh.sig_servidor as ss", "ss.id_servidor", "pas.fk_servidor")
-        ->join("srh.sig_cargo as c", "c.id", "=", "ss.fk_id_cargo")
-        ->join("processo_situacao_servidor as pss", "pss.id", "=", "pas.status")
-        ->whereNull("pa.deleted_at")
-        ->orderBy("pa.id");
+            ->join("eprobatorio.processo_avaliacao_servidor as pas", "pas.fk_processo_avaliacao", "pa.id")
+            ->join("srh.sig_servidor as ss", "ss.id_servidor", "pas.fk_servidor")
+            ->join("srh.sig_cargo as c", "c.id", "=", "ss.fk_id_cargo")
+            ->join("processo_situacao_servidor as pss", "pss.id", "=", "pas.status")
+            ->whereNull("pa.deleted_at")
+            ->orderBy("pa.id");
 
         // Select que retorna os servidores que serão avaliados pelo usuário logado
         $servidoresPorAvaliador = clone $sql;
@@ -105,8 +107,8 @@ class AvaliacaoDB
         $servidoresPorAvaliador = $servidoresPorAvaliador->select($select);
 
         // Verifica a unidade em que os servidorres trabalharam mais tempo
-        $servidoresPorAvaliador->each(function($servidor){
-            $unidade = DB::select(DB::raw("select fk_unidade, unidade from srh.sp_lotacao_com_maior_tempo_de_servico_por_periodo(:inicio, :termino, :id)"),[
+        $servidoresPorAvaliador->each(function ($servidor) {
+            $unidade = DB::select(DB::raw("select fk_unidade, unidade from srh.sp_lotacao_com_maior_tempo_de_servico_por_periodo(:inicio, :termino, :id)"), [
                 'inicio' => $servidor->dt_inicio_avaliacao,
                 'termino' => $servidor->dt_termino_avaliacao,
                 'id' => $servidor->id
@@ -118,18 +120,18 @@ class AvaliacaoDB
         // Select que retorna os servidores das unidades que o usuário logado deve avaliar, exceto os listados para serem avaliados individualmente por algum usuário.
         $servidoresPorUnidade = clone $sql;
         $servidoresPorUnidade->join(
-                "policia.unidade as unidade",
-                "unidade.id","=",
-                "pas.fk_unidade")
+            "policia.unidade as unidade",
+            "unidade.id", "=",
+            "pas.fk_unidade")
             ->whereIn('unidade.id', $unidades_do_avaliador->pluck('unidade_id'))
             ->whereNotIn('ss.id_servidor', $servidores_avaliados_individualmente->pluck('servidor_id'))
             ->select($select);
-            if (isset($p->descricao)) {
-                $servidoresPorUnidade->where('pa.id', $p->descricao);
-            }
-            if (isset($p->status)) {
-                $servidoresPorUnidade->where('pas.status', $p->status);
-            }
+        if (isset($p->descricao)) {
+            $servidoresPorUnidade->where('pa.id', $p->descricao);
+        }
+        if (isset($p->status)) {
+            $servidoresPorUnidade->where('pas.status', $p->status);
+        }
 
         // Une os servidores que serão avaliados expecificamente pelo usuário logado com os servidores das unidades que deverão ser avaliadas pelo usuário logado.
         $servidores = $servidoresPorAvaliador->union($servidoresPorUnidade)->get()->sortBy('nome');
@@ -137,7 +139,7 @@ class AvaliacaoDB
         return response()->json($servidores->values()->all());
     }
 
-    public static function comboProcesso() : Collection
+    public static function comboProcesso(): Collection
     {
         return DB::table('processo_avaliacao')
             ->orderBy('descricao')
@@ -148,7 +150,7 @@ class AvaliacaoDB
             ]);
     }
 
-    public static function comboStatus() : Collection
+    public static function comboStatus(): Collection
     {
         return DB::table('processo_situacao_servidor')
             ->orderBy('id')

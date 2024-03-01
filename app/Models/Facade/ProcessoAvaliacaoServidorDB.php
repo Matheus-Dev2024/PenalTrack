@@ -2,6 +2,8 @@
 
 namespace App\Models\Facade;
 
+use FontLib\TrueType\Collection;
+use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\DB;
 
 class ProcessoAvaliacaoServidorDB
@@ -88,6 +90,27 @@ class ProcessoAvaliacaoServidorDB
             }
         
             return $agrupados;
+    }
+
+    public static function getProcessoAvaliacaoServidor($fk_servidor) :SupportCollection
+    {
+        $srh = config('database.connections.conexao_srh.schema');
+        $policia = config('database.connections.conexao_banco_unico.schema');
+
+        $sql = DB::table('processo_avaliacao_servidor as pas')
+            ->leftJoin("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
+            ->leftJoin("$policia.seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
+            ->select(
+                'su.nome as nome_avaliador',
+                'pas.status',
+                'pas.nota_total',
+                'pas.dt_inicio',
+                'pas.dt_termino'
+            )
+            ->orderBy('pas.created_at', 'DESC')
+            ->where('pas.fk_servidor', $fk_servidor);
+
+        return $sql->get();
     }
 
 }

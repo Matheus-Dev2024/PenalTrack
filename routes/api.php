@@ -9,6 +9,7 @@ use App\Http\Controllers\ImpressaoController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\PeriodoProcessoAvaliacaoController;
 use App\Http\Controllers\ProcessoAvaliacaoController;
+use App\Http\Controllers\RotinasController;
 use App\Http\Controllers\TipoArquivoController;
 use App\Http\Controllers\UnidadesController;
 use Illuminate\Support\Facades\Route;
@@ -135,6 +136,10 @@ Route::get('unidades', [UnidadesController::class, 'index']);
 // Route::get('unidades/{id}', [UnidadesController::class, 'show']);
 // Route::post('unidades', [UnidadesController::class, 'store']);
 // Route::delete('unidades/{id}', [UnidadesController::class, 'destroy']);
+
+//rotinas eprobatorio
+Route::get('rotinas/robo-eprobatorio', [RotinasController::class, 'roboEprobatorio']);
+
 
 
 
