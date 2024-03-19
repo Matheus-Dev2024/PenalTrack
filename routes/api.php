@@ -139,6 +139,8 @@ Route::get('unidades', [UnidadesController::class, 'index']);
 
 //rotinas eprobatorio
 Route::get('rotinas/robo-eprobatorio', [RotinasController::class, 'roboEprobatorio']);
+Route::get('rotinas/teste-funcao', [RotinasController::class, 'funcaoRenato']);
+
 
 
 
