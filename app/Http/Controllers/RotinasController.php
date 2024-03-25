@@ -43,7 +43,8 @@ class RotinasController extends Controller
 
             return Response('sucesso', 200);
         } catch (Exception $e){
-            return Response($e->getMessage(), 500);
+            // return Response($e->getMessage(), 500);
+            return Response('falha', 500);
         }    
     }
 
@@ -78,7 +79,7 @@ class RotinasController extends Controller
 
     public function getLogsPerdidos() :array
     {
-        //pega o valor máximo do campo data
+        //pega o valor máximo do campo data(a data mais recente)
         $ultimoLog = Log::max('data');
 
         if ($ultimoLog) {
