@@ -157,7 +157,7 @@ class ProcessoAvaliacaoDB
             })
             //->where('ds.exibicao_documento', '=', 2)
             ->leftJoin("$srh.sig_tipo_documento as td", 'ds.fk_tipo_documento', '=', 'td.id')
-            ->join("policia.unidade as u", 'u.id', '=', 'ss.fk_id_unidade_atual')
+            ->join("$policia.policia.unidade as u", 'u.id', '=', 'ss.fk_id_unidade_atual')
             ->join("$srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
             ->select(
                 'pas.id as id_processo_avaliacao',
@@ -225,7 +225,6 @@ class ProcessoAvaliacaoDB
                 'ss.matricula',
                 'su.nome'
 
-
             ])
             ->get();
 
@@ -249,17 +248,14 @@ class ProcessoAvaliacaoDB
     {
         $srh = config('database.connections.conexao_srh.schema');
         return DB::table('processo_avaliacao_servidor as pas')
-            ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')
             ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
             ->distinct()
-            ->whereNull('pa.deleted_at')
             ->orderBy('ss.nome')
             ->get([
                 'pas.fk_servidor as id',
                 'ss.nome as name'
             ]);
     }
-
 
     public static function pesquisarDescricao()
     {
@@ -281,75 +277,71 @@ class ProcessoAvaliacaoDB
 
     public static function acompanhamentoServidoresGrid(stdClass $p): JsonResponse
     {
-        $srh = config('database.connections.conexao_srh.schema');
-        $policia = config('database.connections.conexao_banco_unico.schema');
+        // $srh = config('database.connections.conexao_srh.schema');
+        // $policia = config('database.connections.conexao_banco_unico.schema');
 
         $sql = DB::table('processo_avaliacao_servidor as pas')
-            ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')
-            // Descomentar as linhas abaixo e comentar as posteriores para funcionar em desenvolvimento
-//            ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
-//            ->LeftJoin("$policia.seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
-//            ->leftJoin("$srh.sig_documentacao_servidor as ds", 'ds.fk_servidor', 'ss.id_servidor')
-//            ->leftJoin("$srh.sig_tipo_documento as td", 'ds.fk_tipo_documento', '=', 'td.id')
-//            ->join("$policia.policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
-//            ->join("$srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
             ->join("srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
             ->LeftJoin("seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
-            ->leftJoin("srh.sig_documentacao_servidor as ds", 'ds.fk_servidor', 'ss.id_servidor')
+            ->leftJoin("srh.sig_documentacao_servidor as ds", function ($join) {
+                $join->on('ds.fk_servidor', '=', 'ss.id_servidor')
+                    ->where('ds.exibicao_documento', '=', 2);
+            })
             ->leftJoin("srh.sig_tipo_documento as td", 'ds.fk_tipo_documento', '=', 'td.id')
-            ->join("policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
+            ->join("periodos_processo as pp", 'pp.id', '=', 'pas.fk_periodo' )
+            ->LeftJoin("policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
             ->join("srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
             ->select(
                 'pas.id as id_processo_avaliacao',
                 'pas.fk_servidor',
                 'sc.abreviacao as sigla_cargo',
-                'pa.id',
                 'ss.nome',
                 'su.nome as nome_avaliador',
                 'pas.status',
                 'pas.nota_total',
                 'pas.fk_unidade',
                 'pas.fk_avaliador',
-                'pa.descricao',
-                DB::raw("STRING_AGG(
+                'pp.nome as periodo',
+                'pp.id as id_periodo',
+                // DB::raw("STRING_AGG(
 
 
-                    '
-                    <table style=\"width: 100%;\" >
-                    <tr>
-                        <td >
-                            <a href=\"#' || ds.id::text || '\" onclick=\"abrirDocumentacaoPdfNovaAba(' || ds.id || ')\">
-                                <i class=\"glyphicon glyphicon-paperclip\">&nbsp;</i>' || td.nome || '
-                            </a>
-                        </td>
+                //     '
+                //     <table style=\"width: 100%;\" >
+                //     <tr>
+                //         <td >
+                //             <a href=\"#' || ds.id::text || '\" onclick=\"abrirDocumentacaoPdfNovaAba(' || ds.id || ')\">
+                //                 <i class=\"glyphicon glyphicon-paperclip\">&nbsp;</i>' || td.nome || '
+                //             </a>
+                //         </td>
+                        
+                //     </tr>
+                //     </table>
 
-                    </tr>
-                    </table>
+                //     '
 
-                    '
-
-                    ,
-                  '')
-                    as documentos"
-                ),
+                //     ,
+                //   '')
+                //     as documentos"
+                // ),
 
                 DB::raw("TO_CHAR(ss.dt_admissao, 'DD/MM/YYYY') AS dt_admissao"), 'u.nome as unidade', 'ss.cargo', 'ss.matricula',)
-            ->whereNull('pa.deleted_at')
             ->groupBy([
                 'ss.nome',
                 'pas.id',
                 'pas.fk_servidor',
                 'sc.abreviacao',
-                'pa.id',
                 'ss.dt_admissao',
                 'u.nome',
                 'ss.cargo',
                 'ss.matricula',
-                'su.nome'
+                'su.nome',
+                'periodo',
+                'pp.id'
             ]);
 
-        if (isset($p->processo_avaliacao)) {
-            $sql->where('pa.id', $p->processo_avaliacao);
+        if (isset($p->periodo_processo)) {
+            $sql->where('pp.id', $p->periodo_processo);
         }
         if (isset($p->processo_avaliacao_unidade)) {
             $sql->where('pas.fk_unidade', $p->processo_avaliacao_unidade);
@@ -370,16 +362,101 @@ class ProcessoAvaliacaoDB
             return response()->json(['mensagem' => 'Verifique se existe um servidor, unidade ou o avaliador existe no processo selecionado.'], 412);
         return response()->json($v);
     }
+    // public static function acompanhamentoServidoresGrid(stdClass $p): JsonResponse
+    // {
+    //     $srh = config('database.connections.conexao_srh.schema');
+    //     $policia = config('database.connections.conexao_banco_unico.schema');
+
+    //     $sql = DB::table('processo_avaliacao_servidor as pas')
+    //         ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')
+    //         ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
+    //         ->LeftJoin("$policia.seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
+    //         ->leftJoin("$srh.sig_documentacao_servidor as ds", function ($join) {
+    //             $join->on('ds.fk_servidor', '=', 'ss.id_servidor')
+    //                 ->where('ds.exibicao_documento', '=', 2);
+    //         })
+    //         ->leftJoin("$srh.sig_tipo_documento as td", 'ds.fk_tipo_documento', '=', 'td.id')
+    //         ->join("$policia.policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
+    //         ->join("$srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
+    //         ->select(
+    //             'pas.id as id_processo_avaliacao',
+    //             'pas.fk_servidor',
+    //             'sc.abreviacao as sigla_cargo',
+    //             'pa.id',
+    //             'ss.nome',
+    //             'su.nome as nome_avaliador',
+    //             'pas.status',
+    //             'pas.nota_total',
+    //             'pas.fk_unidade',
+    //             'pas.fk_avaliador',
+    //             'pa.descricao',
+    //             DB::raw("STRING_AGG(
+
+
+    //                 '
+    //                 <table style=\"width: 100%;\" >
+    //                 <tr>
+    //                     <td >
+    //                         <a href=\"#' || ds.id::text || '\" onclick=\"abrirDocumentacaoPdfNovaAba(' || ds.id || ')\">
+    //                             <i class=\"glyphicon glyphicon-paperclip\">&nbsp;</i>' || td.nome || '
+    //                         </a>
+    //                     </td>
+                        
+    //                 </tr>
+    //                 </table>
+
+    //                 '
+
+    //                 ,
+    //               '')
+    //                 as documentos"
+    //             ),
+
+    //             DB::raw("TO_CHAR(ss.dt_admissao, 'DD/MM/YYYY') AS dt_admissao"), 'u.nome as unidade', 'ss.cargo', 'ss.matricula',)
+    //         ->whereNull('pa.deleted_at')
+    //         ->groupBy([
+    //             'ss.nome',
+    //             'pas.id',
+    //             'pas.fk_servidor',
+    //             'sc.abreviacao',
+    //             'pa.id',
+    //             'ss.dt_admissao',
+    //             'u.nome',
+    //             'ss.cargo',
+    //             'ss.matricula',
+    //             'su.nome'
+    //         ]);
+
+    //     if (isset($p->processo_avaliacao)) {
+    //         $sql->where('pa.id', $p->processo_avaliacao);
+    //     }
+    //     if (isset($p->processo_avaliacao_unidade)) {
+    //         $sql->where('pas.fk_unidade', $p->processo_avaliacao_unidade);
+    //     }
+    //     if (isset($p->avaliador)) {
+    //         $sql->where('pas.fk_avaliador', $p->avaliador);
+    //     }
+    //     if (isset($p->servidor)) {
+    //         $sql->where('pas.fk_servidor', $p->servidor);
+    //     }
+    //     if (isset($p->status)) {
+    //         $sql->where('pas.status', $p->status);
+    //     }
+
+    //     $v = $sql->paginate(50);
+    //     //if (!count($v->toArray()) > 0)
+    //     if ($v->isEmpty() || (isset($v->data) && count($v->data) > 0))
+    //         return response()->json(['mensagem' => 'Verifique se existe um servidor, unidade ou o avaliador existe no processo selecionado.'], 412);
+    //     return response()->json($v);
+    // }
 
 
     public static function comboUnidade()
     {
-        $policia = config('database.connections.conexao_banco_unico.schema');
+        //$policia = config('database.connections.conexao_banco_unico.schema');
         return DB::table('processo_avaliacao_servidor as pas')
-            ->join('processo_avaliacao as pa', 'pa.id', '=', 'pas.fk_processo_avaliacao')
             ->join("policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
             ->orderBy('u.nome')
-            ->whereNull('pa.deleted_at')
             ->distinct()
             ->get([
                 'pas.fk_unidade as id',
