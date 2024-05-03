@@ -287,7 +287,7 @@ class ProcessoAvaliacaoDB
                 $join->on('ds.fk_servidor', '=', 'ss.id_servidor')
                     ->where('ds.exibicao_documento', '=', 2);
             })
-            ->leftJoin("srh.sig_tipo_documento as td", 'ds.fk_tipo_documento', '=', 'td.id')
+            ->leftJoin("sig_tipo_documento as td", 'ds.fk_tipo_documento', '=', 'td.id')
             ->join("periodos_processo as pp", 'pp.id', '=', 'pas.fk_periodo' )
             ->LeftJoin("policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
             ->join("srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
