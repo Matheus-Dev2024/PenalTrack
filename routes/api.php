@@ -116,6 +116,9 @@ Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/servidores-proc
 
 //Período do processo de avaliação
 Route::get('periodo-processo-avaliacao/combo', [PeriodoProcessoAvaliacaoController::class, 'combo']);
+//método criado exclusivamente para usar com autocomplete srh, considerando que recebe especificamente os parametros id e name.
+Route::get('periodo-processo-avaliacao/combo-auto', [PeriodoProcessoAvaliacaoController::class, 'comboAutoComplete']);
+
 
 //Avaliador
 Route::get('avaliador/grid-pesquisar-avaliador', [AvaliadorController::class, 'index']);

@@ -15,4 +15,12 @@ class PeriodoProcessoAvaliacaoDB
             'nome as text'
         ]);
     }
+
+    public static function comboPeriodoProcessoAutoComplete(): Collection
+    {
+        return PeriodoProcessoAvaliacao::all([
+            'id as id',
+            'nome as name'
+        ]);
+    }
 }

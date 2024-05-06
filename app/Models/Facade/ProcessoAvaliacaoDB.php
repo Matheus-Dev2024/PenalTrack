@@ -287,7 +287,7 @@ class ProcessoAvaliacaoDB
                 $join->on('ds.fk_servidor', '=', 'ss.id_servidor')
                     ->where('ds.exibicao_documento', '=', 2);
             })
-            ->leftJoin("sig_tipo_documento as td", 'ds.fk_tipo_documento', '=', 'td.id')
+            ->leftJoin("srh.sig_tipo_documento as td", 'ds.fk_tipo_documento', '=', 'td.id')
             ->join("periodos_processo as pp", 'pp.id', '=', 'pas.fk_periodo' )
             ->LeftJoin("policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
             ->join("srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
@@ -338,7 +338,8 @@ class ProcessoAvaliacaoDB
                 'su.nome',
                 'periodo',
                 'pp.id'
-            ]);
+            ])
+            ->orderBy('ss.nome');
 
         if (isset($p->periodo_processo)) {
             $sql->where('pp.id', $p->periodo_processo);
@@ -355,6 +356,11 @@ class ProcessoAvaliacaoDB
         if (isset($p->status)) {
             $sql->where('pas.status', $p->status);
         }
+        //filtro de pesquisa por data de período
+        if (isset($p->ref_inicio_admissao,$p->ref_fim_admissao)){
+            $sql->whereBetween('ss.dt_admissao', [$p->ref_inicio_admissao,$p->ref_fim_admissao]);
+        }
+
 
         $v = $sql->paginate(50);
         //if (!count($v->toArray()) > 0)

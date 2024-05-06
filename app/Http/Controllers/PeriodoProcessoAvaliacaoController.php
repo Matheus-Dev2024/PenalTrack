@@ -11,4 +11,10 @@ class PeriodoProcessoAvaliacaoController extends Controller
         $lista = PeriodoProcessoAvaliacaoDB::comboPeriodoProcesso();
         return response()->json($lista);
     }
+
+    public function comboAutoComplete()
+    {
+        $lista = PeriodoProcessoAvaliacaoDB::comboPeriodoProcessoAutoComplete();
+        return response()->json($lista);
+    }
 }
