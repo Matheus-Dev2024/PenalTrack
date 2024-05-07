@@ -365,7 +365,7 @@ class ProcessoAvaliacaoDB
         $v = $sql->paginate(50);
         //if (!count($v->toArray()) > 0)
         if ($v->isEmpty() || (isset($v->data) && count($v->data) > 0))
-            return response()->json(['mensagem' => 'Verifique se existe um servidor, unidade ou o avaliador existe no processo selecionado.'], 412);
+            return response()->json(['mensagem' => 'Não foram encontrados registros com os parâmetros informados.'], 400);
         return response()->json($v);
     }
     // public static function acompanhamentoServidoresGrid(stdClass $p): JsonResponse
