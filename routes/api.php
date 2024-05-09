@@ -3,6 +3,7 @@
 use App\Http\Controllers\AvaliacaoController;
 use App\Http\Controllers\AvaliadorController;
 use App\Http\Controllers\ComissaoController;
+use App\Http\Controllers\DocumentacaoEstagioDifController;
 use App\Http\Controllers\FatorAvaliacaoController;
 use App\Http\Controllers\FatorAvaliacaoItemController;
 use App\Http\Controllers\ImpressaoController;
@@ -113,6 +114,10 @@ Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/combo-avaliador
 Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/combo-processo', [ProcessoAvaliacaoController::class, 'comboProcessoTelaAcompanhamento']);
 Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/combo-status', [ProcessoAvaliacaoController::class, 'comboStatusTelaAcompanhamento']);
 Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/servidores-processo', [ProcessoAvaliacaoController::class, 'getServidoresProcesso']);
+// 
+
+Route::post('processo-avaliacao/acompanhamento-processo-avaliacao/upload-documentacao', [DocumentacaoEstagioDifController::class, 'store']);
+
 
 //Período do processo de avaliação
 Route::get('periodo-processo-avaliacao/combo', [PeriodoProcessoAvaliacaoController::class, 'combo']);

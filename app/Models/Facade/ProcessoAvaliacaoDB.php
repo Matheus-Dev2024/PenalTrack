@@ -303,6 +303,7 @@ class ProcessoAvaliacaoDB
                 'pas.fk_avaliador',
                 'pp.nome as periodo',
                 'pp.id as id_periodo',
+                
                 // DB::raw("STRING_AGG(
 
 
