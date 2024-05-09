@@ -114,9 +114,12 @@ Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/combo-avaliador
 Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/combo-processo', [ProcessoAvaliacaoController::class, 'comboProcessoTelaAcompanhamento']);
 Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/combo-status', [ProcessoAvaliacaoController::class, 'comboStatusTelaAcompanhamento']);
 Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/servidores-processo', [ProcessoAvaliacaoController::class, 'getServidoresProcesso']);
-// 
 
+// 
+Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/documentacao/{id}', [ProcessoAvaliacaoController::class, 'exibirDocumentoDif']);
 Route::post('processo-avaliacao/acompanhamento-processo-avaliacao/upload-documentacao', [DocumentacaoEstagioDifController::class, 'store']);
+Route::post('processo-avaliacao/acompanhamento-processo-avaliacao/documentacao/delete/{id}', [DocumentacaoEstagioDifController::class, 'deletarDocumentoDif']);
+
 
 
 //Período do processo de avaliação

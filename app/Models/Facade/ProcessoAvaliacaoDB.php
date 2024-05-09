@@ -283,11 +283,12 @@ class ProcessoAvaliacaoDB
         $sql = DB::table('processo_avaliacao_servidor as pas')
             ->join("srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
             ->LeftJoin("seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
-            ->leftJoin("srh.sig_documentacao_servidor as ds", function ($join) {
-                $join->on('ds.fk_servidor', '=', 'ss.id_servidor')
-                    ->where('ds.exibicao_documento', '=', 2);
-            })
-            ->leftJoin("srh.sig_tipo_documento as td", 'ds.fk_tipo_documento', '=', 'td.id')
+            ->LeftJoin("documentacao_estagio_dif as ded", "ded.fk_servidor", "=", "ss.id_servidor")
+            // ->leftJoin("srh.sig_documentacao_servidor as ds", function ($join) {
+            //     $join->on('ds.fk_servidor', '=', 'ss.id_servidor')
+            //         ->where('ds.exibicao_documento', '=', 2);
+            // })
+            ->leftJoin("srh.sig_tipo_documento as td", 'ded.fk_tipo_documento', '=', 'td.id')
             ->join("periodos_processo as pp", 'pp.id', '=', 'pas.fk_periodo' )
             ->LeftJoin("policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
             ->join("srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
@@ -303,28 +304,58 @@ class ProcessoAvaliacaoDB
                 'pas.fk_avaliador',
                 'pp.nome as periodo',
                 'pp.id as id_periodo',
-                
-                // DB::raw("STRING_AGG(
 
-
+                // DB::raw(
+                //     "STRING_AGG(
                 //     '
                 //     <table style=\"width: 100%;\" >
                 //     <tr>
                 //         <td >
-                //             <a href=\"#' || ds.id::text || '\" onclick=\"abrirDocumentacaoPdfNovaAba(' || ds.id || ')\">
-                //                 <i class=\"glyphicon glyphicon-paperclip\">&nbsp;</i>' || td.nome || '
+                //             <a href=\"#' || ded.id::text || '\" onclick=\"abrirDocumentacaoPdfNovaAba(' || ded.id || ')\">
+                //                 <i class=\"glyphicon glyphicon-pencil\">&nbsp;</i> ' || td.nome || '
                 //             </a>
+                            
                 //         </td>
-                        
+                //         <td style=\"text-align: right;\">
+                //             <btn onclick=\"vuelocal.deletarDiligencia(' || ded.id || ')\">
+                //                 <a href=\"#\" class=\"glyphicon glyphicon-trash\"></a>
+                //             </btn>
+    
+                //         </td>
                 //     </tr>
                 //     </table>
-
                 //     '
-
                 //     ,
                 //   '')
                 //     as documentos"
                 // ),
+                DB::raw("STRING_AGG(
+
+
+                    '
+                    <table style=\"width: 100%;\" >
+                    <tr>
+                        <td >
+                            <a href=\"#' || ded.id::text || '\" onclick=\"abrirDocumentacaoPdfNovaAba(' || ded.id || ')\">
+                                <i class=\"glyphicon glyphicon-paperclip\">&nbsp;</i>' || td.nome || '
+                            </a>
+                        </td>
+
+                        <td style=\"text-align: right;\">
+                             <btn onclick=\"vue.deletarDocumentacaoDif(' || ded.id || ')\">
+                                 <a href=\"#\" class=\"glyphicon glyphicon-trash\"></a>
+                            </btn>
+    
+                         </td>
+                    </tr>
+                    </table>
+
+                    '
+
+                    ,
+                  '')
+                    as documentos"
+                ),
 
                 DB::raw("TO_CHAR(ss.dt_admissao, 'DD/MM/YYYY') AS dt_admissao"), 'u.nome as unidade', 'ss.cargo', 'ss.matricula',)
             ->groupBy([
@@ -338,7 +369,8 @@ class ProcessoAvaliacaoDB
                 'ss.matricula',
                 'su.nome',
                 'periodo',
-                'pp.id'
+                'pp.id',
+                
             ])
             ->orderBy('ss.nome');
 

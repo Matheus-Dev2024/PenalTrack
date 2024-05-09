@@ -41,6 +41,12 @@ class RotinasController extends Controller
                 self::gravarLog();
             }
 
+
+            //Pegar os servidores cujo o processo esta como a coluna "notificado" = false
+
+            //enviar email para o avaliado e avaliador sobre a conclusão do processo
+
+
             return Response('sucesso', 200);
         } catch (Exception $e){
             // return Response($e->getMessage(), 500);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Documentacao;
+use App\Models\Entity\DocumentacaoEstagioDif;
 use App\Models\Entity\ProcessoAvaliacao;
 use App\Models\Entity\Servidor;
 use App\Models\Facade\ProcessoAvaliacaoDB;
@@ -222,5 +223,17 @@ class ProcessoAvaliacaoController extends Controller
     {
         $comboStatusProcesso = ProcessoAvaliacaoDB::comboStatusTelaAcompanhamento();
         return $comboStatusProcesso;
+    }
+
+    public function exibirDocumentoDif(Request $request)
+    {
+        $anexo = DocumentacaoEstagioDif::find($request->id);
+        $arquivo_resposta = stream_get_contents($anexo->anexo, -1);
+
+        return response($arquivo_resposta, 200, [
+            //'Content-Disposition' => 'attachment',
+            //'Content-Type' => 'application/pdf',
+            'Content-Type' => mime_content_type($anexo->anexo),
+        ]);
     }
 }
