@@ -275,6 +275,109 @@ class ProcessoAvaliacaoDB
         return number_format($notas->sum("nota"), 1);
     }
 
+    public static function acompanhamentoServidoresComissaoGrid(stdClass $p): JsonResponse
+    {
+        // $srh = config('database.connections.conexao_srh.schema');
+        // $policia = config('database.connections.conexao_banco_unico.schema');
+
+        $sql = DB::table('processo_avaliacao_servidor as pas')
+            ->join("srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
+            ->LeftJoin("seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
+            ->LeftJoin("documentacao_estagio_comissao as dec", "dec.fk_servidor", "=", "ss.id_servidor")
+            // ->leftJoin("srh.sig_documentacao_servidor as ds", function ($join) {
+            //     $join->on('ds.fk_servidor', '=', 'ss.id_servidor')
+            //         ->where('ds.exibicao_documento', '=', 2);
+            // })
+            ->leftJoin("srh.sig_tipo_documento as td", 'dec.fk_tipo_documento', '=', 'td.id')
+            ->join("periodos_processo as pp", 'pp.id', '=', 'pas.fk_periodo' )
+            ->LeftJoin("policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
+            ->join("srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
+            ->select(
+                'pas.id as id_processo_avaliacao',
+                'pas.fk_servidor',
+                'sc.abreviacao as sigla_cargo',
+                'ss.nome',
+                'su.nome as nome_avaliador',
+                'pas.status',
+                'pas.nota_total',
+                'pas.fk_unidade',
+                'pas.fk_avaliador',
+                'pp.nome as periodo',
+                'pp.id as id_periodo',
+
+                DB::raw("STRING_AGG(
+
+
+                    '
+                    <table style=\"width: 100%;\" >
+                    <tr>
+                        <td >
+                            <a href=\"#' || dec.id::text || '\" onclick=\"abrirDocumentacaoPdfNovaAba(' || dec.id || ')\">
+                                <i class=\"glyphicon glyphicon-paperclip\">&nbsp;</i>' || td.nome || '
+                            </a>
+                        </td>
+
+                        <td style=\"text-align: right;\">
+                             <btn onclick=\"vue.deletarDocumentacaoComissao(' || dec.id || ')\">
+                                 <a href=\"#\" class=\"glyphicon glyphicon-trash\"></a>
+                            </btn>
+    
+                         </td>
+                    </tr>
+                    </table>
+
+                    '
+
+                    ,
+                  '')
+                    as documentos"
+                ),
+
+                DB::raw("TO_CHAR(ss.dt_admissao, 'DD/MM/YYYY') AS dt_admissao"), 'u.nome as unidade', 'ss.cargo', 'ss.matricula',)
+            ->groupBy([
+                'ss.nome',
+                'pas.id',
+                'pas.fk_servidor',
+                'sc.abreviacao',
+                'ss.dt_admissao',
+                'u.nome',
+                'ss.cargo',
+                'ss.matricula',
+                'su.nome',
+                'periodo',
+                'pp.id',
+                
+            ])
+            ->orderBy('ss.nome');
+
+        if (isset($p->periodo_processo)) {
+            $sql->where('pp.id', $p->periodo_processo);
+        }
+        if (isset($p->processo_avaliacao_unidade)) {
+            $sql->where('pas.fk_unidade', $p->processo_avaliacao_unidade);
+        }
+        if (isset($p->avaliador)) {
+            $sql->where('pas.fk_avaliador', $p->avaliador);
+        }
+        if (isset($p->servidor)) {
+            $sql->where('pas.fk_servidor', $p->servidor);
+        }
+        if (isset($p->status)) {
+            $sql->where('pas.status', $p->status);
+        }
+        //filtro de pesquisa por data de período
+        if (isset($p->ref_inicio_admissao,$p->ref_fim_admissao)){
+            $sql->whereBetween('ss.dt_admissao', [$p->ref_inicio_admissao,$p->ref_fim_admissao]);
+        }
+
+
+        $v = $sql->paginate(50);
+        //if (!count($v->toArray()) > 0)
+        if ($v->isEmpty() || (isset($v->data) && count($v->data) > 0))
+            return response()->json(['mensagem' => 'Não foram encontrados registros com os parâmetros informados.'], 400);
+        return response()->json($v);
+    }
+
     public static function acompanhamentoServidoresGrid(stdClass $p): JsonResponse
     {
         // $srh = config('database.connections.conexao_srh.schema');
@@ -305,30 +408,6 @@ class ProcessoAvaliacaoDB
                 'pp.nome as periodo',
                 'pp.id as id_periodo',
 
-                // DB::raw(
-                //     "STRING_AGG(
-                //     '
-                //     <table style=\"width: 100%;\" >
-                //     <tr>
-                //         <td >
-                //             <a href=\"#' || ded.id::text || '\" onclick=\"abrirDocumentacaoPdfNovaAba(' || ded.id || ')\">
-                //                 <i class=\"glyphicon glyphicon-pencil\">&nbsp;</i> ' || td.nome || '
-                //             </a>
-                            
-                //         </td>
-                //         <td style=\"text-align: right;\">
-                //             <btn onclick=\"vuelocal.deletarDiligencia(' || ded.id || ')\">
-                //                 <a href=\"#\" class=\"glyphicon glyphicon-trash\"></a>
-                //             </btn>
-    
-                //         </td>
-                //     </tr>
-                //     </table>
-                //     '
-                //     ,
-                //   '')
-                //     as documentos"
-                // ),
                 DB::raw("STRING_AGG(
 
 

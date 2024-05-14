@@ -3,6 +3,7 @@
 use App\Http\Controllers\AvaliacaoController;
 use App\Http\Controllers\AvaliadorController;
 use App\Http\Controllers\ComissaoController;
+use App\Http\Controllers\DocumentacaoEstagioComissaoController;
 use App\Http\Controllers\DocumentacaoEstagioDifController;
 use App\Http\Controllers\FatorAvaliacaoController;
 use App\Http\Controllers\FatorAvaliacaoItemController;
@@ -114,12 +115,19 @@ Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/combo-avaliador
 Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/combo-processo', [ProcessoAvaliacaoController::class, 'comboProcessoTelaAcompanhamento']);
 Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/combo-status', [ProcessoAvaliacaoController::class, 'comboStatusTelaAcompanhamento']);
 Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/servidores-processo', [ProcessoAvaliacaoController::class, 'getServidoresProcesso']);
+Route::get('processo-avaliacao/acompanhamento/info', [ProcessoAvaliacaoController::class, 'getAllInfoAcompanhamento']);
 
-// 
+
+
+//ROTAS DOCUMENTACAO ESTAGIO COMISSAO
+Route::post('processo-avaliacao/acompanhamento-comissao/upload-documentacao', [DocumentacaoEstagioComissaoController::class, 'store']);
+Route::get('processo-avaliacao/acompanhamento-comissao/grid', [ProcessoAvaliacaoController::class, 'acompanhamentoServidoresComissaoGrid']);
+Route::post('processo-avaliacao/acompanhamento-comissao/documentacao/delete/{id}', [DocumentacaoEstagioComissaoController::class, 'deletarDocumentoComissao']);
+
+//ROTAS DOCUMENTACAO ESTAGIO DIF 
 Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/documentacao/{id}', [ProcessoAvaliacaoController::class, 'exibirDocumentoDif']);
 Route::post('processo-avaliacao/acompanhamento-processo-avaliacao/upload-documentacao', [DocumentacaoEstagioDifController::class, 'store']);
 Route::post('processo-avaliacao/acompanhamento-processo-avaliacao/documentacao/delete/{id}', [DocumentacaoEstagioDifController::class, 'deletarDocumentoDif']);
-
 
 
 //Período do processo de avaliação

@@ -6,6 +6,7 @@ use App\Models\Documentacao;
 use App\Models\Entity\DocumentacaoEstagioDif;
 use App\Models\Entity\ProcessoAvaliacao;
 use App\Models\Entity\Servidor;
+use App\Models\Facade\PeriodoProcessoAvaliacaoDB;
 use App\Models\Facade\ProcessoAvaliacaoDB;
 use App\Models\Facade\UsuarioAvaliaServidorDB;
 use App\Models\Facade\UsuarioAvaliaServidoresDB;
@@ -27,6 +28,12 @@ class ProcessoAvaliacaoController extends Controller
     {
         $p = (object)$request->all();
         return ProcessoAvaliacaoDB::acompanhamentoServidoresGrid($p);
+    }
+
+    public function acompanhamentoServidoresComissaoGrid(Request $request)
+    {
+        $p = (object)$request->all();
+        return ProcessoAvaliacaoDB::acompanhamentoServidoresComissaoGrid($p);
     }
 
     public function servidoresGrid(Request $request)
@@ -235,5 +242,17 @@ class ProcessoAvaliacaoController extends Controller
             //'Content-Type' => 'application/pdf',
             'Content-Type' => mime_content_type($anexo->anexo),
         ]);
+    }
+
+    public function getAllInfoAcompanhamento()
+    {
+        $info = [];
+
+        $info['servidores'] = $this->getServidoresProcesso();
+        $info['status'] = $this->comboStatusTelaAcompanhamento();
+        $info['periodo_processo'] = PeriodoProcessoAvaliacaoDB::comboPeriodoProcessoAutoComplete();
+        $info['unidades'] = ProcessoAvaliacaoDB::comboUnidade();
+
+        return $info;
     }
 }
