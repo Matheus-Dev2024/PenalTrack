@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Documentacao;
 use App\Models\Entity\DocumentacaoEstagioDif;
+use App\Models\Entity\ProcessoAcompanhamentoAnexos;
 use App\Models\Entity\ProcessoAvaliacao;
 use App\Models\Entity\Servidor;
 use App\Models\Facade\PeriodoProcessoAvaliacaoDB;
@@ -30,11 +31,11 @@ class ProcessoAvaliacaoController extends Controller
         return ProcessoAvaliacaoDB::acompanhamentoServidoresGrid($p);
     }
 
-    public function acompanhamentoServidoresComissaoGrid(Request $request)
-    {
-        $p = (object)$request->all();
-        return ProcessoAvaliacaoDB::acompanhamentoServidoresComissaoGrid($p);
-    }
+    // public function acompanhamentoServidoresComissaoGrid(Request $request)
+    // {
+    //     $p = (object)$request->all();
+    //     return ProcessoAvaliacaoDB::acompanhamentoServidoresComissaoGrid($p);
+    // }
 
     public function servidoresGrid(Request $request)
     {
@@ -234,7 +235,10 @@ class ProcessoAvaliacaoController extends Controller
 
     public function exibirDocumentoDif(Request $request)
     {
-        $anexo = DocumentacaoEstagioDif::find($request->id);
+        //$anexo = DocumentacaoEstagioDif::find($request->id);
+        //método alterado para usar o model de uma tabela unica de anexos entre dif e comissao "processo_acompanhamento_anexos"
+        $anexo = ProcessoAcompanhamentoAnexos::find($request->id);
+
         $arquivo_resposta = stream_get_contents($anexo->anexo, -1);
 
         return response($arquivo_resposta, 200, [

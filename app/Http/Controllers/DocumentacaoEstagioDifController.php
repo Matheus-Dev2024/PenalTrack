@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Entity\DocumentacaoEstagioDif;
+use App\Models\Entity\ProcessoAcompanhamentoAnexos;
 use App\Models\Regras\DocumentacaoEstagioDifRegras;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,7 +29,9 @@ class DocumentacaoEstagioDifController extends Controller
     {
         DB::beginTransaction();
         try{
-            $documentacao = DocumentacaoEstagioDif::find($id);
+            //método alterado para usar o model de uma tabela unica de anexos entre dif e comissao "processo_acompanhamento_anexos"
+            //$documentacao = DocumentacaoEstagioDif::find($id);
+            $documentacao = ProcessoAcompanhamentoAnexos::find($id);
             $documentacao->delete();
             DB::commit();
             return response()->json(['message' => 'Excluído com sucesso']);    

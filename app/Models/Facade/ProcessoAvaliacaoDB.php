@@ -386,12 +386,12 @@ class ProcessoAvaliacaoDB
         $sql = DB::table('processo_avaliacao_servidor as pas')
             ->join("srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
             ->LeftJoin("seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
-            ->LeftJoin("documentacao_estagio_dif as ded", "ded.fk_servidor", "=", "ss.id_servidor")
+            ->LeftJoin("processo_acompanhamento_anexos as paa", "paa.fk_servidor", "=", "ss.id_servidor")
             // ->leftJoin("srh.sig_documentacao_servidor as ds", function ($join) {
             //     $join->on('ds.fk_servidor', '=', 'ss.id_servidor')
             //         ->where('ds.exibicao_documento', '=', 2);
             // })
-            ->leftJoin("srh.sig_tipo_documento as td", 'ded.fk_tipo_documento', '=', 'td.id')
+            ->leftJoin("srh.sig_tipo_documento as td", 'paa.fk_tipo_documento', '=', 'td.id')
             ->join("periodos_processo as pp", 'pp.id', '=', 'pas.fk_periodo' )
             ->LeftJoin("policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
             ->join("srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
@@ -415,13 +415,13 @@ class ProcessoAvaliacaoDB
                     <table style=\"width: 100%;\" >
                     <tr>
                         <td >
-                            <a href=\"#' || ded.id::text || '\" onclick=\"abrirDocumentacaoPdfNovaAba(' || ded.id || ')\">
+                            <a href=\"#' || paa.id::text || '\" onclick=\"abrirDocumentacaoPdfNovaAba(' || paa.id || ')\">
                                 <i class=\"glyphicon glyphicon-paperclip\">&nbsp;</i>' || td.nome || '
                             </a>
                         </td>
 
                         <td style=\"text-align: right;\">
-                             <btn onclick=\"vue.deletarDocumentacaoDif(' || ded.id || ')\">
+                             <btn onclick=\"vue.deletarDocumentacaoDif(' || paa.id || ')\">
                                  <a href=\"#\" class=\"glyphicon glyphicon-trash\"></a>
                             </btn>
     

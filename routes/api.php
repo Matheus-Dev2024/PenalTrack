@@ -117,8 +117,6 @@ Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/combo-status', 
 Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/servidores-processo', [ProcessoAvaliacaoController::class, 'getServidoresProcesso']);
 Route::get('processo-avaliacao/acompanhamento/info', [ProcessoAvaliacaoController::class, 'getAllInfoAcompanhamento']);
 
-
-
 //ROTAS DOCUMENTACAO ESTAGIO COMISSAO
 Route::post('processo-avaliacao/acompanhamento-comissao/upload-documentacao', [DocumentacaoEstagioComissaoController::class, 'store']);
 Route::get('processo-avaliacao/acompanhamento-comissao/grid', [ProcessoAvaliacaoController::class, 'acompanhamentoServidoresComissaoGrid']);
