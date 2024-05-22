@@ -7,6 +7,7 @@ use App\Models\Entity\Grupo;
 use App\Models\Entity\UsuarioAvaliadorIntermediario;
 use App\Models\Entity\UsuarioAvaliaServidores;
 use App\Models\Entity\UsuarioAvaliaUnidades;
+use App\Models\Entity\UsuarioRispEstagio;
 use App\Models\Entity\UsuarioSistema;
 use Illuminate\Http\JsonResponse;
 use stdClass;
@@ -64,10 +65,13 @@ class AvaliadorRegras
             ]);
         }
 
-        //registra o usuário que cadastrou e o usuario cadastrado
+        //registra o usuário que cadastrou e o usuario cadastrado e a risp do usuario que cadastrou(superintendente)
+        $risp_usuario_logado = UsuarioRispEstagio::where('fk_usuario', $dados->usuario_cad)->first();
+
         UsuarioAvaliadorIntermediario::create([
             'usuario_cadastrou' => $dados->usuario_cad,
-            'usuario_cadastrado' => $avaliadorNovo->id
+            'usuario_cadastrado' => $avaliadorNovo->id,
+            'fk_risp_usuario_cadastrou' => $risp_usuario_logado->fk_risp
         ]);
 
         //registra o usuário cadastrado na tabela grupo que relaciona o perfil do novo usuário, no sistema e-probatório é necessário para carregar os menus
