@@ -19,7 +19,6 @@ class AvaliadorRegras
 
     public static function salvar(stdClass $dados): JsonResponse
     {
-
         $senha2 = password_hash($dados->senha2, PASSWORD_BCRYPT);
         $dados->senha2 = $senha2;
 

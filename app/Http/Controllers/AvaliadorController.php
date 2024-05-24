@@ -35,7 +35,7 @@ class AvaliadorController extends Controller
         return response()->json($avaliador);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(AvaliadorStoreRequest $request): JsonResponse
     {
         try {
             DB::beginTransaction();
