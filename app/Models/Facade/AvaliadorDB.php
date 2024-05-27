@@ -50,12 +50,13 @@ class AvaliadorDB
     {
         $listaAvaliador = DB::table('seguranca.usuario as u')
             ->join('seguranca.usuario_sistema as us', 'u.id', '=', 'us.usuario_id')
-            ->join('eprobatorio.usuario_avaliador_intermediario as uai', 'u.id', '=', 'uai.usuario_cadastrado')
+            ->join('eprobatorio.usuario_cadastro_avaliador as uai', 'u.id', '=', 'uai.usuario_cadastrado')
+            //->leftJoinjoin('eprobatorio.usuario_risp_estagio as ur0', 'uai.')
             ->join('eprobatorio.usuario_avalia_unidades as uau', 'u.id', '=', 'uau.usuario_id')
             //->join('eprobatorio.usuario_avalia_unidades as uau', 'u.id', '=', 'uau.usuario_id') // Descomentar esta linha para mostrar somente avaliadores com unidades para avaliar
             ->select('u.id', 'u.nome', 'u.email', 'u.status')
             ->where('us.sistema_id', '=', 56)
-            //->where('uai.usuario_cadastrou', '=', $usuarioLogado->id_usuario) // Exibe apenas os avaliadores que o usuario cadastrou
+            ->where('uai.usuario_cadastrou', '=', $usuarioLogado->id_usuario) // Exibe apenas os avaliadores que o usuario cadastrou
             ->groupBy('u.id')
             ->orderBy('u.id')
             ->get();

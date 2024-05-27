@@ -4,7 +4,7 @@ namespace App\Models\Regras;
 
 use App\Models\Entity\Avaliador;
 use App\Models\Entity\Grupo;
-use App\Models\Entity\UsuarioAvaliadorIntermediario;
+use App\Models\Entity\UsuarioCadastroAvaliador;
 use App\Models\Entity\UsuarioAvaliaServidores;
 use App\Models\Entity\UsuarioAvaliaUnidades;
 use App\Models\Entity\UsuarioRispEstagio;
@@ -12,7 +12,7 @@ use App\Models\Entity\UsuarioSistema;
 use Illuminate\Http\JsonResponse;
 use stdClass;
 use PoliciaCivil\Seguranca\Models\Entity\SegGrupo;
-
+use PoliciaCivil\Seguranca\Models\Entity\Usuario;
 
 class AvaliadorRegras
 {
@@ -64,15 +64,7 @@ class AvaliadorRegras
             ]);
         }
 
-        //registra o usuário que cadastrou e o usuario cadastrado e a risp do usuario que cadastrou(superintendente)
-        $risp_usuario_logado = UsuarioRispEstagio::where('fk_usuario', $dados->usuario_cad)->first();
-
-        UsuarioAvaliadorIntermediario::create([
-            'usuario_cadastrou' => $dados->usuario_cad,
-            'usuario_cadastrado' => $avaliadorNovo->id,
-            'fk_risp_usuario_cadastrou' => $risp_usuario_logado->fk_risp
-        ]);
-
+        
         //registra o usuário cadastrado na tabela grupo que relaciona o perfil do novo usuário, no sistema e-probatório é necessário para carregar os menus
         // perfil criado como perfil eprobatorio no ambiente de desenvolvimento (1)
         Grupo::create([
@@ -88,6 +80,17 @@ class AvaliadorRegras
                 "errors" => (object)['avaliador' => 'Este Avaliador já encontra-se cadastrado!']
             ], 409);
         }
+        
+        //registra o usuário que cadastrou e o usuario cadastrado e a risp do usuario que cadastrou(superintendente)
+        $risp_usuario_logado = UsuarioRispEstagio::where('fk_usuario', $dados->usuario_cad)->first();
+        $diretoria_usuario_logado = Usuario::where('id', $dados->usuario_cad)->first();
+
+        UsuarioCadastroAvaliador::create([
+            'usuario_cadastrou' => $dados->usuario_cad,
+            'usuario_cadastrado' => $avaliadorNovo->id,
+            'fk_risp_usuario_cadastrou' => $risp_usuario_logado->fk_risp,
+            'fk_diretoria' => $diretoria_usuario_logado->fk_unidade
+        ]);
 
         //Adiciona o usuário no sistema estágio probatório (56)
         UsuarioSistema::create([
@@ -160,7 +163,7 @@ class AvaliadorRegras
         $avaliadorUnidades = UsuarioAvaliaUnidades::where('usuario_id', $id)->get();
         $avaliadorServidores = UsuarioAvaliaServidores::where('usuario_id', $id)->get();
         $avaliadorGrupo = SegGrupo::where('usuario_id', $id)->get();
-        $avaliadorIntermediario = UsuarioAvaliadorIntermediario::where('usuario_cadastrado', $id)->get();
+        $avaliadorIntermediario = UsuarioCadastroAvaliador::where('usuario_cadastrado', $id)->get();
 
         $avaliadorGrupo->each(function ($avaGrupo) {
             $avaGrupo->delete();

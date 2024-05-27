@@ -39,6 +39,9 @@ use Illuminate\Support\Facades\Route;
 
 //});
 
+Route::get('robo-eprobatorio', [RotinasController::class, 'roboEprobatorio']);
+
+
 //Formulário de Avaliação
 Route::controller(AvaliacaoController::class)->group(function () {
     Route::get('avaliacao/info', 'info');

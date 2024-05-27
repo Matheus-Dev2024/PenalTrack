@@ -5,10 +5,10 @@ namespace App\Models\Entity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UsuarioAvaliadorIntermediario extends Model
+class UsuarioCadastroAvaliador extends Model
 {
     use HasFactory;
 
-    protected $table = "usuario_avaliador_intermediario";
+    protected $table = "usuario_cadastro_avaliador";
     protected $guarded = [];
 }
