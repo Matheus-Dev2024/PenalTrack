@@ -5,9 +5,9 @@ namespace App\Models\Entity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UsuarioRispEstagio extends Model
+class UsuarioRisp extends Model
 {
     use HasFactory;
-    protected $table = "usuario_risp_estagio";
+    protected $table = "policia.usuario_risp";
 
 }

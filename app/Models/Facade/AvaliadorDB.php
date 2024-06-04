@@ -48,15 +48,24 @@ class AvaliadorDB
     public static function PesquisaAvaliador(stdClass $usuarioLogado): Collection
         // usuario avalia unidades onde o id é igual ao 56(estágio probatório)
     {
+        $fk_risp_logado = DB::table('policia.usuario_risp')
+        ->where('fk_usuario', $usuarioLogado->id_usuario)
+        ->value('fk_risp');
+
+        $fk_diretoria_logado = DB::table('seguranca.usuario')
+        ->where('id', $usuarioLogado->id_usuario)
+        ->value('fk_unidade');
+
         $listaAvaliador = DB::table('seguranca.usuario as u')
             ->join('seguranca.usuario_sistema as us', 'u.id', '=', 'us.usuario_id')
             ->join('eprobatorio.usuario_cadastro_avaliador as uai', 'u.id', '=', 'uai.usuario_cadastrado')
-            //->leftJoinjoin('eprobatorio.usuario_risp_estagio as ur0', 'uai.')
             ->join('eprobatorio.usuario_avalia_unidades as uau', 'u.id', '=', 'uau.usuario_id')
-            //->join('eprobatorio.usuario_avalia_unidades as uau', 'u.id', '=', 'uau.usuario_id') // Descomentar esta linha para mostrar somente avaliadores com unidades para avaliar
+            ->leftJoin('policia.usuario_risp as ur', 'u.id', '=', 'ur.fk_usuario')
             ->select('u.id', 'u.nome', 'u.email', 'u.status')
             ->where('us.sistema_id', '=', 56)
-            ->where('uai.usuario_cadastrou', '=', $usuarioLogado->id_usuario) // Exibe apenas os avaliadores que o usuario cadastrou
+            ->where('uai.fk_risp', '=', $fk_risp_logado)
+            ->orWhere('uai.fk_diretoria', '=', $fk_diretoria_logado)
+            //->where('uai.usuario_cadastrou', '=', $usuarioLogado->id_usuario) // Exibe apenas os avaliadores que o usuario cadastrou
             ->groupBy('u.id')
             ->orderBy('u.id')
             ->get();

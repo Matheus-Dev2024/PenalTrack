@@ -4,10 +4,11 @@ namespace App\Models\Regras;
 
 use App\Models\Entity\Avaliador;
 use App\Models\Entity\Grupo;
+use App\Models\Entity\GrupoSrh;
 use App\Models\Entity\UsuarioCadastroAvaliador;
 use App\Models\Entity\UsuarioAvaliaServidores;
 use App\Models\Entity\UsuarioAvaliaUnidades;
-use App\Models\Entity\UsuarioRispEstagio;
+use App\Models\Entity\UsuarioRisp;
 use App\Models\Entity\UsuarioSistema;
 use Illuminate\Http\JsonResponse;
 use stdClass;
@@ -81,16 +82,31 @@ class AvaliadorRegras
             ], 409);
         }
         
-        //registra o usuário que cadastrou e o usuario cadastrado e a risp do usuario que cadastrou(superintendente)
-        $risp_usuario_logado = UsuarioRispEstagio::where('fk_usuario', $dados->usuario_cad)->first();
-        $diretoria_usuario_logado = Usuario::where('id', $dados->usuario_cad)->first();
-
-        UsuarioCadastroAvaliador::create([
-            'usuario_cadastrou' => $dados->usuario_cad,
-            'usuario_cadastrado' => $avaliadorNovo->id,
-            'fk_risp_usuario_cadastrou' => $risp_usuario_logado->fk_risp,
-            'fk_diretoria' => $diretoria_usuario_logado->fk_unidade
-        ]);
+        //verifica se o perfil do usuario logado, se for de superintendente(41), vai salvar a risp;
+        //se o perfil for de diretor(42), vai salvar a diretoria(fk_unidade);        
+        $perfisUsuarioLogado = GrupoSrh::where('fk_usuario', $dados->usuario_cad)->get();
+        foreach ($perfisUsuarioLogado as $perfil) {
+            // 41 é o perfil de superintendente
+            if($perfil->fk_perfil == 41) {
+                $risp_usuario_logado = UsuarioRisp::where('fk_usuario', $dados->usuario_cad)->first();
+                UsuarioCadastroAvaliador::create([
+                    'usuario_cadastrou' => $dados->usuario_cad,
+                    'usuario_cadastrado' => $avaliadorNovo->id,
+                    'fk_risp' => $risp_usuario_logado->fk_risp,
+                    //'fk_diretoria' => $diretoria_usuario_logado->fk_unidade
+                ]);
+            // 42 é o perfil de diretor
+            } elseif($perfil->fk_perfil == 42) {
+                $diretoria_usuario_logado = Usuario::where('id', $dados->usuario_cad)->first();
+                $risp_usuario_logado = UsuarioRisp::where('fk_usuario', $dados->usuario_cad)->first();
+                UsuarioCadastroAvaliador::create([
+                    'usuario_cadastrou' => $dados->usuario_cad,
+                    'usuario_cadastrado' => $avaliadorNovo->id,
+                    'fk_risp' => $risp_usuario_logado->fk_risp,
+                    'fk_diretoria' => $diretoria_usuario_logado->fk_unidade
+                ]);
+            } 
+        };
 
         //Adiciona o usuário no sistema estágio probatório (56)
         UsuarioSistema::create([
