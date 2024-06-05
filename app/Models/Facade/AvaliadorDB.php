@@ -117,6 +117,7 @@ class AvaliadorDB
                 'sgc.abreviacao'
 
             ])
+            ->orderBy('ss.nome')
             ->get();
 
         return $servidoresPorPeriodo;

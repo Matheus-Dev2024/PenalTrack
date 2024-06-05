@@ -16,12 +16,14 @@ class UsuarioAvaliaServidorDB
             'uas.id',
             'uas.usuario_id',
             'uas.fk_processo_avaliacao_servidor',
-            'ss.nome'
+            'ss.nome',
+            'pp.nome as periodo'
         ];
         
         $sql = DB::table('usuario_avalia_servidores as uas')
         ->join('processo_avaliacao_servidor as pas', 'pas.id', '=', 'uas.fk_processo_avaliacao_servidor')
         ->join("srh.sig_servidor as ss", 'ss.id_servidor', '=', 'uas.servidor_id')
+        ->join('periodos_processo as pp', 'pp.id', '=', 'pas.fk_periodo')
         ->where('uas.usuario_id', '=', $p->usuario_id)
         ->orderBy('ss.nome')
         ->select($select); 

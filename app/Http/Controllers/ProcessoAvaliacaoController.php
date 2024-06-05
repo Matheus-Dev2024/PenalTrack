@@ -14,6 +14,7 @@ use App\Models\Facade\UsuarioAvaliaServidoresDB;
 use App\Models\Regras\ProcessoAvaliacaoRegras;
 use App\Models\Regras\UsuarioAvaliaServidorRegras;
 use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -119,8 +120,13 @@ class ProcessoAvaliacaoController extends Controller
             UsuarioAvaliaServidorRegras::salvar($p);
             DB::commit();
             return response()->json(["mensagem" => "Servidor adicionado com sucesso."]);
+            
         } catch (Exception $ex) {
             DB::rollback();
+
+            if ($ex->getCode() == '23505') {
+                return response()->json(["error" => "Servidor já adicionado nesse período"]);
+            }
             return response()->json(["error" => $ex->getMessage()]);
         }
     }
