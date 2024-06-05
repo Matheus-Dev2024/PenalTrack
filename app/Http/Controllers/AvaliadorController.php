@@ -125,4 +125,15 @@ class AvaliadorController extends Controller
         return $comboAvaliador;
     }
 
+    public function carregarServidorPorPeriodo($periodo)
+    {
+        try {
+            $lista = AvaliadorDB::carregarServidorPorPeriodo($periodo);
+            return response()->json($lista);
+        } catch (Exception $ex) {
+            //return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
+            return response()->json(["error" => $ex->getMessage()]);
+        }
+    }
+
 }

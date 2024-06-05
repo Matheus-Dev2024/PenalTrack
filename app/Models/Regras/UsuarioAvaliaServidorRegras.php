@@ -12,7 +12,7 @@ class UsuarioAvaliaServidorRegras
         UsuarioAvaliaServidores::create([
             'usuario_id' => $dados->usuario_id,
             'servidor_id' => $dados->servidor_id,
-            'fk_processo_avaliacao' => $dados->processo_avaliacao
+            'fk_processo_avaliacao_servidor' => $dados->processo_avaliacao_servidor
         ]);
     }
 

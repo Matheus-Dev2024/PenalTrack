@@ -93,4 +93,32 @@ class AvaliadorDB
         $avaliadores = $avaliador_por_unidade->union($avaliador_por_servidor)->get();
         return $avaliadores;
     }
+
+    public static function carregarServidorPorPeriodo($periodo)
+    {
+        // $srh = config('database.connections.conexao_srh.schema');
+        // $policia = config('database.connections.conexao_banco_unico.database');
+
+        $servidoresPorPeriodo = DB::table('processo_avaliacao_servidor as pas')
+            ->join("srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
+            ->join('periodos_processo as pp', 'pp.id', '=', 'pas.fk_periodo')
+            ->join("srh.sig_cargo as sgc", 'sgc.id', '=', 'ss.fk_id_cargo')    
+            ->select(
+                'pas.id as id_processo_avaliacao_servidor',
+                'pas.fk_servidor',
+                'ss.nome',
+                'sgc.abreviacao'
+            )
+            ->where('pas.fk_periodo', '=', $periodo)
+            ->groupBy([
+                'ss.nome',
+                'pas.id',
+                'pas.fk_servidor',
+                'sgc.abreviacao'
+
+            ])
+            ->get();
+
+        return $servidoresPorPeriodo;
+    }
 }

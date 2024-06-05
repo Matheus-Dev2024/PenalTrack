@@ -42,7 +42,6 @@ class ProcessoAvaliacaoController extends Controller
         try {
             DB::beginTransaction();
             $lista = ProcessoAvaliacaoDB::servidoresGrid($request->id_processo);
-            //DB::commit();
             return response()->json($lista);
         }catch (Exception $e){
             DB::rollBack();
@@ -113,9 +112,6 @@ class ProcessoAvaliacaoController extends Controller
 
         DB::beginTransaction();
         try {
-            if (!$request->processo_avaliacao) {
-                return response()->json(['error' => 'O campo processo avaliação é obrigatório.']);
-            }
             if (!$request->servidor_id) {
                 return response()->json(['error' => 'O campo servidor é obrigatório.']);
             }
@@ -125,7 +121,7 @@ class ProcessoAvaliacaoController extends Controller
             return response()->json(["mensagem" => "Servidor adicionado com sucesso."]);
         } catch (Exception $ex) {
             DB::rollback();
-            return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
+            return response()->json(["error" => $ex->getMessage()]);
         }
     }
 
