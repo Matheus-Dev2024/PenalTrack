@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AvaliadoResource;
 use App\Models\Entity\ArquivoAvaliacaoServidor;
 use App\Models\Entity\FatorAvaliacao;
 use App\Models\Facade\AvaliacaoDB;
 use App\Models\Regras\AvaliacaoServidorRegras;
 use App\Models\Regras\ProcessoAvaliacaoRegras;
 use Exception;
-use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class AvaliacaoController extends Controller
@@ -54,7 +55,8 @@ class AvaliacaoController extends Controller
     public function getServidoresAvaliacaoCorrente(Request $request)
     {
         $p = (object)$request->all();
-        return AvaliacaoDB::getListaServidoresDoProcessoAvaliacao($p);
+        $dados = AvaliacaoDB::getListaServidoresDoProcessoAvaliacao($p);
+        return response(AvaliadoResource::collection($dados), 200);
     }
 
 
@@ -109,13 +111,13 @@ class AvaliacaoController extends Controller
         }
     }
 
-    public function comboProcesso() : array
+    public function comboProcesso(): array
     {
         $comboProcesso = AvaliacaoDB::comboProcesso();
         return compact('comboProcesso');
     }
 
-    public function comboStatus() : Collection 
+    public function comboStatus(): Collection
     {
         return AvaliacaoDB::comboStatus();
     }
@@ -123,7 +125,7 @@ class AvaliacaoController extends Controller
 
     //retorna um arquivo para ser baixado
     public function exibirArquivo(Request $request)
-    {   
+    {
         $p = (object)$request->all();
         return AvaliacaoServidorRegras::exibirArquivo($p);
     }

@@ -27,7 +27,6 @@ class UsuarioAvaliaServidorDB
         ->where('uas.usuario_id', '=', $p->usuario_id)
         ->orderBy('ss.nome')
         ->select($select); 
-
         return $sql->get();
     }
 }

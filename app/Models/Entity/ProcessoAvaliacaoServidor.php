@@ -11,9 +11,9 @@ class ProcessoAvaliacaoServidor extends Model
     protected $table = "processo_avaliacao_servidor";
     protected $guarded = [];
 
-    public function processo()
-    {
-        return $this->hasOne(ProcessoAvaliacao::class);
-    }
+    // public function processo()
+    // {
+    //     return $this->hasOne(ProcessoAvaliacao::class);
+    // }
     
 }

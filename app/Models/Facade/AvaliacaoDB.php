@@ -3,9 +3,9 @@
 namespace App\Models\Facade;
 
 use App\Models\Entity\AvaliacaoServidor;
+use App\Models\Entity\ProcessoAvaliacaoServidor;
 use App\Models\Entity\ServidoresAvaliadosIndividualmente;
 use App\Models\Entity\UsuarioAvaliaUnidades;
-use illuminate\http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -55,101 +55,61 @@ class AvaliacaoDB
         return $sql->get();
     }
 
-    public static function getListaServidoresDoProcessoAvaliacao(stdClass $p): JsonResponse
+    public static function getListaServidoresDoProcessoAvaliacao(stdClass $p): Collection
     {
         $usuario_id = Auth::user()->id;
         //$usuario_id = 587;
 
-        $select = [
-            'pa.id as processo_avaliacao_id', 'pa.dt_inicio_avaliacao',
-            'pa.dt_termino_avaliacao',
-            DB::raw('SUBSTRING(pa.descricao, 1, 23) as nome_processo'),
-            'ss.nome',
-            'ss.id_servidor as id',
-            'ss.matricula',
-            'c.abreviacao as cargo',
-            //'unidadee.nome as unidade',
-            //'unidade.id as unidade_id',
-            'pss.nome as situacao',
-            'pas.nota_total',
-            'pas.status',
-            
-        ];
-
         // Lista de Unidades que o servidor logado deverá Avaliar
-        $unidades_do_avaliador = UsuarioAvaliaUnidades::where('usuario_id', $usuario_id);
+        $unidades_do_avaliador = UsuarioAvaliaUnidades::where('usuario_id', $usuario_id)->select('unidade_id');
+        // $unidades_do_avaliador = UsuarioAvaliaUnidades::unidadesParaServidorAvaliar($usuario_id);
 
-        // Lista com todos os servidores que serão Avaliados Individualmente
-        $servidores_avaliados_individualmente = ServidoresAvaliadosIndividualmente::all();
+        // Lista com todos os processos que serão Avaliados Individualmente
+        $processos_avaliados_individualmente = ServidoresAvaliadosIndividualmente::where('usuario_id', $usuario_id)->select('fk_processo_avaliacao_servidor');
 
-        //Lista com todos os Servidores que serão avaliados individualmente pelo usuário logado
-        $servidores_avaliados_por_este_usuario = $servidores_avaliados_individualmente->where('usuario_id', $usuario_id)
-            ->pluck('servidor_id')->toArray();
+        $servidores_avaliados_individualmente = ProcessoAvaliacaoServidor::WhereIn('id', $processos_avaliados_individualmente);
 
-        $sql = DB::table("eprobatorio.processo_avaliacao as pa")
-            ->join("eprobatorio.processo_avaliacao_servidor as pas", "pas.fk_processo_avaliacao", "pa.id")
-            ->join("srh.sig_servidor as ss", "ss.id_servidor", "pas.fk_servidor")
+        $servidores_avaliados_por_unidade = ProcessoAvaliacaoServidor::whereIn('fk_unidade', $unidades_do_avaliador);
+
+        $servidores_avaliados = $servidores_avaliados_individualmente->union($servidores_avaliados_por_unidade);
+
+        //no select abaixo, transformamos o resultado da união entre as consultas em uma tabela "servidores_avaliados" para realizarmos os joins etc...;
+        //e posteriormente utilizamos o mergeBindings+getQuery pra exibir com os mesmos parametros das consultas anteriores.
+
+
+        $resultados = DB::table(DB::raw("({$servidores_avaliados->toSql()}) as servidores_avaliados"))
+            ->mergeBindings($servidores_avaliados->getQuery()) // É importante passar o query builder aqui
+            ->join("eprobatorio.processo_avaliacao_servidor as pas", "servidores_avaliados.id", 'pas.id')
+            ->join("eprobatorio.periodos_processo as pp", "servidores_avaliados.fk_periodo", "pp.id")
+            ->join("policia.unidade as uni", "servidores_avaliados.fk_unidade", "uni.id")
+            ->join("srh.sig_servidor as ss", "ss.id_servidor", "servidores_avaliados.fk_servidor")
             ->join("srh.sig_cargo as c", "c.id", "=", "ss.fk_id_cargo")
-            ->join("processo_situacao_servidor as pss", "pss.id", "=", "pas.status")
-            ->whereNull("pa.deleted_at")
-            ->orderBy("pa.id");
+            ->join("processo_situacao_servidor as pss", "pss.id", "=", "servidores_avaliados.status")
+            ->select(
+                'ss.nome as nome_servidor',
+                'pp.nome as periodo',
+                'pp.id as fk_periodo',
+                'uni.nome as unidade',
+                'pss.nome as status',
+                'c.abreviacao as cargo',
+                'pss.id as fk_status',
+                'pas.id'
+            )
+            ->orderBy("ss.nome");
 
-        // Select que retorna os servidores que serão avaliados pelo usuário logado
-        $servidoresPorAvaliador = clone $sql;
-        $servidoresPorAvaliador->join("usuario_avalia_servidores as uas", 'uas.servidor_id', "ss.id_servidor")
-            ->whereIn('uas.servidor_id', $servidores_avaliados_por_este_usuario);
-        if (isset($p->descricao)) {
-            $servidoresPorAvaliador->where('pa.id', $p->descricao);
-        }
+        $dados = $resultados->get();
+        //filtro deve ser executado depois do get()
         if (isset($p->status)) {
-            $servidoresPorAvaliador->where('pas.status', $p->status);
-        }
-        $servidoresPorAvaliador = $servidoresPorAvaliador->select($select);
-
-        // Verifica a unidade em que os servidorres trabalharam mais tempo
-        $servidoresPorAvaliador->each(function ($servidor) {
-            $unidade = DB::select(DB::raw("select fk_unidade, unidade from srh.sp_lotacao_com_maior_tempo_de_servico_por_periodo(:inicio, :termino, :id)"), [
-                'inicio' => $servidor->dt_inicio_avaliacao,
-                'termino' => $servidor->dt_termino_avaliacao,
-                'id' => $servidor->id
-            ]);
-            $servidor->unidade_id = $unidade[0]->fk_unidade;
-            $servidor->unidade = $unidade[0]->unidade;
-        });
-
-        // Select que retorna os servidores das unidades que o usuário logado deve avaliar, exceto os listados para serem avaliados individualmente por algum usuário.
-        $servidoresPorUnidade = clone $sql;
-        $servidoresPorUnidade->join(
-            "policia.unidade as unidade",
-            "unidade.id", "=",
-            "pas.fk_unidade")
-            ->whereIn('unidade.id', $unidades_do_avaliador->pluck('unidade_id'))
-            ->whereNotIn('ss.id_servidor', $servidores_avaliados_individualmente->pluck('servidor_id'))
-            ->select($select);
-        if (isset($p->descricao)) {
-            $servidoresPorUnidade->where('pa.id', $p->descricao);
-        }
-        if (isset($p->status)) {
-            $servidoresPorUnidade->where('pas.status', $p->status);
+            $dados = $dados->where('fk_status', '=', $p->status);
         }
 
-        // Une os servidores que serão avaliados expecificamente pelo usuário logado com os servidores das unidades que deverão ser avaliadas pelo usuário logado.
-        $servidores = $servidoresPorAvaliador->union($servidoresPorUnidade)->get()->sortBy('nome');
-
-        // Verifica a unidade em que os servidorres trabalharam mais tempo
-        foreach ($servidores as $servidor){
-            $unidade = DB::select(DB::raw("select fk_unidade, unidade from srh.sp_lotacao_com_maior_tempo_de_servico_por_periodo(:inicio, :termino, :id)"),[
-                'inicio' => $servidor->dt_inicio_avaliacao,
-                'termino' => $servidor->dt_termino_avaliacao,
-                'id' => $servidor->id
-            ]);
-            $servidor->unidade_id = $unidade[0]->fk_unidade;
-            $servidor->unidade = $unidade[0]->unidade;
+        if (isset($p->periodo)) {
+            $dados = $dados->where('fk_periodo', '=', $p->periodo);
         }
 
-        return response()->json($servidores->values()->all());
+        return $dados;
     }
-
+    
     public static function comboProcesso(): Collection
     {
         return DB::table('processo_avaliacao')
