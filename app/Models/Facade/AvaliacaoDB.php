@@ -34,7 +34,7 @@ class AvaliacaoDB
 
     public static function getNotasServidor($processo_id, $servidor_id)
     {
-        return AvaliacaoServidor::where('fk_processo_avaliacao', $processo_id)->where('fk_servidor', $servidor_id)->get();
+        return AvaliacaoServidor::where('fk_processo_avaliacao_servidor', $processo_id)->where('fk_servidor', $servidor_id)->get();
     }
 
 
@@ -43,7 +43,7 @@ class AvaliacaoDB
         //return $p;
         $sql = DB::table('arquivo_avaliacao_servidor as arquivo')
             ->join('tipo_arquivo as tipo', 'tipo.id', 'arquivo.fk_tipo_arquivo')
-            ->where('arquivo.fk_processo_avaliacao', $p->processo_avaliacao_id)
+            ->where('arquivo.fk_processo_avaliacao_servidor', $p->processo_avaliacao_id)
             ->where('arquivo.fk_servidor', $p->servidor_id)
             ->select([
                 'arquivo.id',
@@ -87,20 +87,21 @@ class AvaliacaoDB
             ->join("processo_situacao_servidor as pss", "pss.id", "=", "servidores_avaliados.status")
             ->select(
                 'ss.nome as nome_servidor',
+                'ss.id_servidor as servidor_id',
                 'pp.nome as periodo',
                 'pp.id as fk_periodo',
                 'uni.nome as unidade',
-                'pss.nome as status',
+                'pss.nome as situacao',
                 'c.abreviacao as cargo',
-                'pss.id as fk_status',
-                'pas.id'
+                'pss.id as status',
+                'pas.id as processo_avaliacao_id'
             )
             ->orderBy("ss.nome");
 
         $dados = $resultados->get();
         //filtro deve ser executado depois do get()
         if (isset($p->status)) {
-            $dados = $dados->where('fk_status', '=', $p->status);
+            $dados = $dados->where('status', '=', $p->status);
         }
 
         if (isset($p->periodo)) {

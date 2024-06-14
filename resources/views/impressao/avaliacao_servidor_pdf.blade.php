@@ -34,10 +34,10 @@
                 <td><strong>LOTAÇÃO:</strong> {{$dados->servidor->unidade}}</td>
             </tr>
             <tr>
-                <td><strong>AVALIADOR:</strong></td>
+                <td><strong>AVALIADOR:</strong> {{$dados->processo->nome_avaliador}}</td>
             </tr>
             <tr>
-                <td><strong>INÍCIO DO ESTÁGIO PROBATÓRIO: {{$dados->processo->dt_inicio_estagio}}</td>
+                <td><strong>INÍCIO DO ESTÁGIO PROBATÓRIO: {{$dados->processo->dt_inicio}}</td>
             </tr><tr>
                 <td><strong>PERÍODO DE AVALIAÇÃO: </strong>De {{$dados->processo->dt_inicio_avaliacao}} à {{$dados->processo->dt_termino_avaliacao}} </td>
             </tr>
@@ -51,7 +51,7 @@
             </tr>
             <tr>
                 <td id="texto_instrucao">
-                    <?php echo $dados->processo->instrucao; ?>
+                    {{-- <php echo $dados->processo->instrucao; ?> --}}
                 </td>
             </tr>
         </table>
@@ -133,7 +133,7 @@
             </tr>
             <tr>
                 <td colspan='6'>
-                    <strong>Parecer do Avaliador:</strong> $dados->parecer
+                    <strong>Parecer do Avaliador:</strong> {$dados->processo->parecer_avaliador}
                 </td>
             </tr>
             <tr>

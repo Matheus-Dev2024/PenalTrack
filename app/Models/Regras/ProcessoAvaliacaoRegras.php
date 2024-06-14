@@ -114,12 +114,12 @@ class ProcessoAvaliacaoRegras
         $usuarioLogado = Auth::id();
         $notaTotalDoServidor = ProcessoAvaliacaoDB::getNotaTotalServidor($p->processo_avaliacao_id, $p->servidor_id);
 
-        ProcessoAvaliacaoServidor::where('fk_processo_avaliacao', $p->processo_avaliacao_id)
+        ProcessoAvaliacaoServidor::where('id', $p->processo_avaliacao_id)
             ->where('fk_servidor', $p->servidor_id)
             ->update([
-                'dias_ausencia' => $p->dias_ausencia,
-                'dias_trabalhados' => $p->dias_trabalhados,
-                'dias_prorrogados' => $p->dias_prorrogados,
+                // 'dias_ausencia' => $p->dias_ausencia,
+                // 'dias_trabalhados' => $p->dias_trabalhados,
+                // 'dias_prorrogados' => $p->dias_prorrogados,
                 'nota_total' => $notaTotalDoServidor,
                 'parecer_avaliador' => $p->parecer_avaliador,
                 'fk_avaliador' => $usuarioLogado,

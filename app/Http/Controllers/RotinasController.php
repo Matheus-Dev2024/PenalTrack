@@ -31,9 +31,9 @@ class RotinasController extends Controller
                     self::gravarLog($logs[$i]);
                 }
 
-                if(Log::count() > 9) {
-                    self::removeLogMaisAntigo();
-                }
+                // if(Log::count() > 9) {
+                //     self::removeLogMaisAntigo();
+                // }
 
             } else {
                 DB::select("SELECT eprobatorio.registro_processo_avaliacao_servidor(?)", [$data_parametro]);
@@ -49,8 +49,8 @@ class RotinasController extends Controller
 
             return Response('sucesso', 200);
         } catch (Exception $e){
-            // return Response($e->getMessage(), 500);
-            return Response('falha', 500);
+             return Response($e->getMessage(), 500);
+            //return Response('falha', 500);
         }    
     }
 

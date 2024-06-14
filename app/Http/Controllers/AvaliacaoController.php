@@ -59,7 +59,6 @@ class AvaliacaoController extends Controller
         return response(AvaliadoResource::collection($dados), 200);
     }
 
-
     // Retorna os arquivos de uma Avaliação
     public function GridArquivos(Request $request)
     {

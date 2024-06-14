@@ -8,6 +8,7 @@ use App\Models\Entity\ProcessoAvaliacaoServidor;
 use App\Models\Facade\AvaliacaoDB;
 use App\Models\Facade\FatorAvaliacaoDB;
 use App\Models\Facade\ProcessoAvaliacaoDB;
+use App\Models\Facade\ProcessoAvaliacaoServidorDB;
 use App\Models\Facade\ServidorDB;
 use App\Models\Facade\TipoArquivoDB;
 use Exception;
@@ -20,17 +21,17 @@ class AvaliacaoServidorRegras
     public static function informacao(stdClass $p)
     {
         $formulario = FatorAvaliacaoDB::getFormularioAvaliacao();
-        $processo = ProcessoAvaliacaoDB::getById($p->processo_id);
-        $servidor = ServidorDB::info($p->servidor_id, $processo->processo_id, $processo->dt_inicio_avaliacao_en, $processo->dt_termino_avaliacao_en);
-        $ausencias = ServidorDB::listaAusenciasPorPeriodo($p->servidor_id, $processo->dt_inicio_avaliacao_en, $processo->dt_termino_avaliacao_en);
+        $processo = ProcessoAvaliacaoServidorDB::getById($p->processo_id);
+        $servidor = ServidorDB::info($p->servidor_id, $processo->processo_id);
+        $ausencias = ServidorDB::listaAusenciasPorPeriodo($p->servidor_id, $processo->dt_inicio, $processo->dt_termino);
 
         $notas = AvaliacaoDB::getNotasServidor($processo->processo_id, $p->servidor_id);
 
         $totalDasNotas = ProcessoAvaliacaoDB::getNotaTotalServidor($processo->processo_id, $p->servidor_id);
 
-        $parecer = ProcessoAvaliacaoServidor::where('fk_processo_avaliacao', $p->processo_id)
-            ->where('fk_servidor', $p->servidor_id)
-            ->first()->parecer_avaliador;
+        // $parecer = ProcessoAvaliacaoServidor::where('fk_processo_avaliacao', $p->processo_id)
+        //     ->where('fk_servidor', $p->servidor_id)
+        //     ->first()->parecer_avaliador;
 
         $impressao = false;
 
@@ -47,7 +48,7 @@ class AvaliacaoServidorRegras
             'servidor' => $servidor,
             'ausencias' => $ausencias,
             'habilitarimpressao' => $impressao,
-            'parecer' => $parecer,
+            // 'parecer' => $parecer,
         ]);
     }
 
@@ -55,8 +56,7 @@ class AvaliacaoServidorRegras
     {
         self::validarForm($p);
 
-
-        AvaliacaoServidor::where('fk_processo_avaliacao', $p->processo_avaliacao_id)
+        AvaliacaoServidor::where('fk_processo_avaliacao_servidor', $p->processo_avaliacao_id)
             ->where('fk_servidor', $p->servidor_id)
             ->delete();
 
@@ -65,7 +65,7 @@ class AvaliacaoServidorRegras
             if (!empty($nota)) {
 
                 AvaliacaoServidor::create([
-                    'fk_processo_avaliacao' => $p->processo_avaliacao_id,
+                    'fk_processo_avaliacao_servidor' => $p->processo_avaliacao_id,
                     'fk_servidor' => $p->servidor_id,
                     'fk_fator_avaliacao_item' => $item_id,
                     'nota' => $nota
@@ -125,7 +125,7 @@ class AvaliacaoServidorRegras
             $av_arquivo->arquivo = DB::raw("decode('" . base64_encode($arquivo) . "', 'base64')");
             $av_arquivo->descricao = $p->$$descricao;
             $av_arquivo->nome_arquivo = $p->$$nome;
-            $av_arquivo->fk_processo_avaliacao = $p->processo_avaliacao_id;
+            $av_arquivo->fk_processo_avaliacao_servidor = $p->processo_avaliacao_id;
             $av_arquivo->fk_servidor = $p->servidor_id;
             $av_arquivo->fk_usuario_cad = $usuario_cadastro_id;
             $av_arquivo->fk_tipo_arquivo = $p->$$fk_tipo;
@@ -133,7 +133,7 @@ class AvaliacaoServidorRegras
             $av_arquivo->save();
         }
         // Muda o status para pendencia após anexar um documento do tipo ficha de avaliação (fk_tipo=2)
-            $processo_avaliacao_servidor = ProcessoAvaliacaoServidor::where('fk_processo_avaliacao', '=', $p->processo_avaliacao_id)
+            $processo_avaliacao_servidor = ProcessoAvaliacaoServidor::where('id', '=', $p->processo_avaliacao_id)
             ->where('fk_servidor', '=', $p->servidor_id)
             ->first();
             if ($processo_avaliacao_servidor) { 

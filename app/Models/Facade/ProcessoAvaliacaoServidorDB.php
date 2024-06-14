@@ -113,4 +113,26 @@ class ProcessoAvaliacaoServidorDB
         return $sql->get();
     }
 
+    public static function getById($processo_id)
+    {
+        return DB::table('processo_avaliacao_servidor as pas')
+            ->join('periodos_processo as pp', 'pp.id', '=', 'pas.fk_periodo')
+            ->leftJoin("seguranca.usuario as u", 'u.id', '=', 'pas.fk_avaliador')
+            ->select([
+                'pas.id as processo_id',
+                'pp.nome as periodo',
+                'pas.dt_inicio',
+                'pas.dt_termino',
+                'pas.parecer_avaliador',
+                'u.nome as nome_avaliador',
+                'pas.fk_avaliador',
+                //DB::raw("TO_CHAR(pas.dt_inicio, 'DD/MM/YYYY') AS dt_inicio_estagio"),
+                DB::raw("TO_CHAR(pas.dt_inicio, 'DD/MM/YYYY') AS dt_inicio_avaliacao"),
+                DB::raw("TO_CHAR(pas.dt_termino, 'DD/MM/YYYY') AS dt_termino_avaliacao"),
+
+            ])
+            ->where('pas.id', $processo_id)
+            ->first();
+    }
+
 }

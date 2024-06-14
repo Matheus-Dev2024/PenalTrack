@@ -19,13 +19,14 @@ class AvaliadoResource extends JsonResource
     {
         return [
             'nome_servidor' => $this->nome_servidor,
+            'servidor_id' => $this->servidor_id,
             'periodo' => $this->periodo,
             'fk_periodo' => $this->fk_periodo,
             'unidade' => $this->unidade,
-            'status' => $this->status,
+            'situacao' => $this->situacao,
             'cargo' => $this->cargo,
-            'fk_status' => $this->fk_status,
-            'id' => $this->id
+            'status' => $this->status,
+            'processo_avaliacao_id' => $this->processo_avaliacao_id
         ];
     }
 }

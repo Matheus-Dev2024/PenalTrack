@@ -16,7 +16,7 @@ class ServidorDB
 
     public static function listaAusenciasPorPeriodo($servidor_id, $dtInicio, $dtTermino=null)
     {
-        $ausencias = DB::select("SELECT * FROM srh.sp_ausencias_estagio_probatorio('$dtInicio'::date, '$dtTermino'::date, $servidor_id)");
+        $ausencias = DB::select("SELECT * FROM srh.sp_ausencias_servidor('$dtInicio'::date, '$dtTermino'::date, $servidor_id)");
         return $ausencias;
     }
     public static function grid(\stdClass $p) :Collection
@@ -150,7 +150,7 @@ class ServidorDB
             return response()->json($servidor);
         }
     }
-    public static function info($servidor_id, $processo_id, $dtInicio, $dtTermino)
+    public static function info($servidor_id, $processo_id)
     {
         //pega os dados do servidor
 
@@ -166,25 +166,27 @@ class ServidorDB
                 'c.abreviacao as cargo',
                 'u.id as unidade_id',
                 'u.nome as unidade',
-                'pas.fk_processo_avaliacao',
                 'pas.status',
-                'pss.nome as nome_status'
+                'pss.nome as nome_status',
+                'pas.dias_bruto',
+                'pas.dias_ausencia',
+                'pas.dias_liquid'
                 //'pas.dias_estagio',
                 //'pas.dias_trabalho_programado',
                 //'pas.dias_ausencia',
                 //'pas.dias_trabalhados',
                 //'pas.dias_prorrogados',
             ])
-            ->where('pas.fk_processo_avaliacao', $processo_id)
+            ->where('pas.id', $processo_id)
             ->where('s.id_servidor', $servidor_id)
             ->first();
 
 
 
-        $infoEstagio = self::lotacoesPorPeriodo($servidor_id, $dtInicio, $dtTermino);
+        // $infoEstagio = self::lotacoesPorPeriodo($servidor_id, $dtInicio, $dtTermino);
 
-        if(count($infoEstagio) > 0)
-            $servidor->periodo = $infoEstagio[0];
+        // if(count($infoEstagio) > 0)
+        //     $servidor->periodo = $infoEstagio[0];
 
 
 
