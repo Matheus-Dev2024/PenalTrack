@@ -24,7 +24,7 @@ class AvaliacaoServidorRegras
         $processo = ProcessoAvaliacaoServidorDB::getById($p->processo_id);
         $servidor = ServidorDB::info($p->servidor_id, $processo->processo_id);
         $ausencias = ServidorDB::listaAusenciasPorPeriodo($p->servidor_id, $processo->dt_inicio, $processo->dt_termino);
-
+        $dias_trabalhados_por_periodo = AvaliacaoDB::diasTrabalhadosPorPeriodo($processo->dt_inicio, $processo->dt_termino, $p->servidor_id);
         $notas = AvaliacaoDB::getNotasServidor($processo->processo_id, $p->servidor_id);
 
         $totalDasNotas = ProcessoAvaliacaoDB::getNotaTotalServidor($processo->processo_id, $p->servidor_id);
@@ -48,6 +48,7 @@ class AvaliacaoServidorRegras
             'servidor' => $servidor,
             'ausencias' => $ausencias,
             'habilitarimpressao' => $impressao,
+            'dias_trabalhados_por_periodo' => $dias_trabalhados_por_periodo
             // 'parecer' => $parecer,
         ]);
     }

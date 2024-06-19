@@ -170,12 +170,9 @@ class ServidorDB
                 'pss.nome as nome_status',
                 'pas.dias_bruto',
                 'pas.dias_ausencia',
-                'pas.dias_liquid'
-                //'pas.dias_estagio',
-                //'pas.dias_trabalho_programado',
-                //'pas.dias_ausencia',
-                //'pas.dias_trabalhados',
-                //'pas.dias_prorrogados',
+                'pas.dias_liquid',
+                DB::raw("TO_CHAR(s.dt_admissao, 'DD/MM/YYYY') as dt_admissao"),
+
             ])
             ->where('pas.id', $processo_id)
             ->where('s.id_servidor', $servidor_id)

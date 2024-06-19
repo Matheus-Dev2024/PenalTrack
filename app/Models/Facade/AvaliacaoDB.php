@@ -132,4 +132,9 @@ class AvaliacaoDB
             ]);
     }
 
+    public static function diasTrabalhadosPorPeriodo($dt_inicio, $dt_termino, $servidor_id)
+    {
+       $dados = DB::select("SELECT * FROM srh.sp_info_servidor_estagio_probatorio('$dt_inicio'::date, '$dt_termino'::date, $servidor_id)");
+       return $dados;
+    }
 }
