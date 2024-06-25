@@ -1,4 +1,6 @@
-@php use Illuminate\Support\Carbon; @endphp
+@php
+    use Carbon\Carbon as CarbonDate;
+@endphp
     <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -26,20 +28,30 @@
     <table class="dados_servidor">
         @foreach($dadosServidor as $item)
             <tr>
-                <td><strong>NOME DO AVALIADO: {{$item->nome}} </strong></td>
+                <td>NOME DO AVALIADO: <strong>{{$item->nome}} </strong></td>
             </tr>
             <tr>
-                <td><strong>MATRÍCULA: {{$item->matricula}}</strong></td>
+                <td>NOMEAÇÃO: <strong>{{$item->dt_nomeacao}} </strong></td>
             </tr>
             <tr>
-                <td><strong>CARGO: {{$item->cargo}}</strong></td>
+                <td>MATRÍCULA: <strong>{{$item->matricula}}</strong></td>
             </tr>
             <tr>
-                <td><strong>INÍCIO DO ESTÁGIO PROBATÓRIO: {{$item->dt_admissao}} </strong></td>
+                <td>CARGO: <strong>{{$item->cargo}}</strong></td>
             </tr>
             <tr>
-                <td><strong>TÉRMINO DE ESTÁGIO PROBATÓRIO: {{$item->dt_final}}</strong></td>
+                <td>INÍCIO DO ESTÁGIO PROBATÓRIO: <strong>{{$item->dt_admissao}} </strong></td>
             </tr>
+            <tr>
+                <td>TÉRMINO PREVISTO DE ESTÁGIO PROBATÓRIO: <strong>{{$item->dt_final_prevista}}</strong></td>
+            </tr>
+
+            {{-- @if($item->dt_final_ultimo_periodo !== null)
+                <tr>
+                    <td>PRORROGADO ATÉ: <strong>{{$item->dt_final_ultimo_periodo}}</strong></td>
+                </tr>
+            @endif --}}
+
         @endforeach
     </table>
     <br>
@@ -48,9 +60,24 @@
 
     <table class="instrucoes dados_servidor">
         @foreach($dadosAvaliacao as $item)
+            @if($item->dt_termino_avaliacao !== null)
+                @php
+                    $dt_inicio_avaliacao = CarbonDate::createFromFormat('d/m/Y', $item->dt_inicio_avaliacao);
+                    $dt_termino_avaliacao = CarbonDate::createFromFormat('d/m/Y', $item->dt_termino_avaliacao);
+                    $dt_final_prevista = CarbonDate::createFromFormat('d/m/Y', $item->dt_final_prevista);
+                @endphp
+            @endif
             <tr>
-                <td>
+                {{-- <td>
                     <b>Pontuação total obtida no {{$item->periodo}} &nbsp; {{$item->dt_inicio_avaliacao}} A {{$item->dt_termino_avaliacao}}</b>
+                </td> --}}
+                <td>
+                    Pontuação total obtida no {{$item->periodo}} &nbsp; <b>{{$dt_inicio_avaliacao->format('d/m/Y')}} A {{$dt_termino_avaliacao->format('d/m/Y')}}
+                        {{-- verifica se alguma data do período é maior que a data final prevista (dt_admissao + 3 anos) --}}
+                    @if($dt_inicio_avaliacao->gt($dt_final_prevista) || $dt_termino_avaliacao->gt($dt_final_prevista))
+                        (Período de Prorrogação)
+                    @endif
+                    </b>
                 </td>
                 <td>
                     <b>{{$item->nota_total}}</b>
@@ -148,65 +175,6 @@
     @else
         <p> O servidor ainda não completou todos os períodos de avaliação.</p>
     @endif
-    
-    {{-- <table class="instrucoes dados_servidor">
-        <thead>
-            <tr>
-                <th>QUESITOS</th>
-                @php
-                    $descricoes = [];
-                @endphp
-                @foreach($dadosItensAvaliacao as $item => $itens)
-                    @foreach($itens as $item)
-                        @if (!in_array($item['descricao'], $descricoes))
-                            @php
-                                $descricoes[] = $item['descricao'];
-                            @endphp
-                            <td><b>{{ $item['descricao'] }}</b></td>
-                        @endif
-                    @endforeach
-                @endforeach
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($dadosItensAvaliacao as $item => $itens)
-                <tr>
-                    <td><b>{{ $item }}</b></td>
-                    @foreach($itens as $item)
-                        <td><b>{{ $item['nota_total'] }}</b></td>
-                    @endforeach
-                </tr>
-            @endforeach
-        </tbody>
-    </table> --}}
-
-    {{-- <table class="instrucoes dados_servidor">
-        <tr>
-            <td>
-                <b>
-                    QUESITOS 
-                </b>
-            </td>
-        </tr> 
-        @foreach($dadosItensAvaliacao as $item => $itensArray)
-            <tr>    
-                <td>
-                    <b>{{$item}}</b>  
-                </td>            
-            </tr>
-                @foreach ($itensArray as $item)
-
-                    <tr>
-                        <td>
-                            <b>{{ $item['nota_total'] }}</b>
-                        </td>
-                    </tr>
-            
-                @endforeach
-
-        @endforeach
-        
-    </table> --}}
 
 </div>
 

@@ -11,8 +11,9 @@ class PdfController extends Controller
     {
         $dadosServidor = ProcessoAvaliacaoServidorDB::dadosServidorRelatorio($fk_servidor);
         $dadosAvaliacao = ProcessoAvaliacaoServidorDB::dadosAvaliacaoRelatorio($fk_servidor);
+        // dd($dadosAvaliacao);
         $dadosItensAvaliacao = ProcessoAvaliacaoServidorDB::dadosItensAvaliacaoRelatorio($fk_servidor);
-
+        
         //return compact('dadosServidor', 'dadosAvaliacao', 'dadosItensAvaliacao');
         //return view('impressao.relatorio_comissao', compact('dadosServidor', 'dadosAvaliacao', 'dadosItensAvaliacao'));
         $pdf = Pdf::loadView('impressao.relatorio_comissao', compact('dadosServidor', 'dadosAvaliacao', 'dadosItensAvaliacao'));

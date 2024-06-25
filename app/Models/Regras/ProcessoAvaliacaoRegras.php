@@ -113,7 +113,6 @@ class ProcessoAvaliacaoRegras
     {
         $usuarioLogado = Auth::id();
         $notaTotalDoServidor = ProcessoAvaliacaoDB::getNotaTotalServidor($p->processo_avaliacao_id, $p->servidor_id);
-
         ProcessoAvaliacaoServidor::where('id', $p->processo_avaliacao_id)
             ->where('fk_servidor', $p->servidor_id)
             ->update([
