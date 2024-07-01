@@ -83,7 +83,6 @@ class AvaliadorController extends Controller
 
     public function UnidadesGrid(Request $request): JsonResponse
     {
-
         $lista = AvaliadorDB::unidadesGrid($request->id);
         return response()->json($lista);
     }
@@ -97,7 +96,6 @@ class AvaliadorController extends Controller
                 "resposta" => $response
             ]);
         } catch (Exception $ex) {
-
             //return response()->json(["error" => "Opa, ocorreu um erro inesperado. Tente novamente mais tarde."]);
             return response()->json(["error" => $ex->getMessage()]);
         }

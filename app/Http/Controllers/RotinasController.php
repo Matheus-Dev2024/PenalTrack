@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Mail\Email;
 use App\Models\Entity\ProcessoAvaliacaoServidor;
+use App\Models\Entity\Servidor;
+use App\Models\Entity\UsuarioAvaliaUnidades;
 use App\Models\Facade\ProcessoAvaliacaoDB;
 use App\Models\Facade\ProcessoAvaliacaoServidorDB;
 use App\Models\Log;
@@ -14,6 +17,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use PoliciaCivil\Seguranca\Models\Entity\Usuario;
+use PoliciaCivil\Seguranca\Models\Entity\UsuarioSistema;
 
 class RotinasController extends Controller
 {
@@ -67,13 +73,6 @@ class RotinasController extends Controller
         }
     }
 
-    // public function gravarLog() :void
-    // {
-    //     $hoje = new \DateTime();
-    //     $log = new Log(['data' => $hoje->format('Y-m-d')]);
-    //     $log->save();
-    // }
-
 
     public function removeLogMaisAntigo() :void
     {
@@ -107,6 +106,43 @@ class RotinasController extends Controller
         } else {
             return [];
         }
+    }
+
+
+    public function enviarNotificacaoPorEmailAvaliador()
+    {
+        $avaliadores = self::getDadosAvaliador();
+        foreach ($avaliadores as $avaliador){
+            $data = $avaliador;
+            Mail::to($avaliador->email_avaliador)->send(new Email($data));
+        }
+               
+        return 'Email Enviado'; 
+    }
+
+    public function getDadosAvaliador() 
+    {
+        //status 1 = aguardando avaliação
+        $avaliador = ProcessoAvaliacaoServidor::from('processo_avaliacao_servidor as pas')
+        ->where('pas.status', 1)
+        ->where('pas.notificado', false)
+        ->join('srh.sig_servidor as ss', 'pas.fk_servidor', '=', 'ss.id_servidor')
+        ->join("srh.sig_cargo as c", "c.id", "=", "ss.fk_id_cargo")
+        ->join('usuario_avalia_unidades as uau', 'uau.unidade_id', '=', 'pas.fk_unidade')
+        ->join('seguranca.usuario as su', 'su.id', '=', 'uau.usuario_id')
+        ->select(
+            'c.abreviacao as cargo',
+            'pas.fk_unidade',
+            'ss.nome as nome_avaliado',
+            'ss.matricula as matricula_avaliado',
+            'su.nome as nome_avaliador',
+            'su.email as email_avaliador'
+        )
+        ->get();
+
+        return $avaliador;
+
+
     }
 
 }

@@ -39,7 +39,10 @@ use Illuminate\Support\Facades\Route;
 
 //});
 
+//rotas de rotinas para teste
 Route::get('robo-eprobatorio', [RotinasController::class, 'roboEprobatorio']);
+Route::get('robo-eprobatori/enviar-email-notificacao', [RotinasController::class, 'enviarNotificacaoPorEmailAvaliador']);
+
 
 
 //Formulário de Avaliação
