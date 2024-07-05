@@ -142,7 +142,6 @@ class RotinasController extends Controller
 
         return $avaliador;
 
-
     }
 
 }

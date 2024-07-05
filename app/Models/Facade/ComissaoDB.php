@@ -9,6 +9,25 @@ use stdClass;
 
 class ComissaoDB
 {
+    public static function carregarParecer($processo_id) :Collection
+    {
+        $sql = DB::table('processo_avaliacao_servidor as pas')
+        ->join("srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
+        ->join('periodos_processo as pp', 'pp.id', '=', 'pas.fk_periodo')
+        ->join("srh.sig_cargo as sgc", 'sgc.id', '=', 'ss.fk_id_cargo')
+        ->leftJoin("parecer_comissao as pc", 'pas.id', '=', 'pc.fk_processo_avaliacao')
+        ->select([
+            'ss.nome',
+            'ss.matricula',
+            'pp.nome as periodo',
+            'sgc.abreviacao as sigla_cargo',
+            'pc.parecer'
+        ])
+        ->where('pas.id', '=', $processo_id)
+        ->get();
+        
+        return $sql;
+    }
 
     public static function grid()
     {

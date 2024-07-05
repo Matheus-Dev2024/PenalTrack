@@ -84,6 +84,9 @@ Route::get('vincular-servidor/grid', [ComissaoController::class, 'vincularServid
 Route::post('vincular-servidor/store', [ComissaoController::class, 'vincularServidoresStore']);
 Route::post('vincular-servidor/excluir', [ComissaoController::class, 'excluir']);
 Route::get('visualizar-comissao/grid/{comissao_id}', [ComissaoController::class, 'gridVisualizarComissao']);
+Route::get('comissao/carregar-parecer/{processo_id}', [ComissaoController::class, 'carregarParecer']);
+Route::post('comissao/salvar-parecer', [ComissaoController::class, 'salvarParecer']);
+
 
 
 //Fator de Avaliação

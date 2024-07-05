@@ -53,4 +53,21 @@ class ComissaoController extends Controller
         return response()->json($lista);
     }
 
+    public function carregarParecer(Request $request)
+    {
+        $lista = ComissaoDB::carregarParecer($request->processo_id);
+        return response()->json($lista);
+    }
+
+    public function salvarParecer(Request $request)
+    {
+        try {
+            ComissaoRegras::salvarParecer($request);
+            return response()->json(["mensagem" => "Parecer salvo com sucesso!"]);
+
+        } catch(Exception $ex) {
+            return response()->json(["error" => $ex->getMessage()]);
+        }
+    }
+
 }
