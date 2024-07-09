@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Entity\ParecerComissao;
+use App\Models\Facade\ComissaoDB;
 use App\Models\Facade\ProcessoAvaliacaoServidorDB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -22,4 +24,17 @@ class PdfController extends Controller
             'Solicitação de '
         );
     }
+
+    public function imprimirParecerComissao($fk_servidor)
+    {
+        $dadosServidor = ProcessoAvaliacaoServidorDB::dadosServidorRelatorio($fk_servidor);
+        $parecerServidor = ComissaoDB::carregarParecerServidor($fk_servidor);
+        //return view('impressao.parecer_comissao', compact('dadosServidor','parecerServidor'));
+        $pdf = Pdf::loadView('impressao.parecer_comissao', compact('dadosServidor','parecerServidor'));
+        $pdf->setPaper('a4', 'portrait')->setWarnings(false)->save('myfile.pdf');
+        return $pdf->stream(
+            'Solicitação de '
+        );
+    }
+
 }

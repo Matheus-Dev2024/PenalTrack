@@ -20,10 +20,34 @@ class ComissaoDB
             'ss.nome',
             'ss.matricula',
             'pp.nome as periodo',
-            'sgc.abreviacao as sigla_cargo',
-            'pc.parecer'
+            'sgc.abreviacao as cargo',
+            'pc.parecer',
+            'ss.id_servidor',
+            DB::raw("TO_CHAR(ss.dt_admissao, 'DD/MM/YYYY') AS admissao"),
         ])
         ->where('pas.id', '=', $processo_id)
+        ->get();
+        
+        return $sql;
+    }
+
+    public static function carregarParecerServidor($fk_servidor)
+    {
+        $sql = DB::table('processo_avaliacao_servidor as pas')
+        ->join("srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
+        ->join('periodos_processo as pp', 'pp.id', '=', 'pas.fk_periodo')
+        ->join("srh.sig_cargo as sgc", 'sgc.id', '=', 'ss.fk_id_cargo')
+        ->leftJoin("parecer_comissao as pc", 'pas.id', '=', 'pc.fk_processo_avaliacao')
+        ->select([
+            // 'pp.nome as periodo',
+            // 'sgc.abreviacao as cargo',
+            'pc.parecer',
+            'ss.id_servidor',
+            //DB::raw("TO_CHAR(ss.dt_admissao, 'DD/MM/YYYY') AS admissao"),
+        ])
+        ->distinct()
+        ->where('pas.fk_servidor', '=', $fk_servidor)
+        ->where('pas.fk_periodo', '=', 6)  // 6 é o ultimo período
         ->get();
         
         return $sql;

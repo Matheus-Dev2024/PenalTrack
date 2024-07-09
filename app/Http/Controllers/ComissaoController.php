@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Entity\Comissao;
+use App\Models\Entity\ProcessoAvaliacaoServidor;
 use App\Models\Facade\ComissaoDB;
 use App\Models\Regras\ComissaoRegras;
 use App\Models\Regras\ServidorComissaoRegras;
@@ -55,8 +56,15 @@ class ComissaoController extends Controller
 
     public function carregarParecer(Request $request)
     {
-        $lista = ComissaoDB::carregarParecer($request->processo_id);
-        return response()->json($lista);
+        $processo = ProcessoAvaliacaoServidor::where('id', $request->processo_id)->first();
+        //verifica se o servidor ja foi avaliado em todos os períodos
+        if($processo->fk_periodo == 6 && $processo->status == 2) {
+            $lista = ComissaoDB::carregarParecer($request->processo_id);
+            return response()->json($lista);
+        } else {
+            return response()->json(['error' => 'Servidor ainda em avaliação.']);
+        }
+        
     }
 
     public function salvarParecer(Request $request)

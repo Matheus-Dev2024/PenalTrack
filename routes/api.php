@@ -86,6 +86,7 @@ Route::post('vincular-servidor/excluir', [ComissaoController::class, 'excluir'])
 Route::get('visualizar-comissao/grid/{comissao_id}', [ComissaoController::class, 'gridVisualizarComissao']);
 Route::get('comissao/carregar-parecer/{processo_id}', [ComissaoController::class, 'carregarParecer']);
 Route::post('comissao/salvar-parecer', [ComissaoController::class, 'salvarParecer']);
+Route::get('comissao/imprimir-parecer/{fk_servidor}', [PdfController::class, 'imprimirParecerComissao']);
 
 
 
