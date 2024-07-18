@@ -9,6 +9,7 @@ use App\Models\Regras\ComissaoRegras;
 use App\Models\Regras\ServidorComissaoRegras;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ComissaoController extends Controller
@@ -16,7 +17,7 @@ class ComissaoController extends Controller
     public function grid()
     {
         $lista = ComissaoDB::grid();
-        return response()->json($lista);
+        return $lista;
     }
 
     public function vincularServidoresGrid(Request $request)
@@ -29,10 +30,10 @@ class ComissaoController extends Controller
     {
         try {
             ComissaoRegras::alterar($request);
-            return response()->json(["mensagem" => "Presidente da comissão alterado com sucesso"]);
+            return response()->json(["mensagem" => "Comissão alterada com sucesso"]);
 
         } catch (Exception $ex) {
-            return response()->json(["error" => $ex->getMessage()]);
+            return response()->json(["error" => 'Preencha todos os campos']);
         }
     }
 
@@ -78,4 +79,21 @@ class ComissaoController extends Controller
         }
     }
 
+    public function autoCompletePresidenteComissao(Request $request) :Collection
+    {
+        $p = (object)$request->validate([
+           'nome' => 'required'
+        ]);
+        return ComissaoDB::servidorPolicial($p);
+    }
+
+    public function getAllInfoComissao()
+    {
+        $info = [];
+
+        $info['tipo_comissao'] = ComissaoDB::comboTipoComissao();
+
+        return $info;
+    }
+    
 }

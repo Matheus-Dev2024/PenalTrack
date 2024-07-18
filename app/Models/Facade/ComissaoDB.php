@@ -2,6 +2,7 @@
 
 namespace App\Models\Facade;
 
+use App\Models\Entity\TipoComissao;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -9,6 +10,15 @@ use stdClass;
 
 class ComissaoDB
 {
+
+    public static function comboTipoComissao(): Collection
+    {
+        return DB::table('tipo_comissao')
+            ->get([
+                'cargo_comissao as text',
+                'id as value',
+            ]);
+    }
     public static function carregarParecer($processo_id) :Collection
     {
         $sql = DB::table('processo_avaliacao_servidor as pas')
@@ -57,7 +67,11 @@ class ComissaoDB
     {
         $srh = config('database.connections.conexao_srh.schema');
         $lista = DB::table('comissao')
+        ->join("tipo_comissao as tc", 'tc.id', '=', 'comissao.fk_tipo_comissao')
         ->leftJoin("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'comissao.presidente')
+        ->leftJoin("$srh.sig_servidor as primeiro_membro", 'primeiro_membro.id_servidor', '=', 'comissao.primeiro_membro')
+        ->leftJoin("$srh.sig_servidor as segundo_membro", 'segundo_membro.id_servidor', '=', 'comissao.segundo_membro')
+        ->join("$srh.sig_cargo as sgc", 'sgc.id', '=', 'ss.fk_id_cargo')
         //->leftJoin("servidor_comissao as sc", 'sc.fk_comissao', '=', 'comissao.id')
         ->leftJoin("servidor_comissao as sc", function($join) {
             $join->on('sc.fk_comissao', '=', 'comissao.id')
@@ -67,11 +81,30 @@ class ComissaoDB
                 'comissao.id as comissao_id',
                 'numero_comissao',
                 'ss.nome as presidente',
+                'ss.id_servidor as id_presidente',
                 DB::raw('COUNT(CASE WHEN sc.deleted_at IS NULL THEN sc.fk_servidor END) as total_servidores'),
                 "comissao.id as comissao_id",
+                'comissao.fk_tipo_comissao',
+                'sgc.abreviacao as cargo',
+                'primeiro_membro.nome as primeiro_membro_nome',
+                'primeiro_membro.id_servidor as id_primeiro_membro',
+                'segundo_membro.nome as segundo_membro_nome',
+                'segundo_membro.id_servidor as id_segundo_membro',
+                'tc.cargo_comissao as cargo_avaliado'
 
             ])
-            ->groupBy('comissao.id', 'comissao.numero_comissao', 'ss.nome')
+            ->groupBy(
+            'comissao.id', 
+            'comissao.numero_comissao', 
+            'ss.nome', 
+            'id_presidente', 
+            'sgc.abreviacao', 
+            'primeiro_membro.nome', 
+            'primeiro_membro.id_servidor', 
+            'segundo_membro.nome', 
+            'segundo_membro.id_servidor',
+            'tc.cargo_comissao'
+            )
             ->orderBy('numero_comissao')
             ->get();
         return $lista;
@@ -83,9 +116,13 @@ class ComissaoDB
         $srh = config('database.connections.conexao_srh.schema');
         $lista = DB::table('servidor_comissao as sc')
         ->join("comissao", "comissao.id", "=", "sc.fk_comissao")
+        ->join("tipo_comissao as tc", 'tc.id', '=', 'comissao.fk_tipo_comissao')
         ->leftJoin("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'sc.fk_servidor')
         ->join("$srh.sig_cargo as sgc", 'sgc.id', '=', 'ss.fk_id_cargo')
         ->leftJoin("$srh.sig_servidor as presidente", 'presidente.id_servidor', '=', 'comissao.presidente')
+        ->leftJoin("$srh.sig_servidor as primeiro_membro", 'primeiro_membro.id_servidor', '=', 'comissao.primeiro_membro')
+        ->leftJoin("$srh.sig_servidor as segundo_membro", 'segundo_membro.id_servidor', '=', 'comissao.segundo_membro')
+
             ->select([
                 'comissao.id',
                 'sc.fk_servidor',
@@ -93,7 +130,10 @@ class ComissaoDB
                 'ss.matricula',
                 'ss.cargo',
                 'sgc.abreviacao as sigla_cargo',
-                'presidente.nome as nome_presidente'
+                'presidente.nome as nome_presidente',
+                'primeiro_membro.nome as primeiro_membro_nome',
+                'segundo_membro.nome as segundo_membro_nome',
+                'tc.cargo_comissao'
             ])
             ->whereNull("sc.deleted_at")
             ->orderBy('nome_servidor')
@@ -152,6 +192,75 @@ class ComissaoDB
         if ($v->isEmpty() || (isset($v->data) && count($v->data) > -1))
             return response()->json(['mensagem' => 'Erro ao carregar os parametros da pesquisa.']);
         return response()->json($v);
+    }
+
+    public static function delegadosAtivos()
+    {
+        return DB::table('srh.sig_servidor as ss')
+            ->join("srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
+            ->orderBy('ss.nome')
+            ->where('ss.status', 1)
+            ->where('ss.fk_id_cargo', 24)
+            ->get([
+                'ss.id_servidor as id',
+                'ss.nome as name'
+            ]);
+    }
+
+    public static function servidorPolicial(stdClass $p): Collection
+    {
+        // Os campos que serão aplicados no Select
+        $select = [
+            'id_servidor as id',
+            DB::raw("UPPER(CONCAT('(', cargo.abreviacao, ') ' , servidor.nome)) as cargo_e_nome"),
+            DB::raw('UPPER(cargo.abreviacao) as cargo'),
+            DB::raw('UPPER(servidor.nome) as nome'),
+            'sit.nome as situacao',
+        ];
+
+        // Os cargos que serão usados para montar o combo. Apenas cargos de policiais.
+        $cargosPermitidos = [
+            //19, // Auxiliar tecnico de Policia Civil
+            24, // Delegado de Polícia
+            //27, // Escrivão de Polícia
+            //34, // Investigador de Polícia
+            //38, // Motorista Policial
+            //40, // Papiloscopista
+            //42, // Perito Policial
+        ];
+
+        // Situações Permitidas
+        $situacoesPermitidas = [
+            1,  // Em Atividade
+            //36, // Apto ao trabalho
+            //49, // Férias Interrompida
+        ];
+
+        $sql = DB::connection('conexao_srh')
+            ->table('srh.sig_servidor as servidor')
+            ->join('srh.sig_cargo as cargo', 'cargo.id', 'servidor.fk_id_cargo')
+            //->leftJoin('srh.sig_situacao_servidores as situacao', 'situacao.fk_servidor', 'servidor.id_servidor')
+            ->leftJoin('srh.sig_situacao_servidores as situacao', function ($join) use ($situacoesPermitidas){
+                $join->on('servidor.id_servidor', '=', 'situacao.fk_servidor')
+                    ->where(function($query) use ($situacoesPermitidas){
+                        $query->whereIn('situacao.fk_situacao', $situacoesPermitidas);
+                    })
+                    ->where(function ($query){
+                        $query->where('situacao.dt_termino', '>=', now());
+                    });
+            })
+            ->whereNull('situacao.fk_servidor') // A condição para incluir servidores sem situações
+
+            ->leftJoin('srh.sig_situacao_servidor as sit', 'sit.id', 'situacao.fk_situacao')
+            ->whereIn('cargo.id', $cargosPermitidos)
+            ->orderBy('servidor.nome')
+            ->select($select);
+
+            if(isset($p->nome))
+                //$sql->whereRaw('servidor.nome', 'ilike', "%$p->nome%");
+                $sql->whereRaw("public.sem_acento(servidor.nome) ilike public.sem_acento('%$p->nome%')");
+
+        return $sql->get();
     }
 
 }

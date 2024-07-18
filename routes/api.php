@@ -43,8 +43,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('robo-eprobatorio', [RotinasController::class, 'roboEprobatorio']);
 Route::get('robo-eprobatori/enviar-email-notificacao', [RotinasController::class, 'enviarNotificacaoPorEmailAvaliador']);
 
-
-
 //Formulário de Avaliação
 Route::controller(AvaliacaoController::class)->group(function () {
     Route::get('avaliacao/info', 'info');
@@ -58,7 +56,6 @@ Route::controller(AvaliacaoController::class)->group(function () {
     Route::get('avaliacao/combo-processo',  'comboProcesso');
     Route::get('avaliacao/combo-status',  'comboStatus');
 });
-
 
 // Rotas de Tipo de Arquivo
 Route::controller(TipoArquivoController::class)->group(function () {
@@ -87,6 +84,9 @@ Route::get('visualizar-comissao/grid/{comissao_id}', [ComissaoController::class,
 Route::get('comissao/carregar-parecer/{processo_id}', [ComissaoController::class, 'carregarParecer']);
 Route::post('comissao/salvar-parecer', [ComissaoController::class, 'salvarParecer']);
 Route::get('comissao/imprimir-parecer/{fk_servidor}', [PdfController::class, 'imprimirParecerComissao']);
+Route::get('comissao/combo-tipo-comissao', [ComissaoController::class, 'comboTipoComissao']);
+Route::get('comissao/info', [ComissaoController::class, 'getAllInfoComissao']);
+Route::get('comissao/auto-complete-presidente', [ComissaoController::class, 'autoCompletePresidenteComissao']);
 
 
 
@@ -137,7 +137,6 @@ Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/documentacao/{i
 Route::post('processo-avaliacao/acompanhamento-processo-avaliacao/upload-documentacao', [DocumentacaoEstagioDifController::class, 'store']);
 Route::post('processo-avaliacao/acompanhamento-processo-avaliacao/documentacao/delete/{id}', [DocumentacaoEstagioDifController::class, 'deletarDocumentoDif']);
 
-
 //Período do processo de avaliação
 Route::get('periodo-processo-avaliacao/combo', [PeriodoProcessoAvaliacaoController::class, 'combo']);
 //método criado exclusivamente para usar com autocomplete srh, considerando que recebe especificamente os parametros id e name.
@@ -163,6 +162,3 @@ Route::get('unidades', [UnidadesController::class, 'index']);
 // Route::get('unidades/{id}', [UnidadesController::class, 'show']);
 // Route::post('unidades', [UnidadesController::class, 'store']);
 // Route::delete('unidades/{id}', [UnidadesController::class, 'destroy']);
-
-
-

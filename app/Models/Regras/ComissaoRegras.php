@@ -9,8 +9,20 @@ class ComissaoRegras
 {
     public static function alterar($dados)
     {
+        $regras = [
+            'presidente' => 'required',
+            'tipo_comissao' => 'required',
+            'primeiro_membro' => 'required',
+            'segundo_membro' => 'required',
+        ];
+
+        $dados->validate($regras);
+
         $comissao = Comissao::find($dados->id);
         $comissao->presidente = $dados->presidente;
+        $comissao->fk_tipo_comissao = $dados->tipo_comissao;
+        $comissao->primeiro_membro = $dados->primeiro_membro;
+        $comissao->segundo_membro = $dados->segundo_membro;
         $comissao->save();
     }
 
