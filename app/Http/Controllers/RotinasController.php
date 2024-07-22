@@ -130,13 +130,15 @@ class RotinasController extends Controller
         ->join("srh.sig_cargo as c", "c.id", "=", "ss.fk_id_cargo")
         ->join('usuario_avalia_unidades as uau', 'uau.unidade_id', '=', 'pas.fk_unidade')
         ->join('seguranca.usuario as su', 'su.id', '=', 'uau.usuario_id')
+        ->join('periodos_processo as pp', 'pas.fk_periodo', '=', 'pp.id')
         ->select(
             'c.abreviacao as cargo',
             'pas.fk_unidade',
             'ss.nome as nome_avaliado',
             'ss.matricula as matricula_avaliado',
             'su.nome as nome_avaliador',
-            'su.email as email_avaliador'
+            'su.email as email_avaliador',
+            'pp.nome as periodo'
         )
         ->get();
 

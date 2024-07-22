@@ -23,13 +23,14 @@
     </div>
     <body>
         <p>Ao(a)<strong> DPC {{ $data['nome_avaliador'] }}</strong>,</p>
-        <p>Gostaríamos de informá-lo(a) que a avaliação do estagiário <strong>{{ $data['cargo'] }} {{ $data['nome_avaliado'] }}</strong>, matrícula <strong>{{ $data['matricula_avaliado'] }}</strong>, já está disponível para ser avaliada.</p>
-        <p>Por favor, acesse o sistema eProbatorio para registrar a sua avaliação.</p>
+        <p>Informamos que o <strong>{{ $data['periodo']}}</strong> do estagiário(a) <strong>{{ $data['cargo'] }} {{ $data['nome_avaliado'] }}</strong>, matrícula <strong>{{ $data['matricula_avaliado'] }}</strong>, já está disponível para ser avaliada.</p>
+        <p>Acesse o sistema eProbatorio para registrar a sua avaliação.</p>
         <p>Agradecemos a sua atenção e colaboração.</p>
         <p>Atenciosamente,</p>
-        <p><strong>DIRETORIA DE RECURSOS HUMANOS</strong><br>
-        <strong>POLÍCIA CIVIL DO ESTADO DO PARÁ</strong><br>
-        <strong>XX-XXXXXXX</strong></p>
+        <br>
+        <p><strong>DIVISÃO DE INFORMAÇÕES FUNCIONAIS</strong><br>
+        <strong>DIRETORIA DE RECURSOS HUMANOS</strong><br>
+        <strong>POLÍCIA CIVIL DO ESTADO DO PARÁ</strong></p>
     </body>
 
 </body>
