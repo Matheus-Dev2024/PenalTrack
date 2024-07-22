@@ -29,8 +29,9 @@ class PdfController extends Controller
     {
         $dadosServidor = ProcessoAvaliacaoServidorDB::dadosServidorRelatorio($fk_servidor);
         $parecerServidor = ComissaoDB::carregarParecerServidor($fk_servidor);
+        $comissaoServidor = ComissaoDB::carregarComissaoParecer($fk_servidor);
         //return view('impressao.parecer_comissao', compact('dadosServidor','parecerServidor'));
-        $pdf = Pdf::loadView('impressao.parecer_comissao', compact('dadosServidor','parecerServidor'));
+        $pdf = Pdf::loadView('impressao.parecer_comissao', compact('dadosServidor','parecerServidor', 'comissaoServidor'));
         $pdf->setPaper('a4', 'portrait')->setWarnings(false)->save('myfile.pdf');
         return $pdf->stream(
             'Solicitação de '

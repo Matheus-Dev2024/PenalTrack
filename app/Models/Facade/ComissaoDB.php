@@ -41,6 +41,27 @@ class ComissaoDB
         return $sql;
     }
 
+    public static function carregarComissaoParecer($fk_servidor) :Collection
+    {
+        $sql = DB::table('comissao')
+        ->join("srh.sig_servidor as presidente", 'presidente.id_servidor', '=', 'comissao.presidente')
+        ->join("srh.sig_servidor as primeiro_membro", 'primeiro_membro.id_servidor', '=', 'comissao.primeiro_membro')
+        ->join("srh.sig_servidor as segundo_membro", 'segundo_membro.id_servidor', '=', 'comissao.segundo_membro')
+        ->join("servidor_comissao as sc", function($join) {
+            $join->on('sc.fk_comissao', '=', 'comissao.id')
+                ->whereNull('sc.deleted_at');
+        })
+        ->select([
+            'presidente.nome as nome_presidente',
+            'primeiro_membro.nome as primeiro_membro_nome',
+            'segundo_membro.nome as segundo_membro_nome',
+        ])
+        ->where('sc.fk_servidor', '=', $fk_servidor)
+        ->get();
+        
+        return $sql;
+    }
+
     public static function carregarParecerServidor($fk_servidor)
     {
         $sql = DB::table('processo_avaliacao_servidor as pas')

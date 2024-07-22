@@ -19,7 +19,7 @@
             <div>CORREGEDORIA-GERAL</div>
             <div>COMISSÃO DE ACOMPANHAMENTO E AVALIAÇÃO DE ESTÁGIO PROBATÓRIO</div>
             <br>
-            <div> <strong> PARECER: PROCESSO N° </strong></div>
+            <div> <strong> PARECER: PROCESSO N° {{$dadosServidor[0]->numero_processo}}</strong></div>
             <br>
         </div>
     </div>
@@ -65,10 +65,23 @@
             {!!$parecerServidor[0]->parecer!!}
         </div>
 
+        @if(count($comissaoServidor) == 0)
+            <div class="assinatura">
+
+                <div class="div1">
+                    <br>
+                    <br>
+                    <strong> Vincule o servidor a uma coimssão para exibir as assinaturas.</strong>
+                </div>
+
+            </div>
+        @endif
+
+        @foreach($comissaoServidor as $item)
         <div class="assinatura">
 
             <div class="div1">
-                <strong> DPC fulana <br> Presidende da CAAEP <br> POLÍCIA CIVIL DO ESTADO DO PA</strong>
+                <strong> DPC {{$item->nome_presidente}}<br> Presidende da CAAEP <br> POLÍCIA CIVIL DO ESTADO DO PA</strong>
             </div>
 
         </div>
@@ -76,15 +89,15 @@
         <div class="assinatura_parte_de_baixo">
 
             <div style="float: left;">
-                <p><strong> DPC fulana <br> Presidende da CAAEP <br> POLÍCIA CIVIL DO ESTADO DO PA</strong></p>
+                <strong> DPC {{$item->primeiro_membro_nome}}<br> Primeiro Membro <br> POLÍCIA CIVIL DO ESTADO DO PA</strong>
             </div>
 
             <div style="float: right;"> 
-                <p><strong> DPC fulana <br> Presidende da CAAEP <br> POLÍCIA CIVIL DO ESTADO DO PA</strong></p>
+                <strong> DPC {{$item->segundo_membro_nome}}<br> Segundo Membro <br> POLÍCIA CIVIL DO ESTADO DO PA</strong>
             </div>
 
         </div>
-
+        @endforeach
 
     </body>
 </html>

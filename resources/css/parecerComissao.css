@@ -52,6 +52,12 @@ table.dados_servidor {
     /*vertical-align: center;*/
 }
 
+#assinatura_parte_de_baixo {
+    text-align: center;
+    padding-top: 30px;
+    vertical-align: center;
+}
+
 #texto_instrucao {
     text-align: start;
     padding-left: 20px;

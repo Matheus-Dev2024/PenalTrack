@@ -28,10 +28,11 @@ class ProcessoAvaliacaoServidorDB
                       AND pas.fk_periodo = 6
                       AND pas.dias_ausencia > 0
                       LIMIT 1) AS dt_final_ultimo_periodo"),
-                
-                
                 'ss.cargo', 
-                'ss.matricula')
+                'ss.matricula',
+                //o numero do processo é o id_servidor + ano da admissão
+                DB::raw("CONCAT(ss.id_servidor, '/', TO_CHAR(ss.dt_admissao, 'YYYY')) AS numero_processo")
+            )
             ->where('ss.id_servidor', $fk_servidor)
             ->distinct();
 
