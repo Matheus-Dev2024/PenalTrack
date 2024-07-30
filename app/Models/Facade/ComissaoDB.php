@@ -11,11 +11,32 @@ use stdClass;
 class ComissaoDB
 {
 
-    public static function comboTipoComissao(): Collection
+    public static function comboCargoComissaoVincularServidor() :Collection
     {
-        return DB::table('tipo_comissao')
+        return DB::table('comissao')
+        ->join('srh.sig_cargo as cargo', 'comissao.fk_cargo_comissao', '=', 'cargo.id')
+        ->orderBy('comissao.id')
+        ->get([
+            // 'comissao.id as id_comissao',
+            'cargo.abreviacao as text',
+            'comissao.id as value',
+            'comissao.numero_comissao',
+            'cargo.id as id_cargo'
+        ]);
+    }
+
+    public static function comboCargoComissao(): Collection
+    {
+        $cargos = [
+            24, //DPC
+            27, //EPC
+            40, //PAP
+            34 //IPC
+        ];
+        return DB::table('srh.sig_cargo as cargo')
+            ->whereIn('cargo.id', $cargos)
             ->get([
-                'cargo_comissao as text',
+                'abreviacao as text',
                 'id as value',
             ]);
     }
@@ -86,13 +107,13 @@ class ComissaoDB
 
     public static function grid()
     {
-        $srh = config('database.connections.conexao_srh.schema');
         $lista = DB::table('comissao')
-        ->join("tipo_comissao as tc", 'tc.id', '=', 'comissao.fk_tipo_comissao')
-        ->leftJoin("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'comissao.presidente')
-        ->leftJoin("$srh.sig_servidor as primeiro_membro", 'primeiro_membro.id_servidor', '=', 'comissao.primeiro_membro')
-        ->leftJoin("$srh.sig_servidor as segundo_membro", 'segundo_membro.id_servidor', '=', 'comissao.segundo_membro')
-        ->join("$srh.sig_cargo as sgc", 'sgc.id', '=', 'ss.fk_id_cargo')
+        // ->join("tipo_comissao as tc", 'tc.id', '=', 'comissao.fk_tipo_comissao')
+        ->leftJoin("srh.sig_servidor as ss", 'ss.id_servidor', '=', 'comissao.presidente')
+        ->leftJoin("srh.sig_servidor as primeiro_membro", 'primeiro_membro.id_servidor', '=', 'comissao.primeiro_membro')
+        ->leftJoin("srh.sig_servidor as segundo_membro", 'segundo_membro.id_servidor', '=', 'comissao.segundo_membro')
+        ->join("srh.sig_cargo as sgc", 'sgc.id', '=', 'ss.fk_id_cargo')
+        ->join('srh.sig_cargo as cargo_comissao', 'cargo_comissao.id', '=', 'comissao.fk_cargo_comissao')
         //->leftJoin("servidor_comissao as sc", 'sc.fk_comissao', '=', 'comissao.id')
         ->leftJoin("servidor_comissao as sc", function($join) {
             $join->on('sc.fk_comissao', '=', 'comissao.id')
@@ -105,13 +126,13 @@ class ComissaoDB
                 'ss.id_servidor as id_presidente',
                 DB::raw('COUNT(CASE WHEN sc.deleted_at IS NULL THEN sc.fk_servidor END) as total_servidores'),
                 "comissao.id as comissao_id",
-                'comissao.fk_tipo_comissao',
-                'sgc.abreviacao as cargo',
+                'cargo_comissao.abreviacao as cargo_avaliado',
+                'comissao.fk_cargo_comissao',
+                // 'sgc.abreviacao as cargo',
                 'primeiro_membro.nome as primeiro_membro_nome',
                 'primeiro_membro.id_servidor as id_primeiro_membro',
                 'segundo_membro.nome as segundo_membro_nome',
                 'segundo_membro.id_servidor as id_segundo_membro',
-                'tc.cargo_comissao as cargo_avaliado'
 
             ])
             ->groupBy(
@@ -119,12 +140,13 @@ class ComissaoDB
             'comissao.numero_comissao', 
             'ss.nome', 
             'id_presidente', 
-            'sgc.abreviacao', 
+            // 'sgc.abreviacao', 
+            'comissao.fk_cargo_comissao',
             'primeiro_membro.nome', 
             'primeiro_membro.id_servidor', 
             'segundo_membro.nome', 
             'segundo_membro.id_servidor',
-            'tc.cargo_comissao'
+            'cargo_comissao.abreviacao'
             )
             ->orderBy('numero_comissao')
             ->get();
@@ -137,7 +159,6 @@ class ComissaoDB
         $srh = config('database.connections.conexao_srh.schema');
         $lista = DB::table('servidor_comissao as sc')
         ->join("comissao", "comissao.id", "=", "sc.fk_comissao")
-        ->join("tipo_comissao as tc", 'tc.id', '=', 'comissao.fk_tipo_comissao')
         ->leftJoin("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'sc.fk_servidor')
         ->join("$srh.sig_cargo as sgc", 'sgc.id', '=', 'ss.fk_id_cargo')
         ->leftJoin("$srh.sig_servidor as presidente", 'presidente.id_servidor', '=', 'comissao.presidente')
@@ -154,7 +175,6 @@ class ComissaoDB
                 'presidente.nome as nome_presidente',
                 'primeiro_membro.nome as primeiro_membro_nome',
                 'segundo_membro.nome as segundo_membro_nome',
-                'tc.cargo_comissao'
             ])
             ->whereNull("sc.deleted_at")
             ->orderBy('nome_servidor')
@@ -165,33 +185,22 @@ class ComissaoDB
 
     public static function vincularServidoresGrid(stdClass $p): JsonResponse
     {
-        //$srh = config('database.connections.conexao_srh.schema');
-        //$policia = config('database.connections.conexao_banco_unico.schema');
-
-        $sql = DB::table('processo_avaliacao_servidor as pas')
+        $sql = DB::table('srh.sig_servidor as ss')
+            ->join("processo_avaliacao_servidor as pas", 'ss.id_servidor', '=', 'pas.fk_servidor')
             ->join('periodos_processo as pp', 'pp.id', '=', 'pas.fk_periodo')
-
-            // Descomente as linhas abaixo e comente as quatro proximas para funcionar em desenvolvimento
-//            ->join("$srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
-//            ->LeftJoin("$policia.seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
-//            ->join("$policia.policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
-//            ->join("$srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
-
-            ->join("srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
-            ->LeftJoin("seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
-            ->LeftJoin("policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
             ->join("srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
-
             ->LeftJoin("servidor_comissao", 'servidor_comissao.fk_servidor', '=', 'ss.id_servidor')
+            ->LeftJoin('comissao', 'servidor_comissao.fk_comissao', '=', 'comissao.id')
             ->select(
-                'pas.id as id_processo_avaliacao',
                 'pas.fk_servidor',
                 'sc.abreviacao as sigla_cargo',
                 'ss.nome',
                 'ss.cargo',
                 'ss.matricula',
-                'servidor_comissao.fk_comissao'
+                'servidor_comissao.fk_comissao',
+                'comissao.numero_comissao'
             )
+            ->selectRaw('false as loading')
             ->whereNull('servidor_comissao.deleted_at')
             ->groupBy([
                 'ss.nome',
@@ -200,12 +209,17 @@ class ComissaoDB
                 'sc.abreviacao',
                 'ss.cargo',
                 'ss.matricula',
-                'servidor_comissao.fk_comissao'
+                'servidor_comissao.fk_comissao',
+                'comissao.numero_comissao'
             ])
-            ->orderBy('ss.nome');
+            ->orderBy('ss.nome')->distinct();
 
         if (isset($p->periodo_avaliacao)) {
             $sql->where('pas.fk_periodo', $p->periodo_avaliacao);
+        }
+
+        if (isset($p->cargo_comissao)) {
+            $sql->where('ss.fk_id_cargo', $p->cargo_comissao);
         }
 
         $v = $sql->paginate(50);
@@ -214,6 +228,52 @@ class ComissaoDB
             return response()->json(['mensagem' => 'Erro ao carregar os parametros da pesquisa.']);
         return response()->json($v);
     }
+
+    // public static function vincularServidoresGrid(stdClass $p): JsonResponse
+    // {
+    //     $sql = DB::table('processo_avaliacao_servidor as pas')
+    //         ->join('periodos_processo as pp', 'pp.id', '=', 'pas.fk_periodo')
+    //         ->join("srh.sig_servidor as ss", 'ss.id_servidor', '=', 'pas.fk_servidor')
+    //         ->LeftJoin("seguranca.usuario as su", 'su.id', '=', 'pas.fk_avaliador')
+    //         ->LeftJoin("policia.unidade as u", 'u.id', '=', 'pas.fk_unidade')
+    //         ->join("srh.sig_cargo as sc", 'sc.id', '=', 'ss.fk_id_cargo')
+    //         ->LeftJoin("servidor_comissao", 'servidor_comissao.fk_servidor', '=', 'ss.id_servidor')
+    //         ->LeftJoin('comissao', 'servidor_comissao.fk_comissao', '=', 'comissao.id')
+    //         ->select(
+    //             'pas.id as id_processo_avaliacao',
+    //             'pas.fk_servidor',
+    //             'sc.abreviacao as sigla_cargo',
+    //             'ss.nome',
+    //             'ss.cargo',
+    //             'ss.matricula',
+    //             'servidor_comissao.fk_comissao'
+    //         )
+    //         ->whereNull('servidor_comissao.deleted_at')
+    //         ->groupBy([
+    //             'ss.nome',
+    //             'pas.id',
+    //             'pas.fk_servidor',
+    //             'sc.abreviacao',
+    //             'ss.cargo',
+    //             'ss.matricula',
+    //             'servidor_comissao.fk_comissao'
+    //         ])
+    //         ->orderBy('ss.nome')->distinct();
+
+    //     if (isset($p->periodo_avaliacao)) {
+    //         $sql->where('pas.fk_periodo', $p->periodo_avaliacao);
+    //     }
+
+    //     if (isset($p->cargo_comissao)) {
+    //         $sql->where('ss.fk_id_cargo', $p->cargo_comissao);
+    //     }
+
+    //     $v = $sql->paginate(50);
+    //     //if (!count($v->toArray()) > 0)
+    //     if ($v->isEmpty() || (isset($v->data) && count($v->data) > -1))
+    //         return response()->json(['mensagem' => 'Erro ao carregar os parametros da pesquisa.']);
+    //     return response()->json($v);
+    // }
 
     public static function delegadosAtivos()
     {
@@ -242,10 +302,10 @@ class ComissaoDB
         // Os cargos que serão usados para montar o combo. Apenas cargos de policiais.
         $cargosPermitidos = [
             //19, // Auxiliar tecnico de Policia Civil
+            //38, // Motorista Policial
             24, // Delegado de Polícia
             //27, // Escrivão de Polícia
             //34, // Investigador de Polícia
-            //38, // Motorista Policial
             //40, // Papiloscopista
             //42, // Perito Policial
         ];

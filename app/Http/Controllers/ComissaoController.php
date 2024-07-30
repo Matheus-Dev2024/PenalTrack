@@ -20,12 +20,6 @@ class ComissaoController extends Controller
         return $lista;
     }
 
-    public function vincularServidoresGrid(Request $request)
-    {
-        $p = (object)$request->all();
-        return ComissaoDB::vincularServidoresGrid($p);
-    }
-
     public function alterar(Request $request)
     {
         try {
@@ -33,19 +27,7 @@ class ComissaoController extends Controller
             return response()->json(["mensagem" => "Comissão alterada com sucesso"]);
 
         } catch (Exception $ex) {
-            return response()->json(["error" => 'Preencha todos os campos']);
-        }
-    }
-
-    public function vincularServidoresStore(Request $request)
-    {
-        try {
-
-            ServidorComissaoRegras::salvar($request);
-            return response()->json(["mensagem" => "Servidor vinculado a uma comissão com sucesso!"]);
-
-        } catch(Exception $ex) {
-            return response()->json(["error" => $ex->getMessage()]);
+            return response()->json(["error" => $ex->getMessage(), 400]);
         }
     }
 
@@ -91,7 +73,7 @@ class ComissaoController extends Controller
     {
         $info = [];
 
-        $info['tipo_comissao'] = ComissaoDB::comboTipoComissao();
+        $info['tipo_comissao'] = ComissaoDB::comboCargoComissao();
 
         return $info;
     }
