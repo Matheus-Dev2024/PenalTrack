@@ -14,6 +14,7 @@ use App\Http\Controllers\ProcessoAvaliacaoController;
 use App\Http\Controllers\RotinasController;
 use App\Http\Controllers\TipoArquivoController;
 use App\Http\Controllers\UnidadesController;
+use App\Http\Controllers\VincularServidorController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -74,21 +75,20 @@ Route::get('imprimir', [ImpressaoController::class, 'imprimir']);
 //Relatorio comissão
 Route::get('relatorio-comissao/{fk_servidor}', [PdfController::class, 'gerarRelatorioComissao']);
 
+//vincular servidor
+Route::get('vincular-servidor/grid', [VincularServidorController::class, 'grid']);
+Route::post('vincular-servidor/store', [VincularServidorController::class, 'store']);
+Route::get('vincular-servidor/info', [VincularServidorController::class, 'info']);
+
 //Comissao
 Route::get('comissao/grid', [ComissaoController::class, 'grid']);
 Route::post('comissao/alterar', [ComissaoController::class, 'alterar']);
-Route::get('vincular-servidor/grid', [ComissaoController::class, 'vincularServidoresGrid']);
-Route::post('vincular-servidor/store', [ComissaoController::class, 'vincularServidoresStore']);
-Route::post('vincular-servidor/excluir', [ComissaoController::class, 'excluir']);
-Route::get('visualizar-comissao/grid/{comissao_id}', [ComissaoController::class, 'gridVisualizarComissao']);
 Route::get('comissao/carregar-parecer/{processo_id}', [ComissaoController::class, 'carregarParecer']);
 Route::post('comissao/salvar-parecer', [ComissaoController::class, 'salvarParecer']);
 Route::get('comissao/imprimir-parecer/{fk_servidor}', [PdfController::class, 'imprimirParecerComissao']);
-Route::get('comissao/combo-tipo-comissao', [ComissaoController::class, 'comboTipoComissao']);
 Route::get('comissao/info', [ComissaoController::class, 'getAllInfoComissao']);
 Route::get('comissao/auto-complete-presidente', [ComissaoController::class, 'autoCompletePresidenteComissao']);
-
-
+Route::get('visualizar-comissao/grid/{comissao_id}', [ComissaoController::class, 'gridVisualizarComissao']);
 
 //Fator de Avaliação
 Route::get('fator-avaliacao/grid', [FatorAvaliacaoController::class, 'grid']);
