@@ -89,6 +89,8 @@ Route::get('comissao/imprimir-parecer/{fk_servidor}', [PdfController::class, 'im
 Route::get('comissao/info', [ComissaoController::class, 'getAllInfoComissao']);
 Route::get('comissao/auto-complete-presidente', [ComissaoController::class, 'autoCompletePresidenteComissao']);
 Route::get('visualizar-comissao/grid/{comissao_id}', [ComissaoController::class, 'gridVisualizarComissao']);
+Route::get('comissao/antecedentes-servidor', [ComissaoController::class, 'antecedentesServidor']);
+
 
 //Fator de Avaliação
 Route::get('fator-avaliacao/grid', [FatorAvaliacaoController::class, 'grid']);
