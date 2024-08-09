@@ -42,8 +42,10 @@ class ComissaoController extends Controller
         $processo = ProcessoAvaliacaoServidor::where('id', $request->processo_id)->first();
         //verifica se o servidor ja foi avaliado em todos os períodos
         if($processo->fk_periodo == 6 && $processo->status == 2) {
-            $lista = ComissaoDB::carregarParecer($request->processo_id);
-            return response()->json($lista);
+            $info = ComissaoDB::montarTextoParecer($request->processo_id);
+            return response()->json($info);
+            // $lista = ComissaoDB::carregarParecer($request->processo_id);
+            // return response()->json($lista);
         } else {
             return response()->json(['error' => 'Servidor ainda em avaliação.']);
         }
@@ -76,6 +78,16 @@ class ComissaoController extends Controller
         $info['tipo_comissao'] = ComissaoDB::comboCargoComissao();
 
         return $info;
+    }
+
+    public static function antecedentesServidor(Request $request) 
+    {
+        $id_servidor = $request->id_servidor;
+
+        // Define a consulta com o parâmetro do id_servidor
+        $antecedentes = DB::select("SELECT * FROM srh.antecedentes_servidor() WHERE id_servidor = :id_servidor", ['id_servidor' => $id_servidor]);
+    
+        return response()->json($antecedentes);
     }
     
 }

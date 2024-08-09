@@ -14,6 +14,24 @@ class ServidorDB
         return DB::select("SELECT * FROM srh.sp_info_servidor_estagio_probatorio('$dtInicio'::date, '$dtTermino'::date, $servidor_id)");
     }
 
+    public static function elogiosServidor($id_servidor) :Collection
+    {
+        $elogios = DB::table('srh.sig_requerimento as sr')
+        ->join('srh.sig_servidor as ss', 'ss.id_servidor', '=', 'sr.fk_servidor')
+        ->select([
+            'ss.id_servidor',
+            'ss.nome',
+            'sr.num_pae',
+            'sr.observacao',
+            'sr.data'
+        ])
+        ->where('ss.id_servidor', $id_servidor)
+        ->where('sr.fk_tipo_requerimento', 87) // 87 é o fk de elogios funcionais na tabela sig_tipo_requerimento
+        ->get();
+
+        return $elogios;
+    }
+
     public static function listaAusenciasPorPeriodo($servidor_id, $dtInicio, $dtTermino=null)
     {
         $ausencias = DB::select("SELECT * FROM srh.sp_ausencias_servidor('$dtInicio'::date, '$dtTermino'::date, $servidor_id)");

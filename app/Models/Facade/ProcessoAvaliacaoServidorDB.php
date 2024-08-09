@@ -56,6 +56,7 @@ class ProcessoAvaliacaoServidorDB
                 DB::raw("TO_CHAR(pas.dt_termino, 'DD/MM/YYYY') AS dt_termino_avaliacao"),
                 'pp.nome as periodo',
                 DB::raw("TO_CHAR((ss.dt_admissao + INTERVAL '3 years'), 'DD/MM/YYYY') AS dt_final_prevista"),
+                'pp.id as id_periodo'
             )
             ->orderBy('pp.nome')
             ->where('pas.fk_servidor', $fk_servidor);
