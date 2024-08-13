@@ -22,11 +22,11 @@
         </div>
     </div>
     <div>
-        <p>Ao(a)<strong> DPC {{ $data['nome_avaliador'] }}</strong>,</p>
-        <p>Informamos que o {{ $data['fk_periodo'] }}º período de avaliação de Estágio Probatório do estagiário
-            <strong>{{ $data['cargo'] }} {{ $data['nome_avaliado'] }}</strong>, matrícula
-            <strong>{{ $data['matricula_avaliado'] }}</strong>, já está disponível para ser avaliada.</p>
-        <p>Acesse o sistema eProbatório para registrar a sua avaliação.</p>
+        <p>Ao(a) <strong>{{ $data['cargo'] }} {{ $data['nome_avaliado'] }}</strong>,</p>
+        <p>Informamos que a sua avaliação de Estágio Probatório do {{ $data['fk_periodo'] }}º período já está disponível para ser
+            avaliada.</p>
+        <p>Acesse o portal Intranet-PCPA atavés do link: <a href="https://intranet.pc.pa.gov.br/login">intranet.pc.pa.gov.br</a>
+            para visualizar a sua avaliação.</p>
         <p>Atenciosamente,</p>
         <p><strong>DIVISÃO DE INFORMAÇÃO FUNCIONAL</strong><br>
             <strong>DIRETORIA DE RECURSOS HUMANOS</strong><br>
