@@ -23,18 +23,6 @@
     </div>
     <div>
         <p>Ao(a)<strong> DPC {{ $data['nome_avaliador'] }}</strong>,</p>
-<<<<<<< HEAD
-        <p>Informamos que o <strong>{{ $data['periodo']}}</strong> do estagiário(a) <strong>{{ $data['cargo'] }} {{ $data['nome_avaliado'] }}</strong>, matrícula <strong>{{ $data['matricula_avaliado'] }}</strong>, já está disponível para ser avaliada.</p>
-        <p>Acesse o sistema eProbatorio para registrar a sua avaliação.</p>
-        <p>Agradecemos a sua atenção e colaboração.</p>
-        <p>Atenciosamente,</p>
-        <br>
-        <p><strong>DIVISÃO DE INFORMAÇÕES FUNCIONAIS</strong><br>
-        <strong>DIRETORIA DE RECURSOS HUMANOS</strong><br>
-        <strong>POLÍCIA CIVIL DO ESTADO DO PARÁ</strong></p>
-    </body>
-
-=======
         <p>Informamos que o {{ $data['fk_periodo'] }}º período de avaliação de Estágio Probatório do estagiário
             <strong>{{ $data['cargo'] }} {{ $data['nome_avaliado'] }}</strong>, matrícula
             <strong>{{ $data['matricula_avaliado'] }}</strong>, já está disponível para ser avaliada.</p>
@@ -45,7 +33,6 @@
             <strong>POLÍCIA CIVIL DO ESTADO DO PARÁ</strong></p>
     </div>
 </div>
->>>>>>> OS-580
 </body>
 </html>
 
