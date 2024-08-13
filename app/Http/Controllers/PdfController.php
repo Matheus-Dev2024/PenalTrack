@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Entity\ParecerComissao;
 use App\Models\Facade\ComissaoDB;
 use App\Models\Facade\ProcessoAvaliacaoServidorDB;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -15,7 +14,7 @@ class PdfController extends Controller
         $dadosAvaliacao = ProcessoAvaliacaoServidorDB::dadosAvaliacaoRelatorio($fk_servidor);
         // dd($dadosAvaliacao);
         $dadosItensAvaliacao = ProcessoAvaliacaoServidorDB::dadosItensAvaliacaoRelatorio($fk_servidor);
-        
+
         //return compact('dadosServidor', 'dadosAvaliacao', 'dadosItensAvaliacao');
         //return view('impressao.relatorio_comissao', compact('dadosServidor', 'dadosAvaliacao', 'dadosItensAvaliacao'));
         $pdf = Pdf::loadView('impressao.relatorio_comissao', compact('dadosServidor', 'dadosAvaliacao', 'dadosItensAvaliacao'));
@@ -31,7 +30,7 @@ class PdfController extends Controller
         $parecerServidor = ComissaoDB::carregarParecerServidor($fk_servidor);
         $comissaoServidor = ComissaoDB::carregarComissaoParecer($fk_servidor);
         //return view('impressao.parecer_comissao', compact('dadosServidor','parecerServidor'));
-        $pdf = Pdf::loadView('impressao.parecer_comissao', compact('dadosServidor','parecerServidor', 'comissaoServidor'));
+        $pdf = Pdf::loadView('impressao.parecer_comissao', compact('dadosServidor', 'parecerServidor', 'comissaoServidor'));
         $pdf->setPaper('a4', 'portrait')->setWarnings(false)->save('myfile.pdf');
         return $pdf->stream(
             'Solicitação de '
