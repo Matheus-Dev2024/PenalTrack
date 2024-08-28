@@ -1,39 +1,77 @@
-version: "3.3"
 services:
     app:
         build:
             args:
-                user: ${USUARIO}
+                # Não altere o nome de usuário abaixo
+                user: dime
                 uid: 1000
             context: ./
-            dockerfile: ./docker/Dockerfile
-        image: php82
+            dockerfile: docker/php/php.dockerfile
+        image: php83
         extra_hosts:
             - host.docker.internal:host-gateway
-        container_name: ${APP_NAME}-app
+        container_name: ${APP_NAME:-php}-app
         restart: unless-stopped
         working_dir: /var/www
         volumes:
             - ./:/var/www
-            - ./docker/docker-compose/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-            - ./docker/docker-compose/php/php.ini:/usr/local/etc/php/conf.d/php.ini
+            - ./docker/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+            - ./docker/php/php.ini:/usr/local/etc/php/conf.d/php.ini
+            - ./docker/php/.bashrc:/home/dime/.bashrc
+            - ./docker/php/auth.json:/home/dime/.composer/auth.json
         networks:
-            - intranet-api_dev
+            - dev
 
     nginx:
         image: nginx:alpine
-        container_name: ${APP_NAME}-nginx
+        container_name: ${APP_NAME:-web}-nginx
         restart: unless-stopped
         ports:
             - "8004:8000"
         volumes:
             - ./:/var/www
-            - ./docker/docker-compose/nginx:/etc/nginx/conf.d
+            - ./docker/nginx:/etc/nginx/conf.d
         networks:
-            - intranet-api_dev
+            - dev
         links:
             - app
 
+    ############################
+    # MySQL
+    ############################
+#    db:
+#        image: mysql:latest
+#        container_name: ${APP_NAME:-mysql}-db
+#        restart: unless-stopped
+#        environment:
+#            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-123456789}
+#            MYSQL_DATABASE: ${DB_DATABASE:-skeleton}
+#        ports:
+#            - "${DB_PORT:-3306}:${DB_PORT:-3306}"
+#        volumes:
+#            - /home/${USUARIO:-dime}/mysqldb:/var/lib/mysql
+#        networks:
+#            - dev
+
+    ############################
+    # Postgres
+    ############################
+#    db:
+#        image: postgres:14-alpine
+#        restart: unless-stopped
+#        container_name: ${APP_NAME:-postgres}-db
+#        environment:
+#            POSTGRES_PASSWORD: ${DB_PASSWORD:-123456789}
+#        ports:
+#            - "${DB_PORT:-5432}:${DB_PORT:-5432}"
+#        volumes:
+#            - /home/dime/postgresdb14:/var/lib/postgresql/data
+#            - ./docker/postgres/01_estrutura_policia.sql:/docker-entrypoint-initdb.d/01_estrutura_policia.sql
+#            - ./docker/postgres/02_estrutura_seguranca.sql:/docker-entrypoint-initdb.d/02_estrutura_seguranca.sql
+#            - ./docker/postgres/03_dados.sql:/docker-entrypoint-initdb.d/03_dados.sql
+#        networks:
+#            - dev
+
 networks:
-    intranet-api_dev:
-        external: true
+    dev:
+        driver: bridge

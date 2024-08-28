@@ -23,8 +23,8 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 |
 | Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
 |
 */
 
@@ -134,7 +134,7 @@ Route::post('processo-avaliacao/acompanhamento-comissao/upload-documentacao', [D
 Route::get('processo-avaliacao/acompanhamento-comissao/grid', [ProcessoAvaliacaoController::class, 'acompanhamentoServidoresComissaoGrid']);
 Route::post('processo-avaliacao/acompanhamento-comissao/documentacao/delete/{id}', [DocumentacaoEstagioComissaoController::class, 'deletarDocumentoComissao']);
 
-//ROTAS DOCUMENTACAO ESTAGIO DIF 
+//ROTAS DOCUMENTACAO ESTAGIO DIF
 Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/documentacao/{id}', [ProcessoAvaliacaoController::class, 'exibirDocumentoDif']);
 Route::post('processo-avaliacao/acompanhamento-processo-avaliacao/upload-documentacao', [DocumentacaoEstagioDifController::class, 'store']);
 Route::post('processo-avaliacao/acompanhamento-processo-avaliacao/documentacao/delete/{id}', [DocumentacaoEstagioDifController::class, 'deletarDocumentoDif']);
