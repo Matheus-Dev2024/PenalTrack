@@ -164,3 +164,11 @@ Route::get('unidades', [UnidadesController::class, 'index']);
 // Route::get('unidades/{id}', [UnidadesController::class, 'show']);
 // Route::post('unidades', [UnidadesController::class, 'store']);
 // Route::delete('unidades/{id}', [UnidadesController::class, 'destroy']);
+
+// ROTAS PARA INTRANET
+Route::get('minhas-avaliacoes/{usuario_id}', [AvaliacaoController::class, 'minhasAvaliacoes']);
+Route::get('processo-avaliacao-servidor/{processo_id}', [AvaliacaoController::class, 'getProcessoAvaliacaoServidor']);
+Route::get('minha-avaliacao/imprimir/{processo_id}', [AvaliacaoController::class, 'imprimirAvaliacao']);
+Route::post('minha-avaliacao/ciencia-avaliado/{processo_id}', [AvaliacaoController::class, 'confirmarCienciaAvaliado']);
+Route::post('minha-avaliacao/recusar-avaliacao/{processo_id}', [AvaliacaoController::class, 'recusarAvaliacao']);
+

@@ -4,11 +4,14 @@ namespace App\Models\Facade;
 
 use App\Models\Entity\AvaliacaoServidor;
 use App\Models\Entity\ProcessoAvaliacaoServidor;
+use App\Models\Entity\Servidor;
 use App\Models\Entity\ServidoresAvaliadosIndividualmente;
+use App\Models\Entity\Usuario as EntityUsuario;
 use App\Models\Entity\UsuarioAvaliaUnidades;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use PoliciaCivil\Seguranca\Models\Entity\Usuario;
 use stdClass;
 
 class AvaliacaoDB
@@ -30,7 +33,6 @@ class AvaliacaoDB
 
         return $form;
     }
-
 
     public static function getNotasServidor($processo_id, $servidor_id)
     {
@@ -136,5 +138,40 @@ class AvaliacaoDB
     {
        $dados = DB::select("SELECT * FROM srh.sp_info_servidor_estagio_probatorio('$dt_inicio'::date, '$dt_termino'::date, $servidor_id)");
        return $dados;
+    }
+
+    public static function minhasAvaliacoes($usuario_id)
+    {
+        $usuario = EntityUsuario::where('id', $usuario_id)->first();
+        
+        $servidor = Servidor::where('cpf', $usuario->cpf)->first();
+        return DB::table('processo_avaliacao_servidor as pas')
+        ->join("periodos_processo as pp", "pas.fk_periodo", "pp.id")
+        ->where('pas.fk_servidor', $servidor->id_servidor)
+        ->orderBy('pp.nome')
+        ->get([
+            'pas.id',
+            'pp.nome as periodo',
+            DB::raw("TO_CHAR(pas.dt_inicio, 'DD/MM/YYYY') AS dt_inicio"),
+            DB::raw("TO_CHAR(pas.dt_termino, 'DD/MM/YYYY') AS dt_termino"),
+            'pas.fk_servidor',
+            'pas.status',
+            'pas.data_recurso'
+        ]);
+    }
+
+    public static function getProcessoAvaliacaoServidor($processo_id)
+    {
+        return DB::table('processo_avaliacao_servidor as pas')
+        ->join("periodos_processo as pp", "pas.fk_periodo", "pp.id")
+        ->join("processo_situacao_servidor as pss", "pss.id", "pas.status")
+        ->where('pas.id', $processo_id)
+        ->first([
+            'pas.id',
+            'pp.nome as periodo',
+            'pas.ciente_avaliado',
+            'pas.status',
+            'pss.nome as situacao'
+        ]);
     }
 }

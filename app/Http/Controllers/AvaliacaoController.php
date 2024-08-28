@@ -5,11 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Resources\AvaliadoResource;
 use App\Models\Entity\ArquivoAvaliacaoServidor;
 use App\Models\Entity\FatorAvaliacao;
+use App\Models\Entity\ProcessoAvaliacaoServidor;
 use App\Models\Facade\AvaliacaoDB;
 use App\Models\Regras\AvaliacaoServidorRegras;
+use App\Models\Regras\ImpressaoRegras;
 use App\Models\Regras\ProcessoAvaliacaoRegras;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -127,6 +131,59 @@ class AvaliacaoController extends Controller
     {
         $p = (object)$request->all();
         return AvaliacaoServidorRegras::exibirArquivo($p);
+    }
+
+    public function minhasAvaliacoes($usuario_id)
+    {
+        $avaliacoes = AvaliacaoDB::minhasAvaliacoes($usuario_id);
+        return $avaliacoes;
+    }
+
+    public function imprimirAvaliacao($processo_id)
+    {
+        $servidor_id = ProcessoAvaliacaoServidor::where('id', $processo_id)->value('fk_servidor');
+        
+        $p = new \stdClass();
+        $p->processo_id = $processo_id;
+        $p->servidor_id = $servidor_id;
+       
+        return ImpressaoRegras::imprimirAvaliacao($p);
+    }
+
+    public function confirmarCienciaAvaliado(Request $request, $processo_id)
+    {
+        $processo_avaliacao_servidor = ProcessoAvaliacaoServidor::where('id', $processo_id)->first();
+        if ($processo_avaliacao_servidor) {
+            //verifica se o processo ja foi alguma vez concluído ou recusado
+            if ($processo_avaliacao_servidor->status == 4 || $processo_avaliacao_servidor->status == 3) {
+                return response()->json(['message' => 'Não é possível dar ciência em uma avaliação ja concluída ou recusada.'], 400);
+            } 
+            $processo_avaliacao_servidor->ciente_avaliado = $request->ciente_avaliado;
+            $processo_avaliacao_servidor->status = 4; // 4 é o status de conclúido conforme tabela processo_situacao_servidor  
+            $processo_avaliacao_servidor->save();
+            return response()->json(['message' => 'Ciência da avaliação confirmada'], 200);
+        }
+        return response()->json(['message' => 'Erro ao dar ciência na avaliação'], 500);
+    }
+    public function recusarAvaliacao($processo_id)
+    {
+        $processo_avaliacao_servidor = ProcessoAvaliacaoServidor::where('id', $processo_id)->first();
+        if ($processo_avaliacao_servidor) {
+            //verifica se o processo ja foi alguma vez concluído ou recusado
+            if ($processo_avaliacao_servidor->status == 4 || $processo_avaliacao_servidor->status == 3) {
+                return response()->json(['message' => 'Não é possível recusar uma avaliação ja concluída ou recusada.'], 400);
+            } 
+            $processo_avaliacao_servidor->status = 3; // 3 é o status de processo com recurso
+            $processo_avaliacao_servidor->data_recurso = Carbon::now();
+            $processo_avaliacao_servidor->save();
+            return response()->json(['message' => 'Avaliação Recusada, apresente o recurso em até 10 (dez) dias na DIRETORIA DE RECURSOS HUMANOS'], 200);
+        }
+    }
+    
+    public function getProcessoAvaliacaoServidor($processo_id)
+    {
+        $processo_avaliacao_servidor = AvaliacaoDB::getProcessoAvaliacaoServidor($processo_id);
+        return $processo_avaliacao_servidor;
     }
 
 }
