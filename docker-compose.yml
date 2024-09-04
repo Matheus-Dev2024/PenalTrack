@@ -20,7 +20,7 @@ services:
             - ./docker/php/.bashrc:/home/dime/.bashrc
             - ./docker/php/auth.json:/home/dime/.composer/auth.json
         networks:
-            - dev
+            - intranet-api_dev
 
     nginx:
         image: nginx:alpine
@@ -32,7 +32,7 @@ services:
             - ./:/var/www
             - ./docker/nginx:/etc/nginx/conf.d
         networks:
-            - dev
+            - intranet-api_dev
         links:
             - app
 
@@ -73,5 +73,5 @@ services:
 #            - dev
 
 networks:
-    dev:
-        driver: bridge
+    intranet-api_dev:
+        external: true

@@ -189,6 +189,7 @@ class ServidorDB
                 'pas.dias_bruto',
                 'pas.dias_ausencia',
                 'pas.dias_liquid',
+                'pas.parecer_avaliador',
                 DB::raw("TO_CHAR(s.dt_admissao, 'DD/MM/YYYY') as dt_admissao"),
 
             ])
