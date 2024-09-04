@@ -60,7 +60,7 @@ class AvaliacaoDB
     public static function getListaServidoresDoProcessoAvaliacao(stdClass $p): Collection
     {
         $usuario_id = Auth::user()->id;
-        //$usuario_id = 5082;
+        //$usuario_id = 587;
 
         // Lista de Unidades que o servidor logado deverá Avaliar
         $unidades_do_avaliador = UsuarioAvaliaUnidades::where('usuario_id', $usuario_id)->select('unidade_id');
@@ -112,7 +112,7 @@ class AvaliacaoDB
 
         return $dados;
     }
-
+    
     public static function comboProcesso(): Collection
     {
         return DB::table('processo_avaliacao')
@@ -143,11 +143,11 @@ class AvaliacaoDB
     public static function minhasAvaliacoes($usuario_id)
     {
         $usuario = EntityUsuario::where('id', $usuario_id)->first();
-
+        
         $servidor = Servidor::where('cpf', $usuario->cpf)->first();
         return DB::table('processo_avaliacao_servidor as pas')
         ->join("periodos_processo as pp", "pas.fk_periodo", "pp.id")
-        ->where('pas.fk_servidor', $servidor?->id_servidor)
+        ->where('pas.fk_servidor', $servidor->id_servidor)
         ->orderBy('pp.nome')
         ->get([
             'pas.id',
