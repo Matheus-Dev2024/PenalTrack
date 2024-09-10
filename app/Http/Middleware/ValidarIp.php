@@ -18,8 +18,8 @@ class ValidarIp
         // Lista de IPs permitidos
         $ipsAutorizados = [
             '172.18.0.4', //ip intranet-api teste
-            '172.18.0.1',// ip local de teste
-            '127.0.0.1', // Localhost
+            // '172.18.0.1',// ip local de teste
+            // '127.0.0.1', // Localhost
         ];
 
         if (!in_array($request->ip(), $ipsAutorizados)) {
@@ -28,6 +28,6 @@ class ValidarIp
 
         return $next($request);
     }
-    
+
 
 }

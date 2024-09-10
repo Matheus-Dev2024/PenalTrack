@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +17,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::group(['middleware' => ['acesso.unico']], function () {
+    Route::get('/acesso/usuario/token/{token}/{usuario}', [UsuarioController::class, 'acessoViaIntranet']);
+
+});
+

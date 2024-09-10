@@ -75,5 +75,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'validar.ip' => \App\Http\Middleware\ValidarIp::class,
+        'acesso.unico' => \App\Http\Middleware\AcessoUnico::class,
     ];
 }

@@ -26,63 +26,53 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider and all of them will
 | be assigned to the "api" middleware group. Make something great!
 |
-*/
-Route::group(['middleware' => ['validar.ip']], function(){
-      // ROTAS PARA INTRANET //não precisa estar no sanctum pois são rotas usadas pelo intranet-api que ja são autenticadas
-    Route::get('minhas-avaliacoes/{usuario_id}', [AvaliacaoController::class, 'minhasAvaliacoes']);
-    Route::get('processo-avaliacao-servidor/{processo_id}', [AvaliacaoController::class, 'getProcessoAvaliacaoServidor']);
-    Route::get('minha-avaliacao/imprimir/{processo_id}', [AvaliacaoController::class, 'imprimirAvaliacao']);
-    Route::post('minha-avaliacao/ciencia-avaliado/{processo_id}', [AvaliacaoController::class, 'confirmarCienciaAvaliado']);
-    Route::post('minha-avaliacao/recusar-avaliacao/{processo_id}', [AvaliacaoController::class, 'recusarAvaliacao']);   
-});
-
-Route::group(['middleware' => ['seguranca', 'validar.ip']], function () {
-
-//Estágio - Lista servidores
+*/     
+Route::group(['middleware' => ['validar.ip', 'acesso.unico']], function () {
+           
+     //Estágio - Lista servidores
 
      Route::controller(AvaliacaoController::class)->group(function () {
-         Route::get('avaliacao/info', 'info');
-         Route::get('avaliacao/form', 'formulario');
-         Route::post('avaliacao/store', 'store');
-         Route::get('avaliacao/arquivos', 'GridArquivos');
-         Route::post('avaliacao/upload-arquivo', 'uploadArquivo');
-         Route::post('avaliacao/arquivos/{arquivo}/destruir', 'ExcluirArquivo');
-         Route::get('avaliacao/arquivo-download', 'exibirArquivo'); //carrega um arquivo específico para ser exibido em tela
-         Route::get('avaliacao/corrente/get-servidores', 'getServidoresAvaliacaoCorrente');
-         Route::get('avaliacao/combo-processo', 'comboProcesso');
-         Route::get('avaliacao/combo-status', 'comboStatus');
+          Route::get('avaliacao/info', 'info');
+          Route::get('avaliacao/form', 'formulario');
+          Route::post('avaliacao/store', 'store');
+          Route::get('avaliacao/arquivos', 'GridArquivos');
+          Route::post('avaliacao/upload-arquivo', 'uploadArquivo');
+          Route::post('avaliacao/arquivos/{arquivo}/destruir', 'ExcluirArquivo');
+          Route::get('avaliacao/arquivo-download', 'exibirArquivo'); //carrega um arquivo específico para ser exibido em tela
+          Route::get('avaliacao/corrente/get-servidores', 'getServidoresAvaliacaoCorrente');
+          Route::get('avaliacao/combo-processo', 'comboProcesso');
+          Route::get('avaliacao/combo-status', 'comboStatus');
      });
 
-//rotas de rotinas para teste
-// Route::get('robo-eprobatorio', [RotinasController::class, 'roboEprobatorio']);
-// Route::get('robo-eprobatori/enviar-email-notificacao', [RotinasController::class, 'enviarNotificacaoPorEmailAvaliador']);
+     //rotas de rotinas para teste
+     // Route::get('robo-eprobatorio', [RotinasController::class, 'roboEprobatorio']);
+     // Route::get('robo-eprobatori/enviar-email-notificacao', [RotinasController::class, 'enviarNotificacaoPorEmailAvaliador']);
 
-//Formulário de Avaliação
+     //Formulário de Avaliação
 
 
-// Rotas de Tipo de Arquivo
+     // Rotas de Tipo de Arquivo
      Route::controller(TipoArquivoController::class)->group(function () {
-         Route::prefix('tipo-arquivo')->group(function () {
-             Route::post('/store', 'store');
-             Route::get('/grid', 'grid');
-             Route::get('/{id}', 'edit');
-             Route::post('/update', 'update');
-             Route::post('/delete/{tipo}', 'delete');
-         });
+          Route::prefix('tipo-arquivo')->group(function () {
+               Route::post('/store', 'store');
+               Route::get('/grid', 'grid');
+               Route::get('/{id}', 'edit');
+               Route::post('/update', 'update');
+               Route::post('/delete/{tipo}', 'delete');
+          });
      });
-
-// Rota de Impressao
+     // Rota de Impressao
      Route::get('imprimir', [ImpressaoController::class, 'imprimir']);
 
-//Relatorio comissão
+     //Relatorio comissão
      Route::get('relatorio-comissao/{fk_servidor}', [PdfController::class, 'gerarRelatorioComissao']);
 
-//vincular servidor
+     //vincular servidor
      Route::get('vincular-servidor/grid', [VincularServidorController::class, 'grid']);
      Route::post('vincular-servidor/store', [VincularServidorController::class, 'store']);
      Route::get('vincular-servidor/info', [VincularServidorController::class, 'info']);
 
-//Comissao
+     //Comissao
      Route::get('comissao/grid', [ComissaoController::class, 'grid']);
      Route::post('comissao/alterar', [ComissaoController::class, 'alterar']);
      Route::get('comissao/carregar-parecer/{processo_id}', [ComissaoController::class, 'carregarParecer']);
@@ -94,19 +84,19 @@ Route::group(['middleware' => ['seguranca', 'validar.ip']], function () {
      Route::get('comissao/antecedentes-servidor', [ComissaoController::class, 'antecedentesServidor']);
 
 
-//Fator de Avaliação
+     //Fator de Avaliação
      Route::get('fator-avaliacao/grid', [FatorAvaliacaoController::class, 'grid']);
      Route::post('fator-avaliacao/salvar', [FatorAvaliacaoController::class, 'salvar']);
      Route::post('fator-avaliacao/alterar', [FatorAvaliacaoController::class, 'alterar']);
      Route::post('fator-avaliacao/excluir', [FatorAvaliacaoController::class, 'excluir']);
-
-//Fator de Avaliação item
+     
+     //Fator de Avaliação item
      Route::get('fator-avaliacao-item/grid', [FatorAvaliacaoItemController::class, 'grid']);
      Route::post('fator-avaliacao-item/salvar', [FatorAvaliacaoItemController::class, 'salvar']);
      Route::post('fator-avaliacao-item/alterar', [FatorAvaliacaoItemController::class, 'alterar']);
      Route::post('fator-avaliacao-item/excluir', [FatorAvaliacaoItemController::class, 'excluir']);
 
-//Processo de Avaliação
+     //Processo de Avaliação  
      Route::get('processo-avaliacao/grid', [ProcessoAvaliacaoController::class, 'grid']);
      Route::get('processo-avaliacao/grid-servidores', [ProcessoAvaliacaoController::class, 'gridServidores']);
      Route::get('processo-avaliacao/servidores-grid/{id_processo}', [ProcessoAvaliacaoController::class, 'servidoresGrid']);
@@ -122,7 +112,7 @@ Route::group(['middleware' => ['seguranca', 'validar.ip']], function () {
      Route::post('processo-avaliacao/salvar-usuario-avalia-servidor', [ProcessoAvaliacaoController::class, 'salvarUsuarioAvaliaServidor']);
      Route::get('processo-avaliacao/grid-usuario-avalia-servidor', [ProcessoAvaliacaoController::class, 'listaUsuarioAvaliaServidor']);
 
-//Rotas da tela de Acompanhamento de Processo
+     //Rotas da tela de Acompanhamento de Processo
      Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/grid', [ProcessoAvaliacaoController::class, 'acompanhamentoServidoresGrid']);
      Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/combo-unidade', [ProcessoAvaliacaoController::class, 'comboUnidadeDoProcesso']);
      Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/combo-avaliador', [AvaliadorController::class, 'comboAvaliador']);
@@ -131,22 +121,22 @@ Route::group(['middleware' => ['seguranca', 'validar.ip']], function () {
      Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/servidores-processo', [ProcessoAvaliacaoController::class, 'getServidoresProcesso']);
      Route::get('processo-avaliacao/acompanhamento/info', [ProcessoAvaliacaoController::class, 'getAllInfoAcompanhamento']);
 
-//ROTAS DOCUMENTACAO ESTAGIO COMISSAO
+     //ROTAS DOCUMENTACAO ESTAGIO COMISSAO
      Route::post('processo-avaliacao/acompanhamento-comissao/upload-documentacao', [DocumentacaoEstagioComissaoController::class, 'store']);
      Route::get('processo-avaliacao/acompanhamento-comissao/grid', [ProcessoAvaliacaoController::class, 'acompanhamentoServidoresComissaoGrid']);
      Route::post('processo-avaliacao/acompanhamento-comissao/documentacao/delete/{id}', [DocumentacaoEstagioComissaoController::class, 'deletarDocumentoComissao']);
 
-//ROTAS DOCUMENTACAO ESTAGIO DIF
+     //ROTAS DOCUMENTACAO ESTAGIO DIF
      Route::get('processo-avaliacao/acompanhamento-processo-avaliacao/documentacao/{id}', [ProcessoAvaliacaoController::class, 'exibirDocumentoDif']);
      Route::post('processo-avaliacao/acompanhamento-processo-avaliacao/upload-documentacao', [DocumentacaoEstagioDifController::class, 'store']);
      Route::post('processo-avaliacao/acompanhamento-processo-avaliacao/documentacao/delete/{id}', [DocumentacaoEstagioDifController::class, 'deletarDocumentoDif']);
 
-//Período do processo de avaliação
+     //Período do processo de avaliação
      Route::get('periodo-processo-avaliacao/combo', [PeriodoProcessoAvaliacaoController::class, 'combo']);
-//método criado exclusivamente para usar com autocomplete srh, considerando que recebe especificamente os parametros id e name.
+     //método criado exclusivamente para usar com autocomplete srh, considerando que recebe especificamente os parametros id e name.
      Route::get('periodo-processo-avaliacao/combo-auto', [PeriodoProcessoAvaliacaoController::class, 'comboAutoComplete']);
-
-//Avaliador
+     
+     //Avaliador
      Route::get('avaliador/grid-pesquisar-avaliador', [AvaliadorController::class, 'index']);
      Route::get('avaliador/{avaliador_id}', [AvaliadorController::class, 'show']);
      Route::post('avaliador', [AvaliadorController::class, 'store']);
@@ -154,19 +144,28 @@ Route::group(['middleware' => ['seguranca', 'validar.ip']], function () {
      Route::post('avaliador/remover-avaliador/{id}', [AvaliadorController::class, 'destroy']);
      Route::post('avaliador/remover-servidor-individual/{id}', [AvaliadorController::class, 'removerServidorIndividualmente']);
      Route::get('avaliador/carregar-servidor-por-periodo/{periodo}', [AvaliadorController::class, 'carregarServidorPorPeriodo']);
-
-// unidades
-// Route::get('avaliador/grid-unidades', [AvaliadorController::class, 'gridUnidades']);
+     
+     // unidades
      Route::get('avaliador/unidades-grid/{id}', [AvaliadorController::class, 'unidadesGrid']);
      Route::post('avaliador/adicionar-unidades', [AvaliadorController::class, 'adicionarUnidades']);
      Route::post('avaliador/remover-unidades/{id}', [AvaliadorController::class, 'destroyUnidades']);
-
-// // refatoração das rotas de unidades
+     
+     
+     
+     // // refatoração das rotas de unidades
      Route::get('unidades', [UnidadesController::class, 'index']);
-// Route::get('unidades/{id}', [UnidadesController::class, 'show']);
-// Route::post('unidades', [UnidadesController::class, 'store']);
-// Route::delete('unidades/{id}', [UnidadesController::class, 'destroy']);
+     // Route::get('unidades/{id}', [UnidadesController::class, 'show']);
+     // Route::post('unidades', [UnidadesController::class, 'store']);
+     // Route::delete('unidades/{id}', [UnidadesController::class, 'destroy']);
+     
+});
 
- });
+Route::group(['middleware' => ['validar.ip']], function () {
 
-
+// ROTAS PARA INTRANET //não precisa estar no sanctum pois são rotas usadas pelo intranet-api que ja são autenticadas
+Route::get('minhas-avaliacoes/{usuario_id}', [AvaliacaoController::class, 'minhasAvaliacoes']);
+Route::get('processo-avaliacao-servidor/{processo_id}', [AvaliacaoController::class, 'getProcessoAvaliacaoServidor']);
+Route::get('minha-avaliacao/imprimir/{processo_id}', [AvaliacaoController::class, 'imprimirAvaliacao']);
+Route::post('minha-avaliacao/ciencia-avaliado/{processo_id}', [AvaliacaoController::class, 'confirmarCienciaAvaliado']);
+Route::post('minha-avaliacao/recusar-avaliacao/{processo_id}', [AvaliacaoController::class, 'recusarAvaliacao']);   
+});
