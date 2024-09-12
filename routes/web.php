@@ -3,28 +3,21 @@ use App\Http\Controllers\PresosController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [PresosController::class, 'TelaCadastro'])->name('TelaCadastro');
+Route::get('/Listagem', [PresosController::class, 'listagem'])->name('Listagem');
+Route::get('/presos/{id}/edicao', [PresosController::class, 'edicao'])->name('presos.edicao');
 
-Route::get('/', [PresosController::class, 'index'])->name('cadastro');
-Route::get('/telaDeListagem', [PresosController::class, 'listagem'])->name('listagem');
 
 
 Route::post('/cadastrar/preso', [PresosController::class, 'cadastro']);
 Route::get('/pesquisar/presos', [PresosController::class, 'pesquisar']);
 Route::get('listar/presos', [PresosController::class, 'listar']);
+Route::get('/presos/{id}/edit', [PresosController::class, 'edit'])->name('presos.edit');
+Route::put('/presos/{id}', [PresosController::class, 'update'])->name('presos.update');
+//Route::delete('/presos/{id}', [PresosController::class, 'destroy'])->name('presos.destroy');
+
+
 
 
 Route::group(['middleware' => ['acesso.unico']], function () {
