@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\PresosController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,9 +18,19 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/', [PresosController::class, 'index'])->name('cadastro');
+Route::get('/telaDeListagem', [PresosController::class, 'listagem'])->name('listagem');
+
+
+Route::post('/cadastrar/preso', [PresosController::class, 'cadastro']);
+Route::get('/pesquisar/presos', [PresosController::class, 'pesquisar']);
+Route::get('listar/presos', [PresosController::class, 'listar']);
+
 
 Route::group(['middleware' => ['acesso.unico']], function () {
     Route::get('/acesso/usuario/token/{token}/{usuario}', [UsuarioController::class, 'acessoViaIntranet']);
 
 });
+
+
 

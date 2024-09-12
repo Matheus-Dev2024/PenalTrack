@@ -4,17 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTipoArquivoTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('tipo_arquivo', function (Blueprint $table) {
-            $table->id();
+        Schema::create('presos', function (Blueprint $table) {
+            $table->integer('id')->autoIncrement();
             $table->string('nome');
             $table->timestamps();
         });
@@ -22,11 +20,9 @@ class CreateTipoArquivoTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('tipo_arquivo');
+        Schema::dropIfExists('presos');
     }
-}
+};
