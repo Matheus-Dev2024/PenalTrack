@@ -9,7 +9,6 @@ Route::get('/Listagem', [PresosController::class, 'listagem'])->name('Listagem')
 Route::get('/presos/{id}/edicao', [PresosController::class, 'edicao'])->name('presos.edicao');
 
 
-
 Route::post('/cadastrar/preso', [PresosController::class, 'cadastro']);
 Route::get('/pesquisar/presos', [PresosController::class, 'pesquisar']);
 Route::get('listar/presos', [PresosController::class, 'listar']);

@@ -9,18 +9,18 @@
                         </v-sheet>
                         <v-sheet class="ma-2 pa-2">
                             <v-btn size="small" @click="isDialogOpen = true" elevation="5" color="#212121">
-                                <v-icon size="x-large" icon="mdi-account-search"></v-icon>
+                                <v-icon class="mr-1" size="x-large" icon="mdi-account-search"></v-icon>
                                 Pesquisar
                             </v-btn>
                         </v-sheet>
                         <v-sheet class="ml-n3 ma-2 pa-2">
                             <v-btn size="small" :to="{ name: 'Cadastro' }" elevation="5" color="#00E676">
-                                <v-icon size="x-large" icon="mdi-account-multiple-plus"></v-icon>
+                                <v-icon class="mr-1" size="x-large" icon="mdi-account-multiple-plus"></v-icon>
                                 Cadastrar
                             </v-btn>
                         </v-sheet>
                         <v-btn size="small" color="#455A64" @click="limpar">
-                            <v-icon size="x-large">mdi-account-convert</v-icon>
+                            <v-icon class="mr-1" size="x-large">mdi-account-convert</v-icon>
                             Limpar
                         </v-btn>
                     </v-sheet>
@@ -81,12 +81,12 @@
 
                     <template v-slot:item="{ item }">
                         <tr>
-<!--                            <td class="text-left">{{ item.id }}</td>-->
+                            <td class="text-left">{{ item.id }}</td>
                             <td class="text-left">{{ item.nome }}</td>
                             <td class="text-left">{{ item.data_cadastro }}</td>
                             <td class="text-center">
                                 <v-btn size="small" class="mr-3" elevation="4" @click="dialog = true" color="#3D5AFE">
-                                    <v-icon size="x-large">mdi-folder-image</v-icon>
+                                    <v-icon class="mr-1" size="x-large">mdi-folder-image</v-icon>
                                     Fotos
                                 </v-btn>
 
@@ -142,11 +142,11 @@ const pesquisas = reactive({
 });
 
 const editPreso = (id) => {
-    window.location.href = `/presos/${id}/edicao`;
+    window.location.href = `http://localhost:8004/presos/${id}/edicao`;
 };
 
 const headers = [
-    // { text: 'ID', value: 'id' },
+    { text: 'ID', value: 'id' },
     { text: 'NOME', value: 'nome' },
     { text: 'DATA', value: 'data_cadastro' },
     { text: 'AÇÕES', value: 'actions', sortable: false }
